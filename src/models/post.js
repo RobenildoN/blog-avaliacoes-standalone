@@ -7,6 +7,7 @@ class Post {
         this.titulo = data.titulo || '';
         this.imagem = data.imagem || null;
         this.resumo = data.resumo || '';
+        this.link_acesso = data.link_acesso || '';
         this.avaliacao = data.avaliacao || 0;
         this.data_post = data.data_post || new Date().toISOString();
         this.categoryId = data.categoryId ? parseInt(data.categoryId) : null;
@@ -101,6 +102,7 @@ class Post {
             titulo: this.titulo,
             imagem: this.imagem,
             resumo: this.resumo,
+            link_acesso: this.link_acesso,
             avaliacao: this.avaliacao,
             data_post: this.data_post,
             categoryId: this.categoryId,

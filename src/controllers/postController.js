@@ -36,7 +36,7 @@ exports.listPosts = async (req, res) => {
 // Criar um novo post
 exports.createPost = async (req, res) => {
     try {
-        const { titulo, resumo, avaliacao, lido_ate, categoryId } = req.body;
+        const { titulo, resumo, link_acesso, avaliacao, lido_ate, categoryId } = req.body;
 
         if (!titulo || !resumo || !avaliacao || !categoryId) {
             return res.status(400).json({ message: 'Campos obrigatórios faltando' });
@@ -51,6 +51,7 @@ exports.createPost = async (req, res) => {
             titulo,
             imagem: imagemPath,
             resumo,
+            link_acesso,
             avaliacao: parseInt(avaliacao),
             lido_ate,
             categoryId: parseInt(categoryId)

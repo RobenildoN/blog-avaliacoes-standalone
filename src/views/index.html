@@ -16,7 +16,8 @@
         </div>
         <div class="search-box"
             style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%;">
-            <input type="text" placeholder="Pesquisar títulos e resumos..." id="searchBox" style="width: 200px; padding: 8px;">
+            <input type="text" placeholder="Pesquisar títulos e resumos..." id="searchBox"
+                style="width: 200px; padding: 8px;">
             <button onclick="realizarBusca()"
                 style="margin-left: 8px; padding: 8px 16px; background: #5cb85c; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Pesquisar</button>
             <button onclick="limparBusca()"
@@ -53,9 +54,11 @@
 
             <!-- Controles de paginação -->
             <div id="paginationControls" style="display: none; text-align: center; margin-top: 30px;">
-                <button id="prevPageBtn" onclick="mudarPagina(-1)" style="padding: 10px 20px; margin: 0 10px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Anterior</button>
+                <button id="prevPageBtn" onclick="mudarPagina(-1)"
+                    style="padding: 10px 20px; margin: 0 10px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Anterior</button>
                 <span id="pageInfo" style="margin: 0 20px; font-weight: bold;"></span>
-                <button id="nextPageBtn" onclick="mudarPagina(1)" style="padding: 10px 20px; margin: 0 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Próximo</button>
+                <button id="nextPageBtn" onclick="mudarPagina(1)"
+                    style="padding: 10px 20px; margin: 0 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Próximo</button>
             </div>
         </section>
     </main>
@@ -71,7 +74,7 @@
         let termoBusca = '';
 
         // Função para limitar texto a aproximadamente 5 linhas
-        function limitarTexto(texto, maxCaracteres = 180) {
+        function limitarTexto(texto, maxCaracteres = 150) {
             if (texto.length <= maxCaracteres) {
                 return texto;
             }
@@ -233,21 +236,23 @@
                 let mensagem = 'Nenhum post encontrado.';
                 if (filtroCategoria) mensagem = 'Nenhum post encontrado nesta categoria.';
                 if (termoBusca) mensagem = `Nenhum post encontrado para "${termoBusca}".`;
-                
+
                 postsContainer.innerHTML = `<div style="text-align: center; width: 100%; padding: 40px;">${mensagem}</div>`;
                 return;
             }
 
             postsContainer.innerHTML = posts.map(post => `
-                <div class="post" style="width: 300px; border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <img src="${post.imagem || '../public/img/exemplo.jpg'}" alt="${post.titulo}" style="width: 100%; height: 360px; object-fit: contain; border-radius: 5px;">
-                    <h3 style="margin: 10px 0; text-align: center;">${post.titulo}</h3>
-                    <p style="text-align: justify;">${limitarTexto(post.resumo)}</p>
-                    <p style="text-align: center;">Avaliação: ${'★'.repeat(post.avaliacao)}${'☆'.repeat(5 - post.avaliacao)}</p>
-                    <p style="text-align: center;"><strong>Categoria:</strong> ${post.Category ? post.Category.name : 'N/A'}</p>
-                    <p style="text-align: center;">Data do Post: ${new Date(post.data_post).toLocaleDateString('pt-BR')}</p>
-                    <div style="text-align: center;">
-                        <a href="/post.html?id=${post.id}" style="display: inline-block; padding: 8px 16px; background: #5cb85c; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 10px;">Ler mais</a>
+                <div class="post" style="width: 280px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
+                    <img src="${post.imagem || '../public/img/exemplo.jpg'}" alt="${post.titulo}" style="width: 100%; height: 260px; object-fit: contain; border-radius: 5px; margin-bottom: 5px;">
+                    <h3 style="margin: 5px 0; text-align: center; font-size: 1.1em;">${post.titulo}</h3>
+                    <p style="text-align: justify; margin: 5px 0; font-size: 0.9em; line-height: 1.3;">${limitarTexto(post.resumo)}</p>
+                    ${post.lido_ate ? `<p style="text-align: center; margin: 2px 0; font-size: 0.85em; color: #555;"><strong>Lido até:</strong> ${post.lido_ate}</p>` : ''}
+                    ${post.link_acesso ? `<p style="text-align: center; margin: 2px 0;"><a href="${post.link_acesso}" target="_blank" style="color: #007bff; text-decoration: underline; font-size: 0.85em;">Link para acesso</a></p>` : ''}
+                    <p style="text-align: center; margin: 2px 0; font-size: 0.9em;">Avaliação: ${'★'.repeat(post.avaliacao)}${'☆'.repeat(5 - post.avaliacao)}</p>
+                    <p style="text-align: center; margin: 2px 0; font-size: 0.8em;">Categoria: ${post.Category ? post.Category.name : 'N/A'}</p>
+                    <p style="text-align: center; margin: 2px 0; font-size: 0.8em; color: #777;">Data: ${new Date(post.data_post).toLocaleDateString('pt-BR')}</p>
+                    <div style="text-align: center; margin-top: auto; padding-top: 8px;">
+                        <a href="/post.html?id=${post.id}" style="display: inline-block; padding: 6px 14px; background: #5cb85c; color: #fff; text-decoration: none; border-radius: 5px; font-size: 0.9em;">Ler mais</a>
                     </div>
                 </div>
             `).join('');
@@ -260,7 +265,7 @@
 
             // Adicionar event listener para busca com Enter
             const searchInput = document.getElementById('searchBox');
-            searchInput.addEventListener('keypress', function(e) {
+            searchInput.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     realizarBusca();
                 }

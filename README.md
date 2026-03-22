@@ -21,6 +21,8 @@ Uma versão completamente autônoma do Blog de Avaliações que funciona **sem s
 - **🚀 Performance Nativa** - Interface Electron otimizada com zero dependência de rede externa.
 - **🔒 Segurança Total** - Dependências auditadas (0 vulnerabilidades) e dados 100% privados.
 - **🎨 Layout Responsivo** - Novo design de rodapé fixo e área de conteúdo expansível.
+- **🔗 Campo de Link Externo** - Agora você pode adicionar um link direto para o conteúdo avaliado.
+- **📖 Progresso Visível** - O campo "Lido até" agora é exibido diretamente nos cards e na página do post.
 
 ## 🚀 Como Usar
 
@@ -89,12 +91,13 @@ npm run dist
 
 ---
 
-**Versão Autônoma v2.1.0**
+**Versão Autônoma v2.2.0**
 _Desenvolvida para máxima portabilidade, privacidade e facilidade de uso._
 
-## 🆕 Novidades da v2.1.0
+## 🆕 Novidades da v2.2.0
 
-- **Busca Expandida**: Agora pesquisa também dentro do resumo dos posts.
-- **Fixação de Rodapé**: O rodapé agora permanece sempre na base da janela, independentemente do conteúdo.
-- **Migração Automática**: Sistema inteligente que move seus dados para a pasta correta do Windows no primeiro acesso.
-- **Correção SQLite**: Resolvido erro de carregamento de módulos nativos em versões empacotadas.
+- **Cards Compactos**: Reduzimos o tamanho dos cards em 20% e otimizamos o espaçamento para mostrar mais conteúdo na tela.
+- **Link para Acesso**: Novo campo para adicionar URLs externas em cada post.
+- **Visibilidade de Progresso**: O campo "Lido até" agora aparece tanto na listagem principal quanto nos detalhes do post.
+- **Layout Inteligente**: O rodapé permanece fixo na base da janela mesmo em telas com pouco conteúdo.
+- **Busca Aprimorada**: Pesquisa simultânea em títulos e resumos com feedback visual aprimorado.
