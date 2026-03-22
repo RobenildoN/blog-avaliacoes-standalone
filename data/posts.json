@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "titulo": "novo",
+    "imagem": "/img/1756956002979-255784387.jpg",
+    "resumo": "poads",
+    "avaliacao": "3",
+    "data_post": "2025-09-04T03:20:02.980Z",
+    "categoryId": "1",
+    "lido_ate": "50",
+    "finalizado": false,
+    "createdAt": "2025-09-04T03:20:02.981Z",
+    "updatedAt": "2025-09-04T03:20:02.981Z"
+  },
+  {
+    "id": 2,
+    "titulo": "Nano",
+    "imagem": "/img/1756956082314-695860054.png",
+    "resumo": "Nano Machine",
+    "avaliacao": "5",
+    "data_post": "2025-09-04T03:21:22.317Z",
+    "categoryId": "1",
+    "lido_ate": "216",
+    "finalizado": false,
+    "createdAt": "2025-09-04T03:21:22.317Z",
+    "updatedAt": "2025-09-04T03:21:22.317Z"
+  },
+  {
+    "id": 3,
+    "titulo": "Hariet",
+    "imagem": "/img/1756956574534-32081847.png",
+    "resumo": "filme",
+    "avaliacao": "4",
+    "data_post": "2025-09-04T03:29:34.537Z",
+    "categoryId": "3",
+    "lido_ate": "Finalizado",
+    "finalizado": false,
+    "createdAt": "2025-09-04T03:29:34.537Z",
+    "updatedAt": "2025-09-04T03:29:34.537Z"
+  }
+]

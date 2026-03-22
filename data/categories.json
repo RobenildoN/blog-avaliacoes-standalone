@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Mangas",
+    "createdAt": "2025-09-04T02:39:03.640Z",
+    "updatedAt": "2025-09-04T02:39:03.640Z"
+  },
+  {
+    "id": 2,
+    "name": "Livros",
+    "createdAt": "2025-09-04T02:39:03.640Z",
+    "updatedAt": "2025-09-04T02:39:03.640Z"
+  },
+  {
+    "id": 3,
+    "name": "Filmes",
+    "createdAt": "2025-09-04T02:39:03.640Z",
+    "updatedAt": "2025-09-04T02:39:03.640Z"
+  },
+  {
+    "id": 4,
+    "name": "Séries",
+    "createdAt": "2025-09-04T02:39:03.640Z",
+    "updatedAt": "2025-09-04T02:39:03.640Z"
+  },
+  {
+    "id": 5,
+    "name": "Cursos",
+    "createdAt": "2025-09-04T02:39:03.640Z",
+    "updatedAt": "2025-09-04T02:39:03.640Z"
+  }
+]

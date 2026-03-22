@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Blog de Avaliações</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body style="display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0;">
+    <header style="width: 100%; text-align: center; background: #35424a; color: #fff; padding: 10px 0;">
+        <h1>Blog de Avaliações</h1>
+        <nav>
+            <ul style="list-style: none; padding: 0; display: flex; justify-content: center; gap: 20px;">
+                <li><a href="/" style="color: #fff; text-decoration: none;">Início</a></li>
+                <li><a href="/categoria.html" style="color: #fff; text-decoration: none;">Categorias</a></li>
+                <li><a href="/login.html" style="color: #fff; text-decoration: none;">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="width: 100%; max-width: 500px; margin: 20px auto; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px; text-align: center;">
+        <h2 style="color: #35424a;">Login</h2>
+        <form action="/auth/login" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; flex-direction: column; text-align: left;">
+                <label for="email" style="margin-bottom: 5px;">Email:</label>
+                <input type="email" id="email" name="email" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div style="display: flex; flex-direction: column; text-align: left;">
+                <label for="senha" style="margin-bottom: 5px;">Senha:</label>
+                <input type="password" id="senha" name="password" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <button type="submit" style="padding: 10px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Entrar</button>
+        </form>
+        <p style="margin-top: 20px;">Não tem uma conta? <a href="/register.html" style="color: #5cb85c;">Registre-se aqui</a></p>
+    </main>
+
+    <footer style="width: 100%; text-align: center; background: #35424a; color: #fff; padding: 10px 0; margin-top: auto;">
+        <p>&copy; 2023 Blog de Avaliações. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = new FormData(form);
+            const body = new URLSearchParams(data);
+
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: body
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                // Login bem-sucedido, redireciona para admin.html
+                window.location.href = '/admin.html';
+            } else {
+                alert(result.message || 'Erro ao realizar login');
+            }
+        });
+    </script>
+</body>
+
+</html>

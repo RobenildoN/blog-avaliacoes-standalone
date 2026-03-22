@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Área Administrativa - Blog de Avaliações</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body style="display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; font-family: Arial, sans-serif;">
+    <header style="width: 100%; text-align: center; background: #35424a; color: #fff; padding: 20px 0;">
+        <h1>Área Administrativa</h1>
+        <nav style="margin-top: 10px;">
+            <a href="/categorias.html" style="color: white; margin: 0 10px; text-decoration: none;">Gerenciar Categorias</a>
+            <a href="/" style="color: white; margin: 0 10px; text-decoration: none;">Página Inicial</a>
+        </nav>
+    </header>
+    <!-- Notificação de status -->
+    <div id="notification" style="display: none; position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 5px; color: white; font-weight: bold; z-index: 10000; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <span id="notificationMessage"></span>
+        <button onclick="fecharNotificacao()" style="background: none; border: none; color: white; font-size: 20px; margin-left: 10px; cursor: pointer;">×</button>
+    </div>
+
+    <main style="width: 100%; max-width: 800px; margin: 20px auto; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px;">
+        <h2 id="mainTitle" style="text-align: center; color: #35424a; margin-bottom: 20px;">Criar Novo Post</h2>
+        <form id="formCriarPost" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+            <input type="text" name="titulo" placeholder="Título" required style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            <input type="file" name="imagem" accept="image/*" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            <textarea name="resumo" placeholder="Resumo" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
+            <input type="number" name="avaliacao" placeholder="Avaliação (1-5)" min="1" max="5" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            <input type="text" name="lido_ate" placeholder="Lido até" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            <select name="categoryId" id="selectCategoria" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">Selecione uma categoria</option>
+            </select>
+            <button type="submit" id="submitBtn" style="padding: 12px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Criar Post</button>
+        </form>
+        <h2 style="text-align: center; color: #35424a; margin-bottom: 20px;">Posts</h2>
+        <div id="posts" style="width: 100%;"></div>
+        <!-- Overlay do modal -->
+        <div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 999;"></div>
+
+        <!-- Modal de edição -->
+        <div id="modalEditar"
+            style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; padding:30px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); width: 80%; max-width: 600px; z-index: 1000;">
+            <h3 style="text-align: center; color: #35424a; margin-bottom: 20px;">Editar Post</h3>
+            <form id="formEditarPost" style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="hidden" name="id">
+                <input type="text" name="titulo" placeholder="Título" required style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <input type="file" name="imagem" accept="image/*" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <textarea name="resumo" placeholder="Resumo" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
+                <input type="number" name="avaliacao" placeholder="Avaliação (1-5)" min="1" max="5" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <input type="text" name="lido_ate" placeholder="Lido até" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <select name="categoryId" id="selectCategoriaEdit" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">Selecione uma categoria</option>
+                </select>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                    <button type="submit" style="padding: 12px 20px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">Salvar</button>
+                    <button type="button" onclick="fecharModal()" style="padding: 12px 20px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script>
+        // Função para mostrar notificações
+        function mostrarNotificacao(mensagem, tipo = 'success') {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notificationMessage');
+
+            messageElement.textContent = mensagem;
+
+            if (tipo === 'success') {
+                notification.style.backgroundColor = '#28a745';
+            } else if (tipo === 'error') {
+                notification.style.backgroundColor = '#dc3545';
+            } else if (tipo === 'warning') {
+                notification.style.backgroundColor = '#ffc107';
+                notification.style.color = '#212529';
+            }
+
+            notification.style.display = 'block';
+
+            // Auto-esconder após 5 segundos
+            setTimeout(() => {
+                fecharNotificacao();
+            }, 5000);
+        }
+
+        // Função para fechar notificação
+        function fecharNotificacao() {
+            const notification = document.getElementById('notification');
+            notification.style.display = 'none';
+        }
+
+
+        // Função para carregar categorias
+        async function carregarCategorias() {
+            try {
+                console.log('Carregando categorias...');
+                const res = await fetch('/categories');
+                console.log('Resposta da API:', res.status);
+                const data = await res.json();
+                console.log('Dados recebidos:', data);
+                const categorias = Array.isArray(data) ? data : (data.categories || []);
+                console.log('Categorias processadas:', categorias);
+
+                // Preencher o select de categorias no formulário de criação
+                const selectCategoria = document.getElementById('selectCategoria');
+                selectCategoria.innerHTML = '<option value="">Selecione uma categoria</option>';
+                categorias.forEach(categoria => {
+                    selectCategoria.innerHTML += `<option value="${categoria.id}">${categoria.name}</option>`;
+                });
+
+                // Preencher o select de categorias no formulário de edição
+                const selectCategoriaEdit = document.getElementById('selectCategoriaEdit');
+                selectCategoriaEdit.innerHTML = '<option value="">Selecione uma categoria</option>';
+                categorias.forEach(categoria => {
+                    selectCategoriaEdit.innerHTML += `<option value="${categoria.id}">${categoria.name}</option>`;
+                });
+            } catch (error) {
+                console.error('Erro ao carregar categorias:', error);
+            }
+        }
+        
+        async function carregarPosts() {
+            try {
+                const res = await fetch('/posts');
+                const data = await res.json();
+                const posts = Array.isArray(data) ? data : (data.posts || []);
+                const div = document.getElementById('posts');
+                div.innerHTML = posts.map(post => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div>
+                        <strong style="font-size: 16px; color: #333;">${post.titulo}</strong>
+                        <span style="margin-left: 10px; font-size: 12px; color: #666;">${post.Category ? post.Category.name : 'Sem categoria'}</span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="abrirModalEditar(${post.id})" style="padding: 8px 12px; background-color: #5bc0de; color: white; border: none; border-radius: 4px; cursor: pointer;">Editar</button>
+                        <button onclick="deletarPost(${post.id})" style="padding: 8px 12px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">Deletar</button>
+                    </div>
+                </div>
+            `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar posts:', error);
+            }
+        }
+
+        document.getElementById('formCriarPost').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Validação básica
+            if (!form.titulo.value.trim() || !form.resumo.value.trim() || !form.avaliacao.value || !form.categoryId.value) {
+                mostrarNotificacao('⚠️ Por favor, preencha todos os campos obrigatórios: título, resumo, avaliação e categoria', 'warning');
+                return;
+            }
+
+            // Desabilitar botão durante o envio
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Criando...';
+
+            try {
+                const formData = new FormData(form);
+                const res = await fetch('/posts', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    // Sucesso
+                    mostrarNotificacao('✅ Post criado com sucesso!', 'success');
+                    form.reset();
+                    await carregarPosts();
+                } else {
+                    // Tentar obter mensagem de erro da resposta
+                    let errorMessage = 'Erro ao criar post';
+                    try {
+                        const errorData = await res.json();
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (parseError) {
+                        // Se não conseguir fazer parse do erro, usar mensagem padrão
+                    }
+                    mostrarNotificacao(`❌ ${errorMessage}`, 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao criar post:', error);
+                mostrarNotificacao('❌ Erro de conexão. Verifique sua internet e tente novamente.', 'error');
+            } finally {
+                // Reabilitar botão
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Criar Post';
+            }
+        });
+
+        async function abrirModalEditar(id) {
+            try {
+                const res = await fetch(`/posts/${id}`);
+                if (!res.ok) {
+                    throw new Error('Erro ao buscar post');
+                }
+                const post = await res.json();
+                const modal = document.getElementById('modalEditar');
+                const overlay = document.getElementById('modalOverlay');
+                const form = document.getElementById('formEditarPost');
+
+                // Preencher formulário com dados do post
+                form.id.value = post.id;
+                form.titulo.value = post.titulo;
+                form.resumo.value = post.resumo;
+                form.avaliacao.value = post.avaliacao;
+                form.lido_ate.value = post.lido_ate;
+                form.categoryId.value = post.categoryId;
+
+                // Nota: Não podemos preencher o input file por questões de segurança
+                // O usuário precisará selecionar uma nova imagem se quiser alterar
+
+                // Mostrar modal e overlay
+                modal.style.display = 'block';
+                overlay.style.display = 'block';
+
+                // Alterar textos para modo de edição
+                document.getElementById('mainTitle').textContent = 'Editar Post';
+                document.getElementById('submitBtn').textContent = 'Editar Post';
+            } catch (error) {
+                console.error('Erro ao abrir modal de edição:', error);
+                mostrarNotificacao('❌ Erro ao carregar dados do post para edição', 'error');
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modalEditar').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+
+            // Limpar formulário
+            const form = document.getElementById('formEditarPost');
+            form.reset();
+
+            // Restaurar textos originais
+            document.getElementById('mainTitle').textContent = 'Criar Novo Post';
+            document.getElementById('submitBtn').textContent = 'Criar Post';
+        }
+
+        document.getElementById('formEditarPost').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const id = form.id.value;
+
+            // Validação básica
+            if (!form.titulo.value.trim() || !form.resumo.value.trim() || !form.avaliacao.value) {
+                mostrarNotificacao('⚠️ Por favor, preencha todos os campos obrigatórios', 'warning');
+                return;
+            }
+
+            const formData = new FormData(form);
+            formData.delete('id');
+
+            try {
+                const res = await fetch(`/posts/${id}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    mostrarNotificacao('✅ Post editado com sucesso!', 'success');
+                    fecharModal();
+                    carregarPosts();
+                } else {
+                    const errorData = await res.json();
+                    mostrarNotificacao(`❌ Erro ao editar post: ${errorData.message || 'Erro desconhecido'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao editar post:', error);
+                mostrarNotificacao('❌ Erro ao editar post. Tente novamente.', 'error');
+            }
+        });
+
+        async function deletarPost(id) {
+            if (confirm('Deseja realmente deletar este post? Esta ação não pode ser desfeita.')) {
+                try {
+                    const res = await fetch(`/posts/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        mostrarNotificacao('✅ Post deletado com sucesso!', 'success');
+                        carregarPosts();
+                    } else {
+                        mostrarNotificacao('❌ Erro ao deletar post', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erro ao deletar post:', error);
+                    mostrarNotificacao('❌ Erro ao deletar post. Tente novamente.', 'error');
+                }
+            }
+        }
+
+        // Verificar se há parâmetro de edição na URL
+        async function verificarEdicaoAutomatica() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            if (editId) {
+                // Aguardar o carregamento das categorias e posts
+                await carregarCategorias();
+                await carregarPosts();
+                // Pequeno delay adicional para garantir que tudo foi renderizado
+                setTimeout(() => {
+                    abrirModalEditar(editId);
+                }, 100);
+            }
+        }
+
+        // Inicializar página
+        async function inicializarAdmin() {
+            // Carregar dados
+            await carregarCategorias();
+            await carregarPosts();
+
+            // Verificar edição automática
+            verificarEdicaoAutomatica();
+        }
+
+        // Permitir fechar modal clicando no overlay
+        document.getElementById('modalOverlay').addEventListener('click', fecharModal);
+
+        // Carregar tudo ao iniciar
+        inicializarAdmin();
+    </script>
+</body>
+
+</html>

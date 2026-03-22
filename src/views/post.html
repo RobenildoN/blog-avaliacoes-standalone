@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Post</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header
+        style="display: flex; flex-direction: column; align-items: center; background: #35424a; color: #fff; padding: 10px 0;">
+        <div style="text-align: center; width: 100%; margin-bottom: 15px;">
+            <h1 style="margin: 0;">Blog de Avaliações</h1>
+        </div>
+        <div class="search-box" style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%;">
+            <input type="text" placeholder="Pesquisar..." id="searchBox" style="width: 200px; padding: 8px;">
+            <button
+                style="margin-left: 8px; padding: 8px 16px; background: #5cb85c; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Pesquisar</button>
+        </div>
+        <nav style="width: 100%; display: flex; justify-content: center;">
+            <ul style="list-style: none; margin: 0; padding: 0; display: flex;">
+                <li style="margin: 0 15px;"><a href="index.html" style="color: #fff;">Home</a></li>
+                <li style="margin: 0 15px;"><a href="#" style="color: #fff;">Mangas</a></li>
+                <li style="margin: 0 15px;"><a href="#" style="color: #fff;">Livros</a></li>
+                <li style="margin: 0 15px;"><a href="#" style="color: #fff;">Filmes</a></li>
+                <li style="margin: 0 15px;"><a href="#" style="color: #fff;">Séries</a></li>
+                <li style="margin: 0 15px;"><a href="#" style="color: #fff;">Cursos</a></li>
+                <li style="margin: 0 15px;"><a href="admin.html" style="color: #fff;">Criar Post</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main style="text-align: center;">
+        <article style="display: inline-block; text-align: center; max-width: 800px; margin: 20px auto;">
+            <h2 id="post-title" style="text-align: center;">Título do Post</h2>
+            <img id="post-image" src="../public/img/exemplo.jpg" alt="Imagem do Post" style="width: 100%; max-width: 600px; height: 432px; object-fit: contain; border-radius: 5px; margin: 20px 0;">
+            <p id="post-summary" style="text-align: justify; margin: 20px 0;">Resumo do post aqui...</p>
+            <p style="text-align: center;"><strong>Avaliação:</strong> <span id="post-rating">★★★★☆</span></p>
+            <p style="text-align: center;"><strong>Data do Post:</strong> <span id="post-date">01/01/2023</span></p>
+            <p style="text-align: center;"><strong>Categoria:</strong> <span id="post-category">Mangas</span></p>
+            <div style="text-align: center; margin-top: 30px;">
+                <button id="editPostBtn" style="display: inline-block; padding: 12px 24px; background: #007bff; color: #fff; text-decoration: none; border-radius: 5px; border: none; cursor: pointer; font-size: 16px;">Editar Post</button>
+            </div>
+        </article>
+    </main>
+    <footer>
+        <p><a href="#">Blog de Avaliações</a></p>
+    </footer>
+
+    <script>
+        // Função para obter o ID do post da URL
+        function getPostIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Função para carregar os detalhes do post
+        async function loadPostDetails() {
+            const postId = getPostIdFromUrl();
+            if (!postId) {
+                document.getElementById('post-title').textContent = 'Post não encontrado';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/posts/${postId}`);
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar post');
+                }
+                const post = await response.json();
+
+                // Preencher os elementos com os dados do post
+                document.getElementById('post-title').textContent = post.titulo;
+                document.getElementById('post-image').src = post.imagem || '../public/img/exemplo.jpg';
+                document.getElementById('post-summary').textContent = post.resumo;
+                document.getElementById('post-rating').textContent = '★'.repeat(post.avaliacao) + '☆'.repeat(5 - post.avaliacao);
+                document.getElementById('post-date').textContent = new Date(post.data_post).toLocaleDateString('pt-BR');
+                document.getElementById('post-category').textContent = post.Category ? post.Category.name : 'N/A';
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('post-title').textContent = 'Erro ao carregar post';
+            }
+        }
+
+
+        // Carregar os detalhes do post ao carregar a página
+        document.addEventListener('DOMContentLoaded', async function() {
+            loadPostDetails();
+
+            // Mostrar botão editar sempre disponível
+            const editBtn = document.getElementById('editPostBtn');
+            editBtn.style.display = 'inline-block';
+            // Adicionar funcionalidade ao botão editar
+            editBtn.addEventListener('click', function() {
+                const postId = getPostIdFromUrl();
+                if (postId) {
+                    window.location.href = `/admin.html?edit=${postId}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
