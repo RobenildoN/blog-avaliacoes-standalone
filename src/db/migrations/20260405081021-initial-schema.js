@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     // Criar tabela categories
     await queryInterface.createTable('categories', {
       id: {
@@ -94,7 +94,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     // Remover tabelas na ordem reversa
     await queryInterface.dropTable('posts');
     await queryInterface.dropTable('categories');
