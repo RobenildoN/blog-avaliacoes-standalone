@@ -62,11 +62,18 @@ process.on('unhandledRejection', (reason, promise) => {
 // Conectar ao SQLite Diretamente
 const { connectDB, migrateDB } = require('./src/db/db');
 const { setupAssociations } = require('./src/models/associations');
+const BackupService = require('./src/services/backupService');
 
 async function initializeApp() {
   await connectDB();
   setupAssociations();
   await migrateDB();
+
+  // Inicializar backup automático
+  const backupService = new BackupService(app.getPath('userData'));
+  backupService.startScheduledBackup();
+
+  console.log('Backup automático inicializado');
 }
 
 initializeApp().then(() => {

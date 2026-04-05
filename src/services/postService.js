@@ -3,10 +3,53 @@ const Category = require('../models/category');
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 class PostService {
     constructor(imagesPath) {
         this.imagesPath = imagesPath;
+        // Garantir que o diretório de imagens existe
+        if (!fs.existsSync(this.imagesPath)) {
+            fs.mkdirSync(this.imagesPath, { recursive: true });
+        }
+    }
+
+    // Gerar nome único para imagem
+    generateImageFilename(originalPath) {
+        const ext = path.extname(originalPath).toLowerCase();
+        const hash = crypto.randomBytes(16).toString('hex');
+        return `${hash}${ext}`;
+    }
+
+    // Salvar imagem do caminho absoluto para o diretório de imagens
+    async saveImage(imageAbsPath) {
+        if (!imageAbsPath || !fs.existsSync(imageAbsPath)) {
+            return null;
+        }
+
+        const filename = this.generateImageFilename(imageAbsPath);
+        const targetPath = path.join(this.imagesPath, filename);
+
+        // Copiar arquivo para o diretório de imagens
+        fs.copyFileSync(imageAbsPath, targetPath);
+
+        return filename; // Retornar apenas o nome do arquivo
+    }
+
+    // Remover imagem do sistema de arquivos
+    async removeImage(filename) {
+        if (!filename || filename.startsWith('data:') || filename === 'img/exemplo.jpg') {
+            return; // Não remover imagens padrão ou base64
+        }
+
+        const imagePath = path.join(this.imagesPath, filename);
+        if (fs.existsSync(imagePath)) {
+            try {
+                fs.unlinkSync(imagePath);
+            } catch (error) {
+                console.error('Erro ao remover imagem:', error);
+            }
+        }
     }
 
     async getPosts({ page = 1, limit = 12, categoryId = null, search = '', minRating = null, onlyFavorites = false }) {
@@ -25,21 +68,56 @@ class PostService {
         if (onlyFavorites) where.favorito = true;
         if (minRating) where.avaliacao = { [Op.gte]: parseInt(minRating) };
 
-        if (search) {
-            where[Op.or] = [
-                { titulo: { [Op.like]: `%${search}%` } },
-                { resumo: { [Op.like]: `%${search}%` } }
-            ];
+        let posts;
+        let count;
+
+        if (search && search.trim()) {
+            // Usar FTS para busca
+            const searchTerm = search.trim().replace(/"/g, '""'); // Escapar aspas para FTS
+
+            const [results] = await Post.sequelize.query(`
+                SELECT p.*, c.name as category_name
+                FROM posts p
+                LEFT JOIN categories c ON p.categoryId = c.id
+                INNER JOIN posts_fts fts ON p.id = fts.rowid
+                WHERE posts_fts MATCH '"${searchTerm}"*' AND p.id IN (
+                    SELECT id FROM posts WHERE 1=1
+                    ${targetCategoryId ? `AND categoryId = ${targetCategoryId}` : ''}
+                    ${onlyFavorites ? `AND favorito = 1` : ''}
+                    ${minRating ? `AND avaliacao >= ${parseInt(minRating)}` : ''}
+                )
+                ORDER BY rank
+                LIMIT ${limit} OFFSET ${offset}
+            `, { type: Post.sequelize.QueryTypes.SELECT });
+
+            // Contar total de resultados
+            const [countResult] = await Post.sequelize.query(`
+                SELECT COUNT(*) as total
+                FROM posts p
+                INNER JOIN posts_fts fts ON p.id = fts.rowid
+                WHERE posts_fts MATCH '"${searchTerm}"*' AND p.id IN (
+                    SELECT id FROM posts WHERE 1=1
+                    ${targetCategoryId ? `AND categoryId = ${targetCategoryId}` : ''}
+                    ${onlyFavorites ? `AND favorito = 1` : ''}
+                    ${minRating ? `AND avaliacao >= ${parseInt(minRating)}` : ''}
+                )
+            `, { type: Post.sequelize.QueryTypes.SELECT });
+
+            posts = results;
+            count = countResult.total;
+        } else {
+            // Busca normal sem FTS
+            const result = await Post.findAndCountAll({
+                where, limit, offset,
+                order: [['createdAt', 'DESC']],
+                include: [{ model: Category, as: 'Category' }]
+            });
+            posts = result.rows.map(r => r.toJSON());
+            count = result.count;
         }
 
-        const { count, rows } = await Post.findAndCountAll({
-            where, limit, offset,
-            order: [['createdAt', 'DESC']],
-            include: [{ model: Category, as: 'Category' }]
-        });
-
         return {
-            posts: rows.map(r => r.toJSON()),
+            posts,
             pagination: {
                 totalPosts: count,
                 totalPages: Math.ceil(count / limit),
@@ -65,13 +143,13 @@ class PostService {
     }
 
     async createPost(data) {
-        let imagemPath = null;
+        let imagemFilename = 'exemplo.jpg'; // Imagem padrão
+
         if (data.imageAbsPath) {
-            const ext = path.extname(data.imageAbsPath).toLowerCase().replace('.', '');
-            const mimeType = ext === 'jpg' ? 'jpeg' : ext;
-            const imageBuffer = fs.readFileSync(data.imageAbsPath);
-            const base64 = imageBuffer.toString('base64');
-            imagemPath = `data:image/${mimeType};base64,${base64}`;
+            const savedFilename = await this.saveImage(data.imageAbsPath);
+            if (savedFilename) {
+                imagemFilename = savedFilename;
+            }
         }
 
         const post = await Post.create({
@@ -81,7 +159,7 @@ class PostService {
             categoryId: data.categoryId ? parseInt(data.categoryId) : null,
             lido_ate: data.lido_ate || '',
             link_acesso: data.link_acesso || '',
-            imagem: imagemPath || 'img/exemplo.jpg',
+            imagem: imagemFilename,
             favorito: data.favorito || false
         });
         return post.toJSON();
@@ -91,13 +169,19 @@ class PostService {
         const post = await Post.findByPk(id);
         if (!post) throw new Error('Not found');
 
-        let imagemPath = post.imagem;
+        let imagemFilename = post.imagem;
+
         if (data.imageAbsPath) {
-            const ext = path.extname(data.imageAbsPath).toLowerCase().replace('.', '');
-            const mimeType = ext === 'jpg' ? 'jpeg' : ext;
-            const imageBuffer = fs.readFileSync(data.imageAbsPath);
-            const base64 = imageBuffer.toString('base64');
-            imagemPath = `data:image/${mimeType};base64,${base64}`;
+            // Remover imagem antiga se existir
+            if (post.imagem && post.imagem !== 'exemplo.jpg') {
+                await this.removeImage(post.imagem);
+            }
+
+            // Salvar nova imagem
+            const savedFilename = await this.saveImage(data.imageAbsPath);
+            if (savedFilename) {
+                imagemFilename = savedFilename;
+            }
         }
 
         let targetCategoryId = post.categoryId;
@@ -113,7 +197,7 @@ class PostService {
             categoryId: targetCategoryId,
             lido_ate: data.lido_ate !== undefined ? data.lido_ate : post.lido_ate,
             link_acesso: data.link_acesso !== undefined ? data.link_acesso : post.link_acesso,
-            imagem: imagemPath,
+            imagem: imagemFilename,
             favorito: data.favorito !== undefined ? data.favorito : post.favorito
         });
         return post.toJSON();
@@ -128,7 +212,13 @@ class PostService {
 
     async deletePost(id) {
         const post = await Post.findByPk(id);
-        if (post) await post.destroy();
+        if (post) {
+            // Remover imagem associada
+            if (post.imagem && post.imagem !== 'exemplo.jpg') {
+                await this.removeImage(post.imagem);
+            }
+            await post.destroy();
+        }
         return true;
     }
 
