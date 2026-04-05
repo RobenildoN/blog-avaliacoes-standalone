@@ -2,7 +2,6 @@ const { Sequelize } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3');
-const { execSync } = require('child_process');
 
 let databasePath;
 
@@ -55,6 +54,45 @@ const sequelize = new Sequelize({
     }
 });
 
+const migrationsPath = path.join(__dirname, 'migrations');
+const migrationTableName = 'SequelizeMeta';
+
+async function ensureMigrationTable() {
+    const existingTable = await sequelize.query(
+        `SELECT name FROM sqlite_master WHERE type='table' AND name='${migrationTableName}';`,
+        { type: Sequelize.QueryTypes.SELECT }
+    );
+
+    if (!existingTable || existingTable.length === 0) {
+        await sequelize.getQueryInterface().createTable(migrationTableName, {
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false,
+                primaryKey: true
+            }
+        });
+    }
+}
+
+async function getAppliedMigrations() {
+    try {
+        const results = await sequelize.query(
+            `SELECT name FROM ${migrationTableName};`,
+            { type: Sequelize.QueryTypes.SELECT }
+        );
+        return results.map(row => row.name);
+    } catch (error) {
+        return [];
+    }
+}
+
+async function recordMigration(name) {
+    await sequelize.query(
+        `INSERT INTO ${migrationTableName} (name) VALUES (?);`,
+        { replacements: [name] }
+    );
+}
+
 // Função de conexão e sincronização
 const connectDB = async () => {
     try {
@@ -66,14 +104,29 @@ const connectDB = async () => {
     }
 };
 
-// Função para executar migrations
+// Função para executar migrations internamente
 const migrateDB = async () => {
     try {
-        // Executar migrations usando sequelize-cli
-        execSync('npx sequelize-cli db:migrate', {
-            cwd: path.join(__dirname, '../../'),
-            stdio: 'inherit'
-        });
+        await ensureMigrationTable();
+        const applied = await getAppliedMigrations();
+
+        const migrationFiles = fs.readdirSync(migrationsPath)
+            .filter(file => file.endsWith('.js'))
+            .sort();
+
+        for (const migrationFile of migrationFiles) {
+            if (applied.includes(migrationFile)) continue;
+
+            console.log(`Aplicando migration: ${migrationFile}`);
+            const migration = require(path.join(migrationsPath, migrationFile));
+            if (!migration || typeof migration.up !== 'function') {
+                throw new Error(`Migration inválida: ${migrationFile}`);
+            }
+
+            await migration.up(sequelize.getQueryInterface(), Sequelize);
+            await recordMigration(migrationFile);
+        }
+
         console.log('Migrations executadas com sucesso');
     } catch (error) {
         console.error('Erro ao executar migrations:', error);

@@ -135,7 +135,7 @@ function createWindow() {
               type: 'info',
               title: 'Sobre - Versão Autônoma',
               message: 'Blog de Avaliações',
-              detail: 'Aplicação desktop 100% nativa sem servidor web operando por IPC (Inter-Process Communication).\nMais rapída, mais leve, totalmente blindada.\n\nVersão: 2.0.0'
+              detail: `Aplicação desktop 100% nativa sem servidor web operando por IPC (Inter-Process Communication).\nMais rápida, mais leve, totalmente blindada.\n\nVersão: ${app.getVersion()}`
             });
           }
         },

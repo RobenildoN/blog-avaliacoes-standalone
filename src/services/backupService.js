@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
 const cron = require('node-cron');
+const packageJson = require('../../package.json');
 
 class BackupService {
     constructor(userDataPath) {
@@ -9,6 +10,7 @@ class BackupService {
         this.databasePath = path.join(userDataPath, 'database.sqlite');
         this.imagesPath = path.join(userDataPath, 'images');
         this.backupPath = path.join(userDataPath, 'backups');
+        this.appVersion = packageJson.version || '4.2.1';
 
         // Garantir que o diretório de backup existe
         if (!fs.existsSync(this.backupPath)) {
@@ -17,10 +19,15 @@ class BackupService {
     }
 
     // Criar backup do banco de dados e imagens
-    async createBackup() {
+    async createBackup(outputPath = null) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
         const backupFilename = `backup-${timestamp}.zip`;
-        const backupFilePath = path.join(this.backupPath, backupFilename);
+        const backupFilePath = outputPath ? outputPath : path.join(this.backupPath, backupFilename);
+        const backupDir = path.dirname(backupFilePath);
+
+        if (!fs.existsSync(backupDir)) {
+            fs.mkdirSync(backupDir, { recursive: true });
+        }
 
         return new Promise((resolve, reject) => {
             const output = fs.createWriteStream(backupFilePath);
@@ -56,7 +63,7 @@ class BackupService {
             // Adicionar arquivo de metadados
             const metadata = {
                 timestamp: new Date().toISOString(),
-                version: '4.1.0',
+                version: this.appVersion,
                 type: 'full-backup'
             };
             archive.append(JSON.stringify(metadata, null, 2), { name: 'backup-metadata.json' });
