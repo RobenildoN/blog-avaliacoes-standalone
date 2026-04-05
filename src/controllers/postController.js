@@ -1,4 +1,6 @@
 const Post = require('../models/post');
+const Category = require('../models/category');
+const { Op } = require('sequelize');
 
 // Listar todos os posts com paginação e filtros
 exports.listPosts = async (req, res) => {
@@ -6,21 +8,27 @@ exports.listPosts = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 16;
         const offset = (page - 1) * limit;
+        const categoryId = req.query.categoryId;
 
-        const posts = Post.findAll({
+        const where = {};
+        if (categoryId) {
+            where.categoryId = categoryId;
+        }
+
+        const { count, rows } = await Post.findAndCountAll({
+            where,
             limit: limit,
             offset: offset,
             order: [['createdAt', 'DESC']],
-            include: ['Category']
+            include: [{ model: Category, as: 'Category' }]
         });
 
-        const totalPosts = Post.count();
-        const totalPages = Math.ceil(totalPosts / limit);
+        const totalPages = Math.ceil(count / limit);
 
         res.status(200).json({
-            posts,
+            posts: rows,
             pagination: {
-                totalPosts,
+                totalPosts: count,
                 totalPages,
                 currentPage: page,
                 hasNextPage: page < totalPages,
@@ -72,17 +80,29 @@ exports.searchPosts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 16;
         const offset = (page - 1) * limit;
 
-        const posts = Post.findAll({
+        const { count, rows } = await Post.findAndCountAll({
             where: {
-                titulo: { like: `%${query}%` }
+                [Op.or]: [
+                    { titulo: { [Op.like]: `%${query}%` } },
+                    { resumo: { [Op.like]: `%${query}%` } }
+                ]
             },
             limit: limit,
             offset: offset,
-            include: ['Category']
+            order: [['createdAt', 'DESC']],
+            include: [{ model: Category, as: 'Category' }]
         });
 
-        res.status(200).json(posts);
+        res.status(200).json({
+            posts: rows,
+            pagination: {
+                totalPosts: count,
+                totalPages: Math.ceil(count / limit),
+                currentPage: page
+            }
+        });
     } catch (error) {
+        console.error('Erro na busca:', error);
         res.status(500).json({ message: 'Erro na busca', error: error.message });
     }
 };
@@ -102,9 +122,14 @@ exports.editPost = async (req, res) => {
             updateData.imagem = '/img/' + req.file.filename;
         }
 
+        // Converter tipos se necessário
+        if (updateData.avaliacao) updateData.avaliacao = parseInt(updateData.avaliacao);
+        if (updateData.categoryId) updateData.categoryId = parseInt(updateData.categoryId);
+
         await post.update(updateData);
         res.status(200).json({ message: 'Post atualizado!', post });
     } catch (error) {
+        console.error('Erro ao editar post:', error);
         res.status(500).json({ message: 'Erro ao editar', error: error.message });
     }
 };
@@ -117,8 +142,9 @@ exports.deletePost = async (req, res) => {
         if (!post) return res.status(404).json({ message: 'Não encontrado' });
 
         await post.destroy();
-        res.status(200).json({ message: 'Deletado' });
+        res.status(200).json({ message: 'Deletado com sucesso' });
     } catch (error) {
+        console.error('Erro ao deletar post:', error);
         res.status(500).json({ message: 'Erro ao deletar', error: error.message });
     }
 };
@@ -126,10 +152,13 @@ exports.deletePost = async (req, res) => {
 // Ver post único
 exports.viewPost = async (req, res) => {
     try {
-        const post = Post.findByPk(req.params.id, { include: ['Category'] });
+        const post = await Post.findByPk(req.params.id, { 
+            include: [{ model: Category, as: 'Category' }] 
+        });
         if (!post) return res.status(404).json({ message: 'Não encontrado' });
         res.status(200).json(post);
     } catch (error) {
+        console.error('Erro ao visualizar post:', error);
         res.status(500).json({ message: 'Erro ao visualizar', error: error.message });
     }
 };
@@ -138,9 +167,14 @@ exports.viewPost = async (req, res) => {
 exports.getLatestPosts = async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 3;
-        const posts = Post.findAll({ limit, order: [['createdAt', 'DESC']] });
+        const posts = await Post.findAll({ 
+            limit, 
+            order: [['createdAt', 'DESC']],
+            include: [{ model: Category, as: 'Category' }]
+        });
         res.status(200).json(posts);
     } catch (error) {
+        console.error('Erro ao obter posts recentes:', error);
         res.status(500).json({ message: 'Erro', error: error.message });
     }
 };
@@ -149,9 +183,14 @@ exports.getLatestPosts = async (req, res) => {
 exports.getPostsByCategory = async (req, res) => {
     try {
         const categoryId = parseInt(req.params.categoryId);
-        const posts = Post.findAll({ where: { categoryId }, include: ['Category'] });
+        const posts = await Post.findAll({ 
+            where: { categoryId }, 
+            include: [{ model: Category, as: 'Category' }],
+            order: [['createdAt', 'DESC']]
+        });
         res.status(200).json(posts);
     } catch (error) {
+        console.error('Erro ao obter posts por categoria:', error);
         res.status(500).json({ message: 'Erro', error: error.message });
     }
 };

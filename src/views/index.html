@@ -9,268 +9,187 @@
 </head>
 
 <body>
-    <header
-        style="display: flex; flex-direction: column; align-items: center; background: #35424a; color: #fff; padding: 10px 0;">
-        <div style="text-align: center; width: 100%; margin-bottom: 15px;">
-            <h1 style="margin: 0;">Blog de Avaliações</h1>
+    <header>
+        <div style="text-align: center; margin-bottom: 5px;">
+            <h1>Blog de Avaliações</h1>
         </div>
-        <div class="search-box"
-            style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px; width: 100%;">
-            <input type="text" placeholder="Pesquisar títulos e resumos..." id="searchBox"
-                style="width: 200px; padding: 8px;">
-            <button onclick="realizarBusca()"
-                style="margin-left: 8px; padding: 8px 16px; background: #5cb85c; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Pesquisar</button>
-            <button onclick="limparBusca()"
-                style="margin-left: 8px; padding: 8px 16px; background: #6c757d; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Limpar</button>
+
+        <div class="search-box">
+            <input type="text" placeholder="Pesquisar títulos e resumos..." id="searchBox">
+            <button class="btn-search" onclick="realizarBusca()">Pesquisar</button>
+            <button class="btn-clear" onclick="limparBusca()">Limpar</button>
         </div>
-        <nav style="width: 100%; display: flex; justify-content: center;">
-            <ul style="list-style: none; margin: 0; padding: 0; display: flex;">
-                <li style="margin: 0 15px;"><a href="#" onclick="filtrarPorCategoria(1)"
-                        style="color: #fff; cursor: pointer;">Mangas</a></li>
-                <li style="margin: 0 15px;"><a href="#" onclick="filtrarPorCategoria(2)"
-                        style="color: #fff; cursor: pointer;">Livros</a></li>
-                <li style="margin: 0 15px;"><a href="#" onclick="filtrarPorCategoria(3)"
-                        style="color: #fff; cursor: pointer;">Filmes</a></li>
-                <li style="margin: 0 15px;"><a href="#" onclick="filtrarPorCategoria(4)"
-                        style="color: #fff; cursor: pointer;">Séries</a></li>
-                <li style="margin: 0 15px;"><a href="#" onclick="filtrarPorCategoria(5)"
-                        style="color: #fff; cursor: pointer;">Cursos</a></li>
-                <li style="margin: 0 15px;"><a href="admin.html" style="color: #fff;">Criar Post</a></li>
+
+        <nav>
+            <ul id="categoriesNav">
+                <li><a href="#" onclick="filtrarPorCategoria(null)">Todos</a></li>
+                <!-- Categorias serão carregadas dinamicamente -->
             </ul>
         </nav>
     </header>
+
     <main>
-        <section id="latestPosts">
-            <div style="text-align: center; width: 100%; margin-bottom: 15px;">
-                <h2>Últimos Posts</h2>
-                <button id="showAllBtn" onclick="mostrarTodosPosts()"
-                    style="display: none; margin-top: 10px; padding: 8px 16px; background: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer;">Mostrar
-                    Todos</button>
-            </div>
-            <div id="postsContainer" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
-                <!-- Posts serão carregados dinamicamente aqui -->
-                <div class="loading" style="text-align: center; width: 100%;">Carregando posts...</div>
+        <section id="postsSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 id="sectionTitle">Últimos Posts</h2>
             </div>
 
-            <!-- Controles de paginação -->
-            <div id="paginationControls" style="display: none; text-align: center; margin-top: 30px;">
-                <button id="prevPageBtn" onclick="mudarPagina(-1)"
-                    style="padding: 10px 20px; margin: 0 10px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Anterior</button>
-                <span id="pageInfo" style="margin: 0 20px; font-weight: bold;"></span>
-                <button id="nextPageBtn" onclick="mudarPagina(1)"
-                    style="padding: 10px 20px; margin: 0 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Próximo</button>
+            <div id="postsContainer" class="posts-container">
+                <div class="loading" style="text-align: center; grid-column: 1/-1;">Carregando posts...</div>
+            </div>
+
+            <div id="paginationControls" class="pagination" style="display: none;">
+                <button id="prevPageBtn" class="btn-clear" onclick="mudarPagina(-1)">Anterior</button>
+                <span id="pageInfo">Página 1 de 1</span>
+                <button id="nextPageBtn" class="btn-search" onclick="mudarPagina(1)">Próximo</button>
             </div>
         </section>
     </main>
+
     <footer>
-        <p><a href="#">Blog de Avaliações</a></p>
+        <p>&copy; 2024 <a href="#">Blog de Avaliações</a> - Versão Autônoma</p>
     </footer>
+
     <script src="/js/script.js"></script>
     <script>
-        // Variáveis globais para paginação e busca
         let paginaAtual = 1;
         let totalPaginas = 1;
         let filtroCategoria = null;
         let termoBusca = '';
 
-        // Função para limitar texto a aproximadamente 5 linhas
-        function limitarTexto(texto, maxCaracteres = 150) {
-            if (texto.length <= maxCaracteres) {
-                return texto;
-            }
-            // Cortar no limite e encontrar a última palavra completa
-            let textoCortado = texto.substring(0, maxCaracteres);
-            let ultimaPalavra = textoCortado.lastIndexOf(' ');
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarCategorias();
+            carregarPosts();
+        });
 
-            if (ultimaPalavra > 0) {
-                textoCortado = textoCortado.substring(0, ultimaPalavra);
-            }
+        async function carregarCategorias() {
+            try {
+                const response = await fetch('/categories');
+                const categories = await response.json();
+                const nav = document.getElementById('categoriesNav');
 
-            return textoCortado + '...';
+                // Limpar e manter apenas o "Todos"
+                nav.innerHTML = '<li><a href="#" onclick="mostrarTodosPosts()">Todos</a></li>';
+
+                categories.forEach(cat => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="#" onclick="filtrarPorCategoria(${cat.id})">${cat.name}</a>`;
+                    nav.appendChild(li);
+                });
+
+                // Adicionar link para criar post
+                const adminLi = document.createElement('li');
+                adminLi.innerHTML = `<a href="admin.html">Criar Post</a>`;
+                nav.appendChild(adminLi);
+            } catch (error) {
+                console.error('Erro ao carregar categorias:', error);
+            }
         }
 
-
-        // Função para carregar posts com paginação e busca
         async function carregarPosts(page = 1, categoryId = null, searchTerm = '') {
             try {
-                const postsContainer = document.getElementById('postsContainer');
-                postsContainer.innerHTML = '<div class="loading" style="text-align: center; width: 100%;">Carregando posts...</div>';
+                const container = document.getElementById('postsContainer');
+                container.innerHTML = '<div class="loading" style="text-align: center; grid-column: 1/-1;">Carregando posts...</div>';
 
-                let url = `/posts?page=${page}&limit=16`;
-                if (categoryId) {
-                    url = `/posts/category/${categoryId}?page=${page}&limit=16`;
-                } else if (searchTerm.trim()) {
-                    url = `/posts/search?q=${encodeURIComponent(searchTerm)}&page=${page}&limit=16`;
-                }
+                let url = `/posts?page=${page}&limit=12`;
+                if (categoryId) url += `&categoryId=${categoryId}`;
+                if (searchTerm) url = `/posts/search?q=${encodeURIComponent(searchTerm)}&page=${page}&limit=12`;
 
                 const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar posts');
-                }
-
                 const data = await response.json();
-                const posts = data.posts || data;
-                const pagination = data.pagination || { currentPage: 1, totalPages: 1, hasNextPage: false, hasPrevPage: false };
 
-                // Atualizar variáveis globais
+                const posts = data.posts || [];
+                const pagination = data.pagination || { currentPage: 1, totalPages: 1 };
+
                 paginaAtual = pagination.currentPage;
                 totalPaginas = pagination.totalPages;
                 filtroCategoria = categoryId;
                 termoBusca = searchTerm;
 
-                // Renderizar posts
                 renderizarPosts(posts);
-
-                // Atualizar controles de paginação
-                atualizarControlesPaginacao(pagination);
-
-                // Atualizar título da página
-                atualizarTitulo(searchTerm, categoryId);
-
+                atualizarPaginacao(pagination);
+                atualizarTitulo();
             } catch (error) {
                 console.error('Erro ao carregar posts:', error);
-                const postsContainer = document.getElementById('postsContainer');
-                postsContainer.innerHTML = `<div style="text-align: center; width: 100%; color: red;">Erro ao carregar posts: ${error.message}</div>`;
+                document.getElementById('postsContainer').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Erro ao carregar dados.</p>';
             }
         }
 
-        // Função para atualizar controles de paginação
-        function atualizarControlesPaginacao(pagination) {
-            const paginationControls = document.getElementById('paginationControls');
-            const pageInfo = document.getElementById('pageInfo');
-            const prevBtn = document.getElementById('prevPageBtn');
-            const nextBtn = document.getElementById('nextPageBtn');
-
-            if (pagination.totalPages > 1) {
-                paginationControls.style.display = 'block';
-                pageInfo.textContent = `Página ${pagination.currentPage} de ${pagination.totalPages}`;
-
-                prevBtn.disabled = !pagination.hasPrevPage;
-                prevBtn.style.opacity = pagination.hasPrevPage ? '1' : '0.5';
-
-                nextBtn.disabled = !pagination.hasNextPage;
-                nextBtn.style.opacity = pagination.hasNextPage ? '1' : '0.5';
-            } else {
-                paginationControls.style.display = 'none';
-            }
-        }
-
-        // Função para atualizar o título da página
-        function atualizarTitulo(searchTerm, categoryId) {
-            const titleElement = document.querySelector('#latestPosts h2');
-
-            if (searchTerm.trim()) {
-                titleElement.textContent = `Resultados para "${searchTerm}"`;
-            } else if (categoryId) {
-                titleElement.textContent = 'Posts da Categoria';
-            } else {
-                titleElement.textContent = 'Últimos Posts';
-            }
-        }
-
-        // Função para mudar de página
-        function mudarPagina(direcao) {
-            const novaPagina = paginaAtual + direcao;
-            if (novaPagina >= 1 && novaPagina <= totalPaginas) {
-                carregarPosts(novaPagina, filtroCategoria);
-            }
-        }
-
-
-        // Função para filtrar posts por categoria
-        async function filtrarPorCategoria(categoryId) {
-            // Resetar para primeira página quando filtrar
-            paginaAtual = 1;
-            termoBusca = ''; // Limpar termo de busca
-            await carregarPosts(1, categoryId, '');
-
-            // Mostrar botão "Mostrar Todos"
-            document.getElementById('showAllBtn').style.display = 'inline-block';
-        }
-
-        // Função para mostrar todos os posts
-        async function mostrarTodosPosts() {
-            // Resetar filtro, busca e página
-            filtroCategoria = null;
-            termoBusca = '';
-            paginaAtual = 1;
-            await carregarPosts(1, null, '');
-
-            // Esconder botão "Mostrar Todos"
-            document.getElementById('showAllBtn').style.display = 'none';
-        }
-
-        // Função para realizar busca
-        async function realizarBusca() {
-            const searchInput = document.getElementById('searchBox');
-            const searchTerm = searchInput.value.trim();
-
-            if (searchTerm) {
-                // Resetar filtros e página
-                filtroCategoria = null;
-                paginaAtual = 1;
-                termoBusca = searchTerm;
-
-                await carregarPosts(1, null, searchTerm);
-
-                // Esconder botão "Mostrar Todos" durante busca
-                document.getElementById('showAllBtn').style.display = 'none';
-            } else {
-                // Se busca estiver vazia, mostrar todos os posts
-                mostrarTodosPosts();
-            }
-        }
-
-        // Função para limpar busca
-        function limparBusca() {
-            const searchInput = document.getElementById('searchBox');
-            searchInput.value = '';
-            mostrarTodosPosts();
-        }
-
-        // Função para renderizar posts
         function renderizarPosts(posts) {
-            const postsContainer = document.getElementById('postsContainer');
-
+            const container = document.getElementById('postsContainer');
             if (posts.length === 0) {
-                let mensagem = 'Nenhum post encontrado.';
-                if (filtroCategoria) mensagem = 'Nenhum post encontrado nesta categoria.';
-                if (termoBusca) mensagem = `Nenhum post encontrado para "${termoBusca}".`;
-
-                postsContainer.innerHTML = `<div style="text-align: center; width: 100%; padding: 40px;">${mensagem}</div>`;
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Nenhum post encontrado.</p>';
                 return;
             }
 
-            postsContainer.innerHTML = posts.map(post => `
-                <div class="post" style="width: 280px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
-                    <img src="${post.imagem || '../public/img/exemplo.jpg'}" alt="${post.titulo}" style="width: 100%; height: 260px; object-fit: contain; border-radius: 5px; margin-bottom: 5px;">
-                    <h3 style="margin: 5px 0; text-align: center; font-size: 1.1em;">${post.titulo}</h3>
-                    <p style="text-align: justify; margin: 5px 0; font-size: 0.9em; line-height: 1.3;">${limitarTexto(post.resumo)}</p>
-                    ${post.lido_ate ? `<p style="text-align: center; margin: 2px 0; font-size: 0.85em; color: #555;"><strong>Lido até:</strong> ${post.lido_ate}</p>` : ''}
-                    ${post.link_acesso ? `<p style="text-align: center; margin: 2px 0;"><a href="${post.link_acesso}" target="_blank" style="color: #007bff; text-decoration: underline; font-size: 0.85em;">Link para acesso</a></p>` : ''}
-                    <p style="text-align: center; margin: 2px 0; font-size: 0.9em;">Avaliação: ${'★'.repeat(post.avaliacao)}${'☆'.repeat(5 - post.avaliacao)}</p>
-                    <p style="text-align: center; margin: 2px 0; font-size: 0.8em;">Categoria: ${post.Category ? post.Category.name : 'N/A'}</p>
-                    <p style="text-align: center; margin: 2px 0; font-size: 0.8em; color: #777;">Data: ${new Date(post.data_post).toLocaleDateString('pt-BR')}</p>
-                    <div style="text-align: center; margin-top: auto; padding-top: 8px;">
-                        <a href="/post.html?id=${post.id}" style="display: inline-block; padding: 6px 14px; background: #5cb85c; color: #fff; text-decoration: none; border-radius: 5px; font-size: 0.9em;">Ler mais</a>
+            container.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <img src="${post.imagem || 'img/exemplo.jpg'}" alt="${post.titulo}" class="post-image" onerror="this.src='img/exemplo.jpg'">
+                    <div class="post-content">
+                        <span class="post-category">${post.Category ? post.Category.name : 'Geral'}</span>
+                        <h3 class="post-title">${post.titulo}</h3>
+                        <div class="post-rating">${formatarNota(post.avaliacao)}</div>
+                        <p class="post-summary">${limitarTexto(post.resumo, 100)}</p>
+                        ${post.lido_ate ? `<p class="post-info"><strong>Lido até:</strong> ${post.lido_ate}</p>` : ''}
+                        ${post.link_acesso ? `<p class="post-info"><a href="${post.link_acesso}" target="_blank" style="color: var(--secondary-color); text-decoration: underline;">Link de Acesso</a></p>` : ''}
+                        <div class="post-footer">
+                            <small>${formatarData(post.createdAt)}</small>
+                            <a href="post.html?id=${post.id}" style="color: var(--secondary-color); font-weight: bold; text-decoration: none;">Ver mais</a>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Executar quando a página carregar
-        document.addEventListener('DOMContentLoaded', function () {
-            // Carregar primeira página de posts
-            carregarPosts(1, null, '');
+        function atualizarPaginacao(pagination) {
+            const controls = document.getElementById('paginationControls');
+            const info = document.getElementById('pageInfo');
+            const prev = document.getElementById('prevPageBtn');
+            const next = document.getElementById('nextPageBtn');
 
-            // Adicionar event listener para busca com Enter
-            const searchInput = document.getElementById('searchBox');
-            searchInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    realizarBusca();
-                }
-            });
-        });
+            if (pagination.totalPages > 1) {
+                controls.style.display = 'flex';
+                info.textContent = `Página ${pagination.currentPage} de ${pagination.totalPages}`;
+                prev.disabled = !pagination.hasPrevPage;
+                next.disabled = !pagination.hasNextPage;
+                prev.style.opacity = pagination.hasPrevPage ? '1' : '0.5';
+                next.style.opacity = pagination.hasNextPage ? '1' : '0.5';
+            } else {
+                controls.style.display = 'none';
+            }
+        }
+
+        function atualizarTitulo() {
+            const title = document.getElementById('sectionTitle');
+            if (termoBusca) title.textContent = `Busca: ${termoBusca}`;
+            else if (filtroCategoria) title.textContent = 'Categoria Selecionada';
+            else title.textContent = 'Últimos Posts';
+        }
+
+        function mudarPagina(dir) {
+            const nova = paginaAtual + dir;
+            if (nova >= 1 && nova <= totalPaginas) {
+                carregarPosts(nova, filtroCategoria, termoBusca);
+            }
+        }
+
+        function filtrarPorCategoria(id) {
+            carregarPosts(1, id, '');
+        }
+
+        function realizarBusca() {
+            const val = document.getElementById('searchBox').value.trim();
+            if (val) carregarPosts(1, null, val);
+        }
+
+        function limparBusca() {
+            document.getElementById('searchBox').value = '';
+            carregarPosts(1, null, '');
+        }
+
+        function mostrarTodosPosts() {
+            limparBusca();
+        }
     </script>
 </body>
 

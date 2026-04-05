@@ -5,38 +5,87 @@
     <meta charset="UTF-8">
     <title>Gerenciar Categorias - Blog de Avaliações</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .btn-action {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: #000;
+        }
+
+        .admin-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 
-<body style="display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; font-family: Arial, sans-serif;">
-    <header style="width: 100%; text-align: center; background: #35424a; color: #fff; padding: 20px 0;">
-        <h1>Gerenciar Categorias</h1>
-        <nav style="margin-top: 10px;">
-            <a href="/admin.html" style="color: white; margin: 0 10px; text-decoration: none;">Voltar para Admin</a>
-            <a href="/" style="color: white; margin: 0 10px; text-decoration: none;">Página Inicial</a>
+<body style="min-height: 100vh; margin: 0; font-family: 'Segoe UI', Arial, sans-serif;">
+    <header>
+        <div style="text-align: center; margin-bottom: 5px;">
+            <h1>Gerenciar Categorias</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="admin.html">Posts (Admin)</a></li>
+            </ul>
         </nav>
     </header>
-    <main style="width: 100%; max-width: 800px; margin: 20px auto; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px;">
-        <h2 style="text-align: center; color: #35424a; margin-bottom: 20px;">Criar Nova Categoria</h2>
-        <form id="formCriarCategoria" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
-            <input type="text" name="name" placeholder="Nome da Categoria" required style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-            <textarea name="description" placeholder="Descrição (opcional)" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
-            <button type="submit" style="padding: 12px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Criar Categoria</button>
-        </form>
-        <h2 style="text-align: center; color: #35424a; margin-bottom: 20px;">Categorias</h2>
-        <div id="categorias" style="width: 100%;"></div>
+    <main style="max-width: 800px; margin: 15px auto; padding: 0 20px; flex: 1;">
+        <div class="admin-container">
+            <h2 style="text-align: center; color: #35424a; margin-bottom: 15px;">Criar Nova Categoria</h2>
+            <form id="formCriarCategoria"
+                style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+                <input type="text" name="name" placeholder="Nome da Categoria" required
+                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <button type="submit" class="btn-search"
+                    style="width: auto; height: 40px; padding: 0 20px; border-radius: 4px; margin: 10px auto; display: block; cursor: pointer; border: none; font-weight: bold;">Criar
+                    Categoria</button>
+            </form>
+        </div>
+
+        <div class="admin-container">
+            <h2 style="text-align: center; color: #35424a; margin-bottom: 15px;">Categorias Existentes</h2>
+            <div id="categorias" style="width: 100%;"></div>
+        </div>
+
         <!-- Modal de edição -->
         <div id="modalEditar"
-            style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; padding:30px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); width: 80%; max-width: 600px; z-index: 1000;">
-            <h3 style="text-align: center; color: #35424a; margin-bottom: 20px;">Editar Categoria</h3>
-            <form id="formEditarCategoria" style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="hidden" name="id">
-                <input type="text" name="name" placeholder="Nome da Categoria" required style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <textarea name="description" placeholder="Descrição (opcional)" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
-                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-                    <button type="submit" style="padding: 12px 20px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">Salvar</button>
-                    <button type="button" onclick="fecharModal()" style="padding: 12px 20px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">Cancelar</button>
-                </div>
-            </form>
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px;">
+                <h3 style="text-align: center; color: #35424a; margin-bottom: 20px;">Editar Categoria</h3>
+                <form id="formEditarCategoria" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="hidden" name="id">
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label style="font-weight: bold;">Nome da Categoria</label>
+                        <input type="text" name="name" placeholder="Nome da Categoria" required
+                            style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn-search"
+                            style="flex: 1; border-radius: 4px; height: 40px; font-weight: bold; cursor: pointer; border: none;">Salvar</button>
+                        <button type="button" class="btn-clear" onclick="fecharModal()"
+                            style="flex: 1; border-radius: 4px; height: 40px; font-weight: bold; cursor: pointer; border: none;">Cancelar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </main>
     <script>
@@ -46,14 +95,13 @@
                 const categorias = await res.json();
                 const div = document.getElementById('categorias');
                 div.innerHTML = categorias.map(categoria => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin-bottom: 8px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #eee;">
                     <div>
-                        <strong style="font-size: 16px; color: #333;">${categoria.name}</strong>
-                        <p style="margin: 5px 0 0; font-size: 14px; color: #666;">${categoria.description || 'Sem descrição'}</p>
+                        <strong style="font-size: 15px; color: #333;">${categoria.name}</strong>
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="abrirModalEditar(${categoria.id})" style="padding: 8px 12px; background-color: #5bc0de; color: white; border: none; border-radius: 4px; cursor: pointer;">Editar</button>
-                        <button onclick="deletarCategoria(${categoria.id})" style="padding: 8px 12px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">Deletar</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="abrirModalEditar(${categoria.id})" class="btn-action btn-edit">Editar</button>
+                        <button onclick="deletarCategoria(${categoria.id})" class="btn-action btn-delete">Deletar</button>
                     </div>
                 </div>
             `).join('');
@@ -92,8 +140,7 @@
                 const form = document.getElementById('formEditarCategoria');
                 form.id.value = categoria.id;
                 form.name.value = categoria.name;
-                form.description.value = categoria.description || '';
-                modal.style.display = 'block';
+                modal.style.display = 'flex';
             } catch (error) {
                 console.error('Erro ao abrir modal de edição:', error);
             }
@@ -108,8 +155,7 @@
             const form = e.target;
             const id = form.id.value;
             const dados = {
-                name: form.name.value,
-                description: form.description.value
+                name: form.name.value
             };
             try {
                 const res = await fetch(`/categories/${id}`, {
