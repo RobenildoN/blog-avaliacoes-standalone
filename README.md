@@ -4,6 +4,14 @@ A evolução definitiva do **Blog de Avaliações**, agora operando como um Soft
 
 ## ✨ Características (Versão 4.2.0 - Performance & Testing Build)
 
+### 🆕 **Mudanças Recentes (v4.2.1)**
+
+- **🗑️ Limpeza de Código:** Remoção completa de estilos CSS não utilizados relacionados ao EasyMDE
+- **📝 Editor Markdown Customizado:** Substituição do EasyMDE por implementação própria com ícones Unicode
+- **🎨 Tema Escuro Nativo:** Editor totalmente compatível com o tema escuro sem conflitos
+- **⚡ Performance:** Redução significativa no tamanho do CSS e JavaScript
+- **🔧 Manutenibilidade:** Código mais limpo e fácil de manter
+
 ### 🏎️ Arquitetura Exclusiva de Software Desktop
 
 - **🚫 Sem Servidor HTTP:** O antigo Express.js local foi desativado. Portas IP locais bloqueadas nunca mais ("Sem Erros 3001/EADDRINUSE").
@@ -25,7 +33,8 @@ A evolução definitiva do **Blog de Avaliações**, agora operando como um Soft
 ### 🎨 Premium Glassmorphism UI
 
 - **🔮 Estilização:** Toda a lógica HTML crua foi varrida, substituída por classes utilitárias CSS globais padronizando espaçamentos num elegante **Dark Theme** com efeitos vítreos de desfoque, gradientes roxos (accent text) e bordas suaves.
-- **📈 Dashboard do Administrador:** Informações estatísticas inteligentes calculadas via SQLite alimentando um sumário rápido sobre Obras Avaliadas, Média Geral, e Número de Categorias no topo da tela Admin.
+- **� Editor Markdown Customizado:** Implementação própria de editor markdown com toolbar completa (negrito, itálico, listas, links, imagens, etc.) otimizada para tema escuro, sem dependências externas problemáticas.
+- **�📈 Dashboard do Administrador:** Informações estatísticas inteligentes calculadas via SQLite alimentando um sumário rápido sobre Obras Avaliadas, Média Geral, e Número de Categorias no topo da tela Admin.
 - **📱 Flex & Responsividade:** Menus adaptativos e Modal de Edição Auto-Scroll (Ajuste independente da resolução do Windows do usuário).
 - **🖼️ Gerenciamento Otimizado de Imagens:** Imagens de capa armazenadas como arquivos no sistema (não mais base64), com cache inteligente e limpeza automática de arquivos órfãos.
 
@@ -39,8 +48,7 @@ A evolução definitiva do **Blog de Avaliações**, agora operando como um Soft
 - **Jest:** Framework de testes unitários para JavaScript.
 - **node-cron:** Agendamento de tarefas automáticas (backup diário).
 - **archiver:** Compressão de backups em formato ZIP.
-- **EasyMDE:** Editor Markdown integrado para criação de avaliações.
-- **Phosphor Icons:** Biblioteca de ícones moderna e leve.
+- **Editor Markdown Customizado:** Implementação própria de editor com toolbar completa, sem dependências externas.
 - **CSS Grid/Flexbox:** Layout responsivo e moderno.
 - **IPC (Inter-Process Communication):** Comunicação segura entre processos do Electron.
 

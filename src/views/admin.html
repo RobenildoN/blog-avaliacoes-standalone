@@ -10,9 +10,83 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="../public/css/style.css">
-    <!-- EasyMDE Markdown Editor -->
-    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <!-- Custom Markdown Editor -->
+    <style>
+        .markdown-editor {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.95);
+            overflow: hidden;
+        }
+        .markdown-toolbar {
+            background: rgba(30, 41, 59, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .markdown-toolbar .separator {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0 4px;
+        }
+        .markdown-toolbar button {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            min-width: 32px;
+            justify-content: center;
+        }
+        .markdown-toolbar button strong,
+        .markdown-toolbar button em,
+        .markdown-toolbar button del {
+            font-weight: normal;
+            font-style: normal;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            color: inherit;
+        }
+        .markdown-toolbar button:hover strong,
+        .markdown-toolbar button:hover em,
+        .markdown-toolbar button:hover del {
+            color: inherit;
+        }
+        .markdown-toolbar button.active {
+            background: var(--accent);
+            color: #ffffff;
+        }
+        .markdown-textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(15, 23, 42, 0.95);
+            border: none;
+            color: #e2e8f0;
+            padding: 12px;
+            font-family: 'Outfit', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+        }
+        .markdown-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+        .markdown-textarea::placeholder {
+            color: #94a3b8;
+        }
+    </style>
 </head>
 
 <body>
@@ -74,8 +148,26 @@
                 </div>
                 <div class="form-group">
                     <label>Resumo / Avaliação*</label>
-                    <textarea name="resumo" id="resumoCreate" rows="8"
-                        placeholder="O que você achou da obra?"></textarea>
+                    <div class="markdown-editor">
+                        <div class="markdown-toolbar" id="toolbarCreate">
+                            <button type="button" data-command="bold" title="Negrito"><strong>B</strong></button>
+                            <button type="button" data-command="italic" title="Itálico"><em>I</em></button>
+                            <button type="button" data-command="strikethrough" title="Riscado"><del>S</del></button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="heading" title="Cabeçalho">#</button>
+                            <button type="button" data-command="link" title="Link">🔗</button>
+                            <button type="button" data-command="image" title="Imagem">🖼️</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="list" title="Lista">•</button>
+                            <button type="button" data-command="list-ordered" title="Lista Ordenada">1.</button>
+                            <button type="button" data-command="quote" title="Citação">❝</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="code" title="Código">&lt;/&gt;</button>
+                            <button type="button" data-command="code-block" title="Bloco de Código">📄</button>
+                        </div>
+                        <textarea name="resumo" id="resumoCreate" class="markdown-textarea"
+                            placeholder="O que você achou da obra? (Suporta Markdown)"></textarea>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Nota de Avaliação (1 a 5)*</label>
@@ -134,7 +226,25 @@
                 </div>
                 <div class="form-group">
                     <label>Texto da Avaliação</label>
-                    <textarea name="resumo" id="resumoEdit" rows="8"></textarea>
+                    <div class="markdown-editor">
+                        <div class="markdown-toolbar" id="toolbarEdit">
+                            <button type="button" data-command="bold" title="Negrito"><strong>B</strong></button>
+                            <button type="button" data-command="italic" title="Itálico"><em>I</em></button>
+                            <button type="button" data-command="strikethrough" title="Riscado"><del>S</del></button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="heading" title="Cabeçalho">#</button>
+                            <button type="button" data-command="link" title="Link">🔗</button>
+                            <button type="button" data-command="image" title="Imagem">🖼️</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="list" title="Lista">•</button>
+                            <button type="button" data-command="list-ordered" title="Lista Ordenada">1.</button>
+                            <button type="button" data-command="quote" title="Citação">❝</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="code" title="Código">&lt;/&gt;</button>
+                            <button type="button" data-command="code-block" title="Bloco de Código">📄</button>
+                        </div>
+                        <textarea name="resumo" id="resumoEdit" class="markdown-textarea"></textarea>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Nova Nota (1 a 5)</label>
