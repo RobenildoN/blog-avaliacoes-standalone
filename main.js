@@ -30,7 +30,7 @@ async function initializeApp() {
 
 initializeApp().then(() => {
   console.log('Aplicação inicializada com sucesso!');
-  
+
   // Agora que o banco está pronto, criar a janela
   createWindow();
 }).catch((error) => {

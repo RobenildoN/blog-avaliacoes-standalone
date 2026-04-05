@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
     <title>Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -41,7 +42,8 @@
 
         <nav class="mt-20">
             <ul id="categoriesNav">
-                <li><a href="#" class="active" onclick="mostrarTodosPosts(this)"><i class="ph ph-squares-four"></i> Todos</a></li>
+                <li><a href="#" class="active" onclick="mostrarTodosPosts(this)"><i class="ph ph-squares-four"></i>
+                        Todos</a></li>
                 <!-- Categorias serão carregadas dinamicamente -->
             </ul>
         </nav>
@@ -50,7 +52,8 @@
     <main>
         <section id="postsSection">
             <div class="section-header flex justify-between items-center mb-25 border-bottom">
-                <h2 id="sectionTitle" class="section-title"><i class="ph ph-clock-counter-clockwise"></i> Últimos Posts</h2>
+                <h2 id="sectionTitle" class="section-title"><i class="ph ph-clock-counter-clockwise"></i> Últimos Posts
+                </h2>
             </div>
 
             <div id="postsContainer" class="posts-container">
@@ -61,15 +64,18 @@
             </div>
 
             <div id="paginationControls" class="pagination" style="display: none;">
-                <button id="prevPageBtn" class="btn-clear" onclick="mudarPagina(-1)"><i class="ph ph-caret-left"></i> Anterior</button>
+                <button id="prevPageBtn" class="btn-clear" onclick="mudarPagina(-1)"><i class="ph ph-caret-left"></i>
+                    Anterior</button>
                 <span id="pageInfo" class="page-info-text">Página 1 de 1</span>
-                <button id="nextPageBtn" class="btn-search" onclick="mudarPagina(1)">Próximo <i class="ph ph-caret-right"></i></button>
+                <button id="nextPageBtn" class="btn-search" onclick="mudarPagina(1)">Próximo <i
+                        class="ph ph-caret-right"></i></button>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão Autônoma</span></p>
+        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão
+                Autônoma</span></p>
     </footer>
 
     <script src="../public/js/script.js"></script>
