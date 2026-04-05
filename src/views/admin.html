@@ -4,10 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
     <title>Administração - Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="../public/css/style.css">
+    <!-- EasyMDE Markdown Editor -->
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
 </head>
 
 <body>
@@ -19,13 +23,16 @@
             <ul id="categoriesNav">
                 <li><a href="index.html"><i class="ph ph-house"></i> Início</a></li>
                 <li><a href="categorias.html"><i class="ph ph-folders"></i> Gerenciar Categorias</a></li>
+                <li><a href="#" onclick="exportarBackup()"><i class="ph ph-download-simple"></i> Exportar Backup</a>
+                </li>
             </ul>
         </nav>
     </header>
 
     <main class="admin-main">
         <div class="admin-container" id="dashboardSection" style="display:none;">
-            <h2 class="section-title"><i class="ph-fill ph-chart-bar color-accent"></i> Estatísticas Administrativas</h2>
+            <h2 class="section-title"><i class="ph-fill ph-chart-bar color-accent"></i> Estatísticas Administrativas
+            </h2>
             <div class="flex gap-20">
                 <div class="info-block flex-1 text-center">
                     <h3 class="color-main size-2" id="statPosts">0</h3>
@@ -66,7 +73,8 @@
                 </div>
                 <div class="form-group">
                     <label>Resumo / Avaliação*</label>
-                    <textarea name="resumo" rows="8" required placeholder="O que você achou da obra?"></textarea>
+                    <textarea name="resumo" id="resumoCreate" rows="8"
+                        placeholder="O que você achou da obra?"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Nota de Avaliação (1 a 5)*</label>
@@ -80,7 +88,7 @@
                     <label>Link de Origem (Opcional)</label>
                     <input type="url" name="link_acesso" placeholder="https://...">
                 </div>
-                
+
                 <div class="form-submit-container">
                     <button type="submit" class="btn-search">
                         <i class="ph ph-check-circle"></i> Publicar Avaliação
@@ -104,7 +112,8 @@
                     </thead>
                     <tbody id="listaPosts">
                         <tr>
-                            <td colspan="5" class="text-center"><i class="ph ph-spinner-gap ph-spin"></i> Carregando...</td>
+                            <td colspan="5" class="text-center"><i class="ph ph-spinner-gap ph-spin"></i> Carregando...
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -124,11 +133,17 @@
                 </div>
                 <div class="form-group">
                     <label>Texto da Avaliação</label>
-                    <textarea name="resumo" rows="8" required></textarea>
+                    <textarea name="resumo" id="resumoEdit" rows="8"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Nova Nota (1 a 5)</label>
                     <input type="number" name="avaliacao" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select name="categoryId" id="selectCategoriaEdit" required>
+                        <option value="">Selecione uma categoria...</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Lido até / Assistido até</label>

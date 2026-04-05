@@ -19,10 +19,24 @@ const path = require('path');
 const fs = require('fs');
 
 // Conectar ao SQLite Diretamente
-const { connectDB } = require('./src/db/db');
+const { connectDB, syncDB } = require('./src/db/db');
 const { setupAssociations } = require('./src/models/associations');
-connectDB();
-setupAssociations();
+
+async function initializeApp() {
+  await connectDB();
+  setupAssociations();
+  await syncDB();
+}
+
+initializeApp().then(() => {
+  console.log('Aplicação inicializada com sucesso!');
+  
+  // Agora que o banco está pronto, criar a janela
+  createWindow();
+}).catch((error) => {
+  console.error('Erro ao inicializar aplicação:', error);
+  process.exit(1);
+});
 
 // Configurar os Handles Nativos (Substitui o Express)
 const setupIpcHandlers = require('./src/ipc-handlers');
@@ -33,6 +47,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -47,6 +62,11 @@ function createWindow() {
 
   // Carregar o sistema via File (100% Nativo, Nível 2)
   mainWindow.loadFile(path.join(__dirname, 'src', 'views', 'index.html'));
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.maximize();
+    mainWindow.show();
+  });
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
@@ -75,8 +95,8 @@ function createWindow() {
         { label: 'Sair', click() { app.quit(); } }
       ]
     },
-    { label: 'Editar', submenu: [ { role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' } ] },
-    { label: 'Visualizar', submenu: [ { role: 'reload' }, { role: 'toggleDevTools' }, { type: 'separator' }, { role: 'resetZoom' } ] },
+    { label: 'Editar', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }] },
+    { label: 'Visualizar', submenu: [{ role: 'reload' }, { role: 'toggleDevTools' }, { type: 'separator' }, { role: 'resetZoom' }] },
     {
       label: 'Dados',
       submenu: [
@@ -94,15 +114,13 @@ function createWindow() {
 
 app.on('ready', async () => {
   console.log('Iniciando Aplicação em Modo IPC...');
-  
+
   // Custom Protocol para carregar as imagens do userData nativamente
   protocol.registerFileProtocol('img', (request, callback) => {
     const url = request.url.replace('img://', '');
     const userDataPath = app.getPath('userData');
     callback({ path: path.normalize(path.join(userDataPath, 'images', url)) });
   });
-
-  createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

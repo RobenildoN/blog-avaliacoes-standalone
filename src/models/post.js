@@ -38,6 +38,18 @@ const Post = sequelize.define('Post', {
     data_post: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
+    },
+    favorito: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    categoryId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'categories',
+            key: 'id'
+        }
     }
 }, {
     tableName: 'posts'

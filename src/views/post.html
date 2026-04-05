@@ -4,10 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
     <title>Detalhes do Post</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="../public/css/style.css">
+    <!-- Showdown Markdown Parser -->
+    <script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
 </head>
 
 <body>
@@ -30,10 +33,10 @@
                 <img id="post-image" src="../public/img/exemplo.jpg" alt="Imagem do Post" class="post-image">
                 <span class="post-category post-detail-category" id="post-category">Categoria</span>
             </div>
-            
+
             <div class="post-content post-detail-content">
                 <h2 id="post-title" class="post-detail-title color-main mb-20">Título do Post</h2>
-                
+
                 <div class="post-detail-meta flex items-center gap-20 mb-30">
                     <div id="post-rating" class="post-detail-rating">★★★★☆</div>
                     <span class="meta-divider">|</span>
@@ -42,18 +45,20 @@
                     </div>
                 </div>
 
-                <p id="post-summary" class="post-detail-summary mb-30">Resumo do post aqui...</p>
-                
+                <div id="post-summary" class="post-detail-summary mb-30">Resumo do post aqui...</div>
+
                 <div class="post-info-blocks">
                     <div id="post-lido-container" class="info-block" style="display: none;">
                         <i class="ph ph-calendar-check info-block-icon"></i>
-                        <strong class="info-block-label">Lido até/Assistido até:</strong> <span id="post-lido-ate" class="info-block-value"></span>
+                        <strong class="info-block-label">Lido até/Assistido até:</strong> <span id="post-lido-ate"
+                            class="info-block-value"></span>
                     </div>
-                    
+
                     <div id="post-link-container" class="info-block" style="display: none;">
                         <i class="ph ph-link info-block-icon"></i>
-                        <strong class="info-block-label">Fonte externa:</strong> 
-                        <a id="post-link" href="#" target="_blank" class="info-block-link">Acessar material original <i class="ph ph-arrow-up-right"></i></a>
+                        <strong class="info-block-label">Fonte externa:</strong>
+                        <a id="post-link" href="#" target="_blank" class="info-block-link">Acessar material original <i
+                                class="ph ph-arrow-up-right"></i></a>
                     </div>
                 </div>
 
@@ -67,7 +72,8 @@
     </main>
 
     <footer>
-        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão Autônoma</span></p>
+        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão
+                Autônoma</span></p>
     </footer>
 
     <script src="../public/js/script.js"></script>

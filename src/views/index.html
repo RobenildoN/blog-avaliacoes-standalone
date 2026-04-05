@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
     <title>Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -22,10 +23,26 @@
             <button class="btn-clear" onclick="limparBusca()"><i class="ph ph-x"></i></button>
         </div>
 
-        <nav>
+        <div class="advanced-filters flex justify-center gap-15 mt-20">
+            <button class="btn-clear" onclick="toggleFiltroFavoritos(this)">
+                <i class="ph ph-heart"></i> Apenas Favoritos
+            </button>
+            <div class="rating-filter flex items-center gap-10">
+                <span class="color-muted font-0-9">Nota mínima:</span>
+                <div class="flex gap-5">
+                    <button class="btn-star-filter" onclick="filtrarPorNota(1)">1</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(2)">2</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(3)">3</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(4)">4</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(5)">5</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="mt-20">
             <ul id="categoriesNav">
-                <li><a href="#" class="active" onclick="filtrarPorCategoria(null, this)"><i class="ph ph-squares-four"></i> Todos</a></li>
-                <!-- Categorias carregadas dinamicamente -->
+                <li><a href="#" class="active" onclick="mostrarTodosPosts(this)"><i class="ph ph-squares-four"></i> Todos</a></li>
+                <!-- Categorias serão carregadas dinamicamente -->
             </ul>
         </nav>
     </header>

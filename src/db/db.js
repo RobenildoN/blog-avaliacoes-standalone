@@ -18,11 +18,11 @@ try {
         const initialDbPath = path.join(__dirname, '../../data/database.sqlite');
 
         if (!fs.existsSync(databasePath) && fs.existsSync(initialDbPath)) {
-            try { 
-                fs.copyFileSync(initialDbPath, databasePath); 
-                console.log('Banco de dados inicial copiado para userData'); 
-            } catch (err) { 
-                console.error('Erro ao copiar banco inicial:', err); 
+            try {
+                fs.copyFileSync(initialDbPath, databasePath);
+                console.log('Banco de dados inicial copiado para userData');
+            } catch (err) {
+                console.error('Erro ao copiar banco inicial:', err);
             }
         }
     } else {
@@ -58,17 +58,26 @@ const sequelize = new Sequelize({
 const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        // Não usamos force: true para não apagar os dados existentes
-        await sequelize.sync({ force: false });
-        console.log('Banco de dados SQLite conectado e sincronizado');
+        console.log('Banco de dados SQLite conectado');
     } catch (error) {
         console.error('Erro na conexão com o banco de dados:', error);
-        // Não encerramos o processo aqui para permitir que o Electron mostre um erro amigável
+        throw error;
+    }
+};
+
+// Função para sincronizar modelos
+const syncDB = async () => {
+    try {
+        await sequelize.sync({ alter: true });
+        console.log('Banco de dados SQLite sincronizado (alter: true)');
+    } catch (error) {
+        console.error('Erro na sincronização do banco de dados:', error);
         throw error;
     }
 };
 
 module.exports = {
     sequelize,
-    connectDB
+    connectDB,
+    syncDB
 };
