@@ -2,6 +2,7 @@ const { Sequelize } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3');
+const { execSync } = require('child_process');
 
 let databasePath;
 
@@ -65,13 +66,17 @@ const connectDB = async () => {
     }
 };
 
-// Função para sincronizar modelos
-const syncDB = async () => {
+// Função para executar migrations
+const migrateDB = async () => {
     try {
-        await sequelize.sync({ alter: true });
-        console.log('Banco de dados SQLite sincronizado (alter: true)');
+        // Executar migrations usando sequelize-cli
+        execSync('npx sequelize-cli db:migrate', {
+            cwd: path.join(__dirname, '../../'),
+            stdio: 'inherit'
+        });
+        console.log('Migrations executadas com sucesso');
     } catch (error) {
-        console.error('Erro na sincronização do banco de dados:', error);
+        console.error('Erro ao executar migrations:', error);
         throw error;
     }
 };
@@ -79,5 +84,5 @@ const syncDB = async () => {
 module.exports = {
     sequelize,
     connectDB,
-    syncDB
+    migrateDB
 };

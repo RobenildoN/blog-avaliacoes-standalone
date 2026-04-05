@@ -17,15 +17,56 @@ try {
 
 const path = require('path');
 const fs = require('fs');
+const log = require('electron-log');
+
+// Configurar electron-log para arquivos persistentes
+log.transports.file.resolvePathFn = () => path.join(app.getPath('userData'), 'logs', 'main.log');
+log.transports.file.level = 'info';
+log.transports.console.level = 'debug';
+
+// Substituir console.log por log.info para persistência
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+const originalConsoleWarn = console.warn;
+
+console.log = (...args) => {
+  log.info(...args);
+  originalConsoleLog(...args);
+};
+
+console.error = (...args) => {
+  log.error(...args);
+  originalConsoleError(...args);
+};
+
+console.warn = (...args) => {
+  log.warn(...args);
+  originalConsoleWarn(...args);
+};
+
+// Tratamento de erro global
+process.on('uncaughtException', (error) => {
+  log.error('Uncaught Exception:', error);
+  console.error('Uncaught Exception:', error);
+  // Em produção, você pode querer sair graciosamente
+  // process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  log.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Em produção, você pode querer sair graciosamente
+  // process.exit(1);
+});
 
 // Conectar ao SQLite Diretamente
-const { connectDB, syncDB } = require('./src/db/db');
+const { connectDB, migrateDB } = require('./src/db/db');
 const { setupAssociations } = require('./src/models/associations');
 
 async function initializeApp() {
   await connectDB();
   setupAssociations();
-  await syncDB();
+  await migrateDB();
 }
 
 initializeApp().then(() => {
