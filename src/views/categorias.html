@@ -4,196 +4,74 @@
 <head>
     <meta charset="UTF-8">
     <title>Gerenciar Categorias - Blog de Avaliações</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        .btn-action {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            margin-right: 5px;
-            font-weight: bold;
-        }
-
-        .btn-edit {
-            background-color: #ffc107;
-            color: #000;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-            color: #000;
-        }
-
-        .admin-container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-    </style>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../public/css/style.css">
 </head>
 
-<body style="min-height: 100vh; margin: 0; font-family: 'Segoe UI', Arial, sans-serif;">
+<body>
     <header>
-        <div style="text-align: center; margin-bottom: 5px;">
-            <h1>Gerenciar Categorias</h1>
+        <div class="header-title-container text-center mb-5">
+            <h1><i class="ph-fill ph-folders header-icon color-accent v-middle"></i> Gerenciar Categorias</h1>
         </div>
         <nav>
-            <ul>
-                <li><a href="index.html">Início</a></li>
-                <li><a href="admin.html">Posts (Admin)</a></li>
+            <ul id="categoriesNav">
+                <li><a href="index.html"><i class="ph ph-house"></i> Início</a></li>
+                <li><a href="admin.html"><i class="ph-fill ph-gear"></i> Moderação (Admin)</a></li>
             </ul>
         </nav>
     </header>
-    <main style="max-width: 800px; margin: 15px auto; padding: 0 20px; flex: 1;">
+    <main class="admin-main small">
         <div class="admin-container">
-            <h2 style="text-align: center; color: #35424a; margin-bottom: 15px;">Criar Nova Categoria</h2>
-            <form id="formCriarCategoria"
-                style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
-                <input type="text" name="name" placeholder="Nome da Categoria" required
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <button type="submit" class="btn-search"
-                    style="width: auto; height: 40px; padding: 0 20px; border-radius: 4px; margin: 10px auto; display: block; cursor: pointer; border: none; font-weight: bold;">Criar
-                    Categoria</button>
+            <h2 class="section-title"><i class="ph-fill ph-plus-circle color-accent"></i> Criar Nova Categoria</h2>
+            <form id="formCriarCategoria" class="category-form">
+                <div class="form-group category-input-group">
+                    <label>Nome da Categoria</label>
+                    <input type="text" name="name" placeholder="Ex: Animes, Séries, Livros..." required>
+                </div>
+                <button type="submit" class="btn-search category-submit-btn">
+                    <i class="ph ph-plus"></i> Adicionar
+                </button>
             </form>
         </div>
 
         <div class="admin-container">
-            <h2 style="text-align: center; color: #35424a; margin-bottom: 15px;">Categorias Existentes</h2>
-            <div id="categorias" style="width: 100%;"></div>
+            <h2 class="section-title"><i class="ph-fill ph-tag color-accent"></i> Categorias Existentes</h2>
+            <div id="categorias" class="flex-1">
+                <div class="loading-container"><i class="ph ph-spinner-gap ph-spin size-2"></i></div>
+            </div>
         </div>
 
         <!-- Modal de edição -->
-        <div id="modalEditar"
-            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
-            <div style="background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px;">
-                <h3 style="text-align: center; color: #35424a; margin-bottom: 20px;">Editar Categoria</h3>
-                <form id="formEditarCategoria" style="display: flex; flex-direction: column; gap: 15px;">
+        <div id="modalOverlay">
+            <div id="modalContent">
+                <h3 class="section-title"><i class="ph-fill ph-pencil-simple color-warning"></i> Editar Categoria</h3>
+                <form id="formEditarCategoria">
                     <input type="hidden" name="id">
-                    <div style="display: flex; flex-direction: column; gap: 5px;">
-                        <label style="font-weight: bold;">Nome da Categoria</label>
-                        <input type="text" name="name" placeholder="Nome da Categoria" required
-                            style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="form-group">
+                        <label>Nome da Categoria</label>
+                        <input type="text" name="name" placeholder="Novo nome da categoria" required>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button type="submit" class="btn-search"
-                            style="flex: 1; border-radius: 4px; height: 40px; font-weight: bold; cursor: pointer; border: none;">Salvar</button>
-                        <button type="button" class="btn-clear" onclick="fecharModal()"
-                            style="flex: 1; border-radius: 4px; height: 40px; font-weight: bold; cursor: pointer; border: none;">Cancelar</button>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-clear" onclick="fecharModal()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-search">
+                            <i class="ph ph-check"></i> Salvar Alterações
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </main>
-    <script>
-        async function carregarCategorias() {
-            try {
-                const res = await fetch('/categories');
-                const categorias = await res.json();
-                const div = document.getElementById('categorias');
-                div.innerHTML = categorias.map(categoria => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin-bottom: 8px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #eee;">
-                    <div>
-                        <strong style="font-size: 15px; color: #333;">${categoria.name}</strong>
-                    </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button onclick="abrirModalEditar(${categoria.id})" class="btn-action btn-edit">Editar</button>
-                        <button onclick="deletarCategoria(${categoria.id})" class="btn-action btn-delete">Deletar</button>
-                    </div>
-                </div>
-            `).join('');
-            } catch (error) {
-                console.error('Erro ao carregar categorias:', error);
-            }
-        }
 
-        document.getElementById('formCriarCategoria').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const form = e.target;
-            const dados = Object.fromEntries(new FormData(form));
-            try {
-                const res = await fetch('/categories', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dados)
-                });
-                if (res.ok) {
-                    form.reset();
-                    carregarCategorias();
-                } else {
-                    alert('Erro ao criar categoria');
-                }
-            } catch (error) {
-                console.error('Erro ao criar categoria:', error);
-                alert('Erro ao criar categoria');
-            }
-        });
+    <footer>
+        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão Autônoma</span></p>
+    </footer>
 
-        async function abrirModalEditar(id) {
-            try {
-                const res = await fetch(`/categories/${id}`);
-                const categoria = await res.json();
-                const modal = document.getElementById('modalEditar');
-                const form = document.getElementById('formEditarCategoria');
-                form.id.value = categoria.id;
-                form.name.value = categoria.name;
-                modal.style.display = 'flex';
-            } catch (error) {
-                console.error('Erro ao abrir modal de edição:', error);
-            }
-        }
-
-        function fecharModal() {
-            document.getElementById('modalEditar').style.display = 'none';
-        }
-
-        document.getElementById('formEditarCategoria').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const form = e.target;
-            const id = form.id.value;
-            const dados = {
-                name: form.name.value
-            };
-            try {
-                const res = await fetch(`/categories/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dados)
-                });
-                if (res.ok) {
-                    fecharModal();
-                    carregarCategorias();
-                } else {
-                    alert('Erro ao editar categoria');
-                }
-            } catch (error) {
-                console.error('Erro ao editar categoria:', error);
-                alert('Erro ao editar categoria');
-            }
-        });
-
-        async function deletarCategoria(id) {
-            if (confirm('Deseja realmente deletar esta categoria? Isso pode afetar posts relacionados.')) {
-                try {
-                    const res = await fetch(`/categories/${id}`, { method: 'DELETE' });
-                    if (res.ok) {
-                        carregarCategorias();
-                    } else {
-                        alert('Erro ao deletar categoria');
-                    }
-                } catch (error) {
-                    console.error('Erro ao deletar categoria:', error);
-                    alert('Erro ao deletar categoria');
-                }
-            }
-        }
-
-        // Carregar categorias ao iniciar
-        carregarCategorias();
-    </script>
+    <script src="../public/js/script.js"></script>
+    <script src="../public/js/api.js"></script>
+    <script src="../public/js/categorias-view.js"></script>
 </body>
 
 </html>

@@ -1,79 +1,60 @@
-# Blog de Avaliações - Versão Autônoma 🖥️
+# Blog de Avaliações - Standalone Nativo 🖥️🌌
 
-Uma versão completamente autônoma do Blog de Avaliações que funciona **sem servidor externo**, salvando todos os dados localmente no computador do usuário de forma segura e persistente.
+A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos, trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
 
-## ✨ Características da Versão Autônoma
+## ✨ Características (Versão 4.0.0 - IPC Build)
 
-### 🔄 Funcionalidades Mantidas
+### 🏎️ Arquitetura Exclusiva de Software Desktop
+- **🚫 Sem Servidor HTTP:** O antigo Express.js local foi desativado. Portas IP locais bloqueadas nunca mais ("Sem Erros 3001/EADDRINUSE").
+- **⚡ Comunicação IPC Nativa:** O frontend (janelas) dialoga direto com o backend operacional através de chamadas em memória (Preload Bridge), resultando em salvamentos e cargas de banco de dados instantâneas.
+- **📁 Integração Real com OS:** O botão de Upload foi substituído por integrações de sistema! Agora você busca as Capas através da verdadeira "Caixa de Seleção do Windows".
 
-- ✅ **Sistema completo de posts** - Criar, editar, deletar posts com salvamento automático.
-- ✅ **Sistema de categorias** - Gerenciamento de Mangas, Livros, Filmes, Séries e Cursos.
-- ✅ **Upload de imagens** - Imagens salvas localmente na pasta de dados do usuário.
-- ✅ **Sistema de avaliação** - Classificação visual por estrelas.
-- ✅ **Busca avançada** - Pesquisa inteligente por **título** e **resumo**.
-- ✅ **Paginação inteligente** - Navegação otimizada por páginas.
-- ✅ **Acesso livre** - Criação de posts disponível para todos, sem necessidade de login.
+### 🛡️ Nível de Segurança 3
+- **🔐 Autenticação Padrão:** Área de Listagem e Criação Administrativas interceptadas por um componente de barreira lógica protegendo seus dados e notas caso seu PC fique exposto.
+- **📦 Banco de Dados Offline (SqLite):** Total privacidade num banco sem contatos web. Relacional puro manipulado através da robustez do *Sequelize ORM*. Os Dados vivem no `%APPDATA%`, imunes tanto a atualizações de interface quanto à remoção da própria pasta raiz.
 
-### 🆕 Recursos Exclusivos e Melhorias
+### 🎨 Premium Glassmorphism UI
+- **🔮 Estilização:** Toda a lógica HTML crua foi varrida, substituída por classes utilitárias CSS globais padronizando espaçamentos num elegante **Dark Theme** com efeitos vítreos de desfoque, gradientes roxos (accent text) e bordas suaves. 
+- **📈 Dashboard do Administrador:** Informações estatísticas inteligentes calculadas via SQLite alimentando um sumário rápido sobre Obras Avaliadas, Média Geral, e Número de Categorias no topo da tela Admin.
+- **📱 Flex & Responsividade:** Menus adaptativos e Modal de Edição Auto-Scroll (Ajuste independente da resolução do Windows do usuário).
 
-- **💾 Banco de Dados SQLite com Sequelize** - Migração completa para uma arquitetura de banco de dados robusta e relacional.
-- **📁 Persistência em %APPDATA%** - Dados e imagens salvos automaticamente na pasta do usuário para garantir persistência após atualizações.
-- **🚀 Performance Nativa** - Interface Electron otimizada com backend Node.js integrado.
-- **🎨 Design Moderno e Compacto** - Interface refinada com cards otimizados, imagens em destaque e rodapé fixo inteligente.
-- **🔗 Gestão Completa de Conteúdo** - Campos para "Lido até", "Link de Acesso" e upload de imagens tanto na criação quanto na edição.
-- **🛠️ Área Administrativa Unificada** - Gerenciamento simplificado de posts e categorias com interface padronizada.
-
-## 🚀 Como Usar
+## 🚀 Como Executar ou Empacotar
 
 ### Pré-requisitos
+- **Node.js**: Instalado (Para compilar e desenvolver).
 
-- **Node.js**: v16 ou superior (para desenvolvimento).
-- **Sistema**: Windows 10 ou superior.
+### Desenvolvimento Local 
+1. **Instalar dependências de Motor**: `npm install`
+2. **Rodar Ambiente**: `npm start` *(Roda de forma nativa já lendo as imagens direto do esquema AppData)*
 
-### Execução em Desenvolvimento
-
-1. **Instalar dependências**: `npm install`
-2. **Iniciar o app**: `npm start`
-
-### Geração de Executável (.exe)
-
-Para gerar a versão standalone para Windows:
+### Geração de Mídia Instaladora (.exe)
+Para obter uma versão autônoma entregável a qualquer amigo com Windows:
 ```bash
 npm run dist
 ```
-O executável será gerado na pasta `dist/win-unpacked/`.
+O `.exe` de instalação estará polido na pasta `dist/win-unpacked/` para ser hospedado ou fixado no menu iniciar.
 
-## 📁 Estrutura do Projeto
+## 📁 Estrutura Renovada
 
 ```
 ├── src/
-│   ├── controllers/    # Lógica de negócio (Post e Category)
-│   ├── db/             # Configuração do Sequelize e SQLite
-│   ├── models/         # Modelos de dados e associações
-│   ├── public/         # CSS, JS e Imagens estáticas
-│   └── views/          # Interfaces HTML (Index, Admin, Categorias, Post)
-├── main.js             # Ponto de entrada Electron
-└── package.json        # Dependências e scripts de build
+│   ├── db/             # Conexão e sincronização SQLite / Sequelize
+│   ├── ipc-handlers.js # [CORE Backend] O processador de rotas de banco Native
+│   ├── preload.js      # [Security] A ponte entre as janelas visuais e as engrenagens Core
+│   ├── models/         # Estruturação e Relações do Database (Categories & Posts)
+│   ├── public/
+│   │   ├── css/        # Layout Centralizado, Utility Classes UI e Temas 
+│   │   └── js/         # Controladores da UI injetando os dados processados pelo Preload na tela
+│   └── views/          # Grid Templates puros sem inline style
+├── main.js             # Electron App Controller (Renderizador da View Nativa)
 ```
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Stack Modificada
 
-- **Electron**: Framework para aplicativos desktop.
-- **Node.js & Express**: Backend e servidor de API interno.
-- **Sequelize**: ORM para manipulação do banco de dados.
-- **SQLite3**: Banco de dados local leve e persistente.
-- **Multer**: Gerenciamento de upload de imagens.
+- **Eletron Core & Builders**: Compilagem base.
+- **Sequelize + Sqlite3**: Armazenamento Persistente Multi-Tabelas.
+- ~~*Express.js / Multer / Fetch HTTP*~~ ➔ Removidos inteiramente por **Electron ipcMain/ipcRenderer** (Zero requisição local via APIs, toda a comunicação é via Memória Compartilhada).
 
 ---
 
-**Versão Autônoma v3.0.0**
-_Sistema profissional de avaliações offline com arquitetura moderna._
-
-## 🆕 Novidades da v3.0.0
-
-- **Arquitetura MVC**: Código totalmente refatorado com Controllers, Models e Rotas para melhor manutenção.
-- **Edição Avançada**: Agora é possível trocar a imagem, o link e o progresso de leitura diretamente no modal de edição.
-- **Cards Imersivos**: Imagens de capa com maior destaque (320px) e enquadramento inteligente (object-fit).
-- **Categorias Dinâmicas**: Sistema de categorias totalmente integrado ao banco de dados e refletido em tempo real no menu.
-- **UI Consistente**: Botões e formulários padronizados em todas as telas administrativas e de visualização.
-- **Rodapé Inteligente**: Layout Flexbox que mantém o rodapé na base da janela independente do conteúdo.
+Feito com excelência para quem consome muita ficção! 🏆

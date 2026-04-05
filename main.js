@@ -2,66 +2,33 @@
 console.log('Process type:', process.type);
 console.log('Electron available:', typeof require('electron'));
 
-let electron, app, BrowserWindow, Menu, dialog;
-
+let electron, app, BrowserWindow, Menu, dialog, protocol;
 try {
   electron = require('electron');
-  console.log('Electron object:', typeof electron);
-  console.log('Electron properties:', Object.keys(electron || {}));
-
-  if (electron && typeof electron === 'object' && electron.app) {
-    app = electron.app;
-    BrowserWindow = electron.BrowserWindow;
-    Menu = electron.Menu;
-    dialog = electron.dialog;
-    console.log('Electron importado com sucesso');
-  } else {
-    console.log('Tentando import alternativo...');
-    // Tentar import alternativo
-    const { app: appAlt, BrowserWindow: BrowserWindowAlt, Menu: MenuAlt, dialog: dialogAlt } = require('electron');
-    app = appAlt;
-    BrowserWindow = BrowserWindowAlt;
-    Menu = MenuAlt;
-    dialog = dialogAlt;
-    console.log('Electron importado com método alternativo');
-  }
+  app = electron.app;
+  BrowserWindow = electron.BrowserWindow;
+  Menu = electron.Menu;
+  dialog = electron.dialog;
+  protocol = electron.protocol;
 } catch (error) {
-  console.error('Erro ao importar Electron:', error.message);
-  console.error('Detalhes do erro:', error);
+  console.error('Erro ao importar Electron:', error);
   process.exit(1);
 }
+
 const path = require('path');
 const fs = require('fs');
 
-// Importar o servidor Express
-const serverApp = require('./src/index');
+// Conectar ao SQLite Diretamente
+const { connectDB } = require('./src/db/db');
+const { setupAssociations } = require('./src/models/associations');
+connectDB();
+setupAssociations();
+
+// Configurar os Handles Nativos (Substitui o Express)
+const setupIpcHandlers = require('./src/ipc-handlers');
 
 let mainWindow;
-let server;
 
-// Função para iniciar o servidor Express
-function startServer() {
-  return new Promise((resolve, reject) => {
-    const PORT = process.env.PORT || 3001; // Usar porta diferente para evitar conflitos
-
-    try {
-      server = serverApp.listen(PORT, () => {
-        console.log(`Servidor autônomo rodando na porta ${PORT}`);
-        resolve();
-      });
-
-      server.on('error', (error) => {
-        console.error('Erro ao iniciar servidor:', error);
-        reject(error);
-      });
-    } catch (error) {
-      console.error('Erro ao configurar servidor:', error);
-      reject(error);
-    }
-  });
-}
-
-// Função para criar a janela principal
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -69,31 +36,26 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      enableRemoteModule: false
+      preload: path.join(__dirname, 'src', 'preload.js')
     },
-    title: 'Blog de Avaliações - Versão Autônoma',
-    show: false // Não mostrar até estar pronto
+    title: 'Blog de Avaliações - Versão Autônoma Nativa',
+    show: false
   });
 
-  // Aguardar o servidor iniciar antes de carregar a página
-  const PORT = process.env.PORT || 3001;
-  mainWindow.loadURL(`http://localhost:${PORT}`);
+  // Level 3: Handlers nativos (IPC)
+  setupIpcHandlers(app, mainWindow);
 
-  // Mostrar a janela quando estiver pronta
+  // Carregar o sistema via File (100% Nativo, Nível 2)
+  mainWindow.loadFile(path.join(__dirname, 'src', 'views', 'index.html'));
+
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
 
-  // Evento quando a janela é fechada
   mainWindow.on('closed', () => {
     mainWindow = null;
-    // Encerrar o servidor quando a aplicação for fechada
-    if (server) {
-      server.close();
-    }
   });
 
-  // Menu personalizado
   const template = [
     {
       label: 'Arquivo',
@@ -105,113 +67,48 @@ function createWindow() {
               type: 'info',
               title: 'Sobre - Versão Autônoma',
               message: 'Blog de Avaliações',
-              detail: 'Aplicação desktop autônoma que funciona sem servidor externo.\n\nTodos os dados são salvos localmente no seu computador.\n\nVersão: 1.0.0\nDesenvolvido com Electron e SQLite'
+              detail: 'Aplicação desktop 100% nativa sem servidor web operando por IPC (Inter-Process Communication).\nMais rapída, mais leve, totalmente blindada.\n\nVersão: 2.0.0'
             });
           }
         },
         { type: 'separator' },
-        {
-          label: 'Sair',
-          accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
-          click() {
-            app.quit();
-          }
-        }
+        { label: 'Sair', click() { app.quit(); } }
       ]
     },
-    {
-      label: 'Editar',
-      submenu: [
-        { role: 'undo', label: 'Desfazer' },
-        { role: 'redo', label: 'Refazer' },
-        { type: 'separator' },
-        { role: 'cut', label: 'Cortar' },
-        { role: 'copy', label: 'Copiar' },
-        { role: 'paste', label: 'Colar' }
-      ]
-    },
-    {
-      label: 'Visualizar',
-      submenu: [
-        { role: 'reload', label: 'Recarregar' },
-        { role: 'forceReload', label: 'Forçar Recarregamento' },
-        { role: 'toggleDevTools', label: 'Ferramentas de Desenvolvedor' },
-        { type: 'separator' },
-        { role: 'resetZoom', label: 'Zoom Padrão' },
-        { role: 'zoomIn', label: 'Aumentar Zoom' },
-        { role: 'zoomOut', label: 'Diminuir Zoom' }
-      ]
-    },
+    { label: 'Editar', submenu: [ { role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' } ] },
+    { label: 'Visualizar', submenu: [ { role: 'reload' }, { role: 'toggleDevTools' }, { type: 'separator' }, { role: 'resetZoom' } ] },
     {
       label: 'Dados',
       submenu: [
         {
           label: 'Local dos Dados',
           click() {
-            const userDataPath = app.getPath('userData');
-            dialog.showMessageBox(mainWindow, {
-              type: 'info',
-              title: 'Local dos Dados',
-              message: 'Seus dados estão salvos em:',
-              detail: userDataPath
-            });
+            dialog.showMessageBox(mainWindow, { type: 'info', title: 'Local', message: app.getPath('userData') });
           }
         }
       ]
     }
   ];
-
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-// Evento quando o Electron estiver pronto
 app.on('ready', async () => {
-  try {
-    console.log('Iniciando aplicação autônoma...');
+  console.log('Iniciando Aplicação em Modo IPC...');
+  
+  // Custom Protocol para carregar as imagens do userData nativamente
+  protocol.registerFileProtocol('img', (request, callback) => {
+    const url = request.url.replace('img://', '');
+    const userDataPath = app.getPath('userData');
+    callback({ path: path.normalize(path.join(userDataPath, 'images', url)) });
+  });
 
-    // Iniciar o servidor Express
-    await startServer();
+  createWindow();
 
-    // Criar a janela principal
-    createWindow();
-
-    // No macOS, recriar a janela quando o ícone do dock for clicado
-    app.on('activate', () => {
-      if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-      }
-    });
-
-    console.log('Aplicação autônoma iniciada com sucesso!');
-  } catch (error) {
-    console.error('Erro ao inicializar aplicação autônoma:', error);
-    dialog.showErrorBox(
-      'Erro de Inicialização',
-      `Erro ao iniciar a aplicação: ${error.message}\n\nVerifique os logs do console para mais detalhes.`
-    );
-    app.quit();
-  }
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
 });
 
-// Evento quando todas as janelas são fechadas
 app.on('window-all-closed', () => {
-  // No macOS, manter a aplicação ativa mesmo com todas as janelas fechadas
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-
-  // Encerrar o servidor
-  if (server) {
-    server.close();
-  }
-});
-
-// Tratamento de erros não capturados
-process.on('uncaughtException', (error) => {
-  console.error('Erro não capturado:', error);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Rejeição não tratada em:', promise, 'razão:', reason);
+  if (process.platform !== 'darwin') app.quit();
 });

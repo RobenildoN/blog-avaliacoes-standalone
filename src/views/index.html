@@ -5,192 +5,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog de Avaliações</title>
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../public/css/style.css">
 </head>
 
 <body>
     <header>
-        <div style="text-align: center; margin-bottom: 5px;">
-            <h1>Blog de Avaliações</h1>
+        <div class="header-title-container text-center mb-5">
+            <h1><i class="ph-fill ph-star-four header-icon color-accent v-middle"></i> Avaliações</h1>
         </div>
 
         <div class="search-box">
-            <input type="text" placeholder="Pesquisar títulos e resumos..." id="searchBox">
-            <button class="btn-search" onclick="realizarBusca()">Pesquisar</button>
-            <button class="btn-clear" onclick="limparBusca()">Limpar</button>
+            <input type="text" placeholder="Pesquisar títulos, resumos ou categorias..." id="searchBox">
+            <button class="btn-search" onclick="realizarBusca()"><i class="ph ph-magnifying-glass"></i> Buscar</button>
+            <button class="btn-clear" onclick="limparBusca()"><i class="ph ph-x"></i></button>
         </div>
 
         <nav>
             <ul id="categoriesNav">
-                <li><a href="#" onclick="filtrarPorCategoria(null)">Todos</a></li>
-                <!-- Categorias serão carregadas dinamicamente -->
+                <li><a href="#" class="active" onclick="filtrarPorCategoria(null, this)"><i class="ph ph-squares-four"></i> Todos</a></li>
+                <!-- Categorias carregadas dinamicamente -->
             </ul>
         </nav>
     </header>
 
     <main>
         <section id="postsSection">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 id="sectionTitle">Últimos Posts</h2>
+            <div class="section-header flex justify-between items-center mb-25 border-bottom">
+                <h2 id="sectionTitle" class="section-title"><i class="ph ph-clock-counter-clockwise"></i> Últimos Posts</h2>
             </div>
 
             <div id="postsContainer" class="posts-container">
-                <div class="loading" style="text-align: center; grid-column: 1/-1;">Carregando posts...</div>
+                <div class="loading">
+                    <i class="ph ph-spinner-gap ph-spin size-2-5 color-accent"></i>
+                    <p>Carregando avaliações...</p>
+                </div>
             </div>
 
             <div id="paginationControls" class="pagination" style="display: none;">
-                <button id="prevPageBtn" class="btn-clear" onclick="mudarPagina(-1)">Anterior</button>
-                <span id="pageInfo">Página 1 de 1</span>
-                <button id="nextPageBtn" class="btn-search" onclick="mudarPagina(1)">Próximo</button>
+                <button id="prevPageBtn" class="btn-clear" onclick="mudarPagina(-1)"><i class="ph ph-caret-left"></i> Anterior</button>
+                <span id="pageInfo" class="page-info-text">Página 1 de 1</span>
+                <button id="nextPageBtn" class="btn-search" onclick="mudarPagina(1)">Próximo <i class="ph ph-caret-right"></i></button>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 <a href="#">Blog de Avaliações</a> - Versão Autônoma</p>
+        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão Autônoma</span></p>
     </footer>
 
-    <script src="/js/script.js"></script>
-    <script>
-        let paginaAtual = 1;
-        let totalPaginas = 1;
-        let filtroCategoria = null;
-        let termoBusca = '';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarCategorias();
-            carregarPosts();
-        });
-
-        async function carregarCategorias() {
-            try {
-                const response = await fetch('/categories');
-                const categories = await response.json();
-                const nav = document.getElementById('categoriesNav');
-
-                // Limpar e manter apenas o "Todos"
-                nav.innerHTML = '<li><a href="#" onclick="mostrarTodosPosts()">Todos</a></li>';
-
-                categories.forEach(cat => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="#" onclick="filtrarPorCategoria(${cat.id})">${cat.name}</a>`;
-                    nav.appendChild(li);
-                });
-
-                // Adicionar link para criar post
-                const adminLi = document.createElement('li');
-                adminLi.innerHTML = `<a href="admin.html">Criar Post</a>`;
-                nav.appendChild(adminLi);
-            } catch (error) {
-                console.error('Erro ao carregar categorias:', error);
-            }
-        }
-
-        async function carregarPosts(page = 1, categoryId = null, searchTerm = '') {
-            try {
-                const container = document.getElementById('postsContainer');
-                container.innerHTML = '<div class="loading" style="text-align: center; grid-column: 1/-1;">Carregando posts...</div>';
-
-                let url = `/posts?page=${page}&limit=12`;
-                if (categoryId) url += `&categoryId=${categoryId}`;
-                if (searchTerm) url = `/posts/search?q=${encodeURIComponent(searchTerm)}&page=${page}&limit=12`;
-
-                const response = await fetch(url);
-                const data = await response.json();
-
-                const posts = data.posts || [];
-                const pagination = data.pagination || { currentPage: 1, totalPages: 1 };
-
-                paginaAtual = pagination.currentPage;
-                totalPaginas = pagination.totalPages;
-                filtroCategoria = categoryId;
-                termoBusca = searchTerm;
-
-                renderizarPosts(posts);
-                atualizarPaginacao(pagination);
-                atualizarTitulo();
-            } catch (error) {
-                console.error('Erro ao carregar posts:', error);
-                document.getElementById('postsContainer').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Erro ao carregar dados.</p>';
-            }
-        }
-
-        function renderizarPosts(posts) {
-            const container = document.getElementById('postsContainer');
-            if (posts.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Nenhum post encontrado.</p>';
-                return;
-            }
-
-            container.innerHTML = posts.map(post => `
-                <div class="post-card">
-                    <img src="${post.imagem || 'img/exemplo.jpg'}" alt="${post.titulo}" class="post-image" onerror="this.src='img/exemplo.jpg'">
-                    <div class="post-content">
-                        <span class="post-category">${post.Category ? post.Category.name : 'Geral'}</span>
-                        <h3 class="post-title">${post.titulo}</h3>
-                        <div class="post-rating">${formatarNota(post.avaliacao)}</div>
-                        <p class="post-summary">${limitarTexto(post.resumo, 100)}</p>
-                        ${post.lido_ate ? `<p class="post-info"><strong>Lido até:</strong> ${post.lido_ate}</p>` : ''}
-                        ${post.link_acesso ? `<p class="post-info"><a href="${post.link_acesso}" target="_blank" style="color: var(--secondary-color); text-decoration: underline;">Link de Acesso</a></p>` : ''}
-                        <div class="post-footer">
-                            <small>${formatarData(post.createdAt)}</small>
-                            <a href="post.html?id=${post.id}" style="color: var(--secondary-color); font-weight: bold; text-decoration: none;">Ver mais</a>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function atualizarPaginacao(pagination) {
-            const controls = document.getElementById('paginationControls');
-            const info = document.getElementById('pageInfo');
-            const prev = document.getElementById('prevPageBtn');
-            const next = document.getElementById('nextPageBtn');
-
-            if (pagination.totalPages > 1) {
-                controls.style.display = 'flex';
-                info.textContent = `Página ${pagination.currentPage} de ${pagination.totalPages}`;
-                prev.disabled = !pagination.hasPrevPage;
-                next.disabled = !pagination.hasNextPage;
-                prev.style.opacity = pagination.hasPrevPage ? '1' : '0.5';
-                next.style.opacity = pagination.hasNextPage ? '1' : '0.5';
-            } else {
-                controls.style.display = 'none';
-            }
-        }
-
-        function atualizarTitulo() {
-            const title = document.getElementById('sectionTitle');
-            if (termoBusca) title.textContent = `Busca: ${termoBusca}`;
-            else if (filtroCategoria) title.textContent = 'Categoria Selecionada';
-            else title.textContent = 'Últimos Posts';
-        }
-
-        function mudarPagina(dir) {
-            const nova = paginaAtual + dir;
-            if (nova >= 1 && nova <= totalPaginas) {
-                carregarPosts(nova, filtroCategoria, termoBusca);
-            }
-        }
-
-        function filtrarPorCategoria(id) {
-            carregarPosts(1, id, '');
-        }
-
-        function realizarBusca() {
-            const val = document.getElementById('searchBox').value.trim();
-            if (val) carregarPosts(1, null, val);
-        }
-
-        function limparBusca() {
-            document.getElementById('searchBox').value = '';
-            carregarPosts(1, null, '');
-        }
-
-        function mostrarTodosPosts() {
-            limparBusca();
-        }
-    </script>
+    <script src="../public/js/script.js"></script>
+    <script src="../public/js/api.js"></script>
+    <script src="../public/js/index-view.js"></script>
 </body>
 
 </html>
