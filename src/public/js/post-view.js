@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Preencher campos
             postTitle.innerText = post.titulo;
             postCategory.innerText = post.Category ? post.Category.name : 'Avaliação';
-            postRating.innerHTML = '★'.repeat(post.avaliacao) + '☆'.repeat(5 - post.avaliacao);
-            postDate.innerText = new Date(post.data_post).toLocaleDateString();
+            postRating.innerHTML = `<span class="color-muted">Avaliação:</span> ` + '★'.repeat(post.avaliacao) + '☆'.repeat(5 - post.avaliacao);
+            postDate.innerText = window.formatarData(post.data_post || post.createdAt);
             
             // Imagem
             postImage.src = post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : '../public/img/exemplo.jpg';

@@ -39,7 +39,7 @@
     };
 
     // Gerenciador de erro de imagens (Retry 3x)
-    window.handleImageError = (img, fallbackUrl = '../public/img/exemplo.jpg') => {
+    window.handleImageError = (img, fallbackUrl = 'https://via.placeholder.com/800x450/1e293b/94a3b8?text=Sem+Imagem') => {
         let retries = parseInt(img.dataset.retries || '0');
         
         if (retries < 3) {

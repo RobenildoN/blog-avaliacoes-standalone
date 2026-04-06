@@ -65,9 +65,10 @@ class BlogAPI {
         }
     }
 
-    static async getPostsByCategory(categoryId, params = {}) {
+    static async getPostsByCategory(categoryId, page = 1) {
         try {
-            return await window.api.getPostsByCategory(categoryId, params);
+            // Unificando com o sistema de filtros padrão para evitar erro de função inexistente
+            return await this.getPosts({ categoryId, page, limit: 16 });
         } catch (error) {
             console.error('Erro ao buscar posts por categoria:', error);
             throw error;

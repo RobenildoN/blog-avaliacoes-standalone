@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img:; connect-src 'self' https://unpkg.com;">
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img: https://via.placeholder.com; connect-src 'self' https://unpkg.com;">
     <title>Detalhes do Post</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -31,21 +31,20 @@
     </header>
 
     <main>
-        <article class="post-card post-detail-article flex flex-column">
-            <div class="post-image-wrapper post-detail-img-wrapper">
-                <img id="post-image" src="../public/img/exemplo.jpg" alt="Imagem do Post" class="post-image">
-                <span class="post-category post-detail-category" id="post-category">Categoria</span>
+        <article class="post-card post-detail-article flex flex-column items-center">
+            <div class="post-image-wrapper post-detail-img-wrapper mb-20 text-center" style="width: 100%;">
+                <img id="post-image" src="../public/img/exemplo.jpg" alt="Imagem do Post" class="post-image" style="margin: 0 auto; display: block; max-width: 100%; border-radius: var(--radius-md);">
+            </div>
+            
+            <div class="post-category-container mb-20">
+                <span class="post-category" id="post-category" style="position: static; transform: none;">Categoria</span>
             </div>
 
-            <div class="post-content post-detail-content">
-                <h2 id="post-title" class="post-detail-title color-main mb-20">Título do Post</h2>
+            <div class="post-content post-detail-content" style="width: 100%;">
+                <h2 id="post-title" class="post-detail-title color-main mb-20 text-center">Título do Post</h2>
 
-                <div class="post-detail-meta flex items-center gap-20 mb-30">
-                    <div id="post-rating" class="post-detail-rating">★★★★☆</div>
-                    <span class="meta-divider">|</span>
-                    <div class="meta-date">
-                        <i class="ph ph-calendar-blank"></i> <span id="post-date">01/01/2023</span>
-                    </div>
+                <div class="post-detail-meta flex items-center justify-center gap-20 mb-30">
+                    <div id="post-rating" class="post-detail-rating fw-600">Avaliação: ★★★★☆</div>
                 </div>
 
                 <div id="post-summary" class="post-detail-summary mb-30">Resumo do post aqui...</div>
@@ -57,6 +56,12 @@
                             class="info-block-value"></span>
                     </div>
 
+                    <div class="info-block" style="margin-bottom: 12px;">
+                        <i class="ph ph-calendar-blank info-block-icon"></i>
+                        <strong class="info-block-label">Data da Avaliação:</strong> <span id="post-date"
+                            class="info-block-value">01/01/2023</span>
+                    </div>
+
                     <div id="post-link-container" class="info-block" style="display: none; margin-bottom: 12px;">
                         <i class="ph ph-link info-block-icon"></i>
                         <strong class="info-block-label">Fonte externa:</strong>
@@ -65,9 +70,9 @@
                     </div>
                 </div>
 
-                <div class="post-action-container" style="text-align:center; margin-top:18px;">
-                    <button id="editPostBtn" class="btn-search btn-edit-post">
-                        <i class="ph ph-pencil-simple"></i> Editar Esta Avaliação
+                <div class="form-submit-container mt-30">
+                    <button id="editPostBtn" class="btn-search">
+                        <i class="ph ph-pencil-simple"></i> Editar esta avaliação
                     </button>
                 </div>
             </div>

@@ -53,20 +53,23 @@ class PostService {
     }
 
     async getPosts({ page = 1, limit = 12, categoryId = null, search = '', minRating = null, onlyFavorites = false }) {
-        console.log('PostService.getPosts chamado com:', { page, limit, categoryId, search, minRating, onlyFavorites });
+        // Saneamento rigoroso para evitar NaN no SQL
+        const p = Math.max(1, parseInt(page) || 1);
+        const l = Math.max(1, parseInt(limit) || 12);
+        const offset = (p - 1) * l;
+        
+        const targetCategoryId = (categoryId && categoryId !== 'null' && categoryId !== 'undefined') ? parseInt(categoryId) : null;
+        const targetMinRating = (minRating && minRating !== 'null') ? parseInt(minRating) : null;
 
-        const offset = (page - 1) * limit;
+        console.log('PostService.getPosts (Saneado):', { p, l, targetCategoryId, search, targetMinRating, onlyFavorites });
+
         const where = {};
-
-        // Normalizar categoryId para garantir que seja um número ou null
-        const targetCategoryId = (categoryId && categoryId !== 'null') ? parseInt(categoryId) : null;
-
-        if (targetCategoryId) {
+        if (targetCategoryId && !isNaN(targetCategoryId)) {
             where.categoryId = targetCategoryId;
         }
 
         if (onlyFavorites) where.favorito = true;
-        if (minRating) where.avaliacao = { [Op.gte]: parseInt(minRating) };
+        if (targetMinRating && !isNaN(targetMinRating)) where.avaliacao = { [Op.gte]: targetMinRating };
 
         let posts;
         let count;
@@ -82,12 +85,12 @@ class PostService {
                 INNER JOIN posts_fts fts ON p.id = fts.rowid
                 WHERE posts_fts MATCH '"${searchTerm}"*' AND p.id IN (
                     SELECT id FROM posts WHERE 1=1
-                    ${targetCategoryId ? `AND categoryId = ${targetCategoryId}` : ''}
+                    ${(targetCategoryId && !isNaN(targetCategoryId)) ? `AND categoryId = ${targetCategoryId}` : ''}
                     ${onlyFavorites ? `AND favorito = 1` : ''}
-                    ${minRating ? `AND avaliacao >= ${parseInt(minRating)}` : ''}
+                    ${(targetMinRating && !isNaN(targetMinRating)) ? `AND avaliacao >= ${targetMinRating}` : ''}
                 )
                 ORDER BY rank
-                LIMIT ${limit} OFFSET ${offset}
+                LIMIT ${l} OFFSET ${offset}
             `, { type: Post.sequelize.QueryTypes.SELECT });
 
             // Contar total de resultados
@@ -97,9 +100,9 @@ class PostService {
                 INNER JOIN posts_fts fts ON p.id = fts.rowid
                 WHERE posts_fts MATCH '"${searchTerm}"*' AND p.id IN (
                     SELECT id FROM posts WHERE 1=1
-                    ${targetCategoryId ? `AND categoryId = ${targetCategoryId}` : ''}
+                    ${(targetCategoryId && !isNaN(targetCategoryId)) ? `AND categoryId = ${targetCategoryId}` : ''}
                     ${onlyFavorites ? `AND favorito = 1` : ''}
-                    ${minRating ? `AND avaliacao >= ${parseInt(minRating)}` : ''}
+                    ${(targetMinRating && !isNaN(targetMinRating)) ? `AND avaliacao >= ${targetMinRating}` : ''}
                 )
             `, { type: Post.sequelize.QueryTypes.SELECT });
 
@@ -108,7 +111,7 @@ class PostService {
         } else {
             // Busca normal sem FTS
             const result = await Post.findAndCountAll({
-                where, limit, offset,
+                where, limit: l, offset,
                 order: [['createdAt', 'DESC']],
                 include: [{ model: Category, as: 'Category' }]
             });
@@ -120,10 +123,10 @@ class PostService {
             posts,
             pagination: {
                 totalPosts: count,
-                totalPages: Math.ceil(count / limit),
-                currentPage: page,
-                hasNextPage: page < Math.ceil(count / limit),
-                hasPrevPage: page > 1
+                totalPages: Math.ceil(count / l),
+                currentPage: p,
+                hasNextPage: p < Math.ceil(count / l),
+                hasPrevPage: p > 1
             }
         };
     }

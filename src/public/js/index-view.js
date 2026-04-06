@@ -111,10 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="post animate-fade-in" onclick="window.location.href='post.html?id=${post.id}'">
                 <img src="${post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'public/img/exemplo.jpg'}" alt="${post.titulo}" onerror="handleImageError(this)">
                 <div class="post-content">
+                    <h3 class="post-title">${post.titulo}</h3>
                     <div class="rating">
                         ${'★'.repeat(post.avaliacao)}${'☆'.repeat(5 - post.avaliacao)}
                     </div>
-                    <h3>${post.titulo}</h3>
                     <p>${limitarTexto(post.resumo, 120)}</p>
                     <div class="post-footer flex justify-between items-center mt-15">
                         <span class="color-muted font-0-8"><i class="ph ph-tag"></i> ${post.Category ? post.Category.name : 'Vários'}</span>
