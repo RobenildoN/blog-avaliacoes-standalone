@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img: https://via.placeholder.com; connect-src 'self' https://unpkg.com;">
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img: https://via.placeholder.com; connect-src 'self' https://unpkg.com https://cdn.jsdelivr.net;">
     <title>Administração - Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -13,6 +13,8 @@
     <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="../public/css/style.css">
     <!-- Custom Markdown Editor -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -31,31 +33,15 @@
     </header>
 
     <main class="admin-main">
-        <div class="admin-container" id="dashboardSection" style="display:none;">
-            <h2 class="section-title"><i class="ph-fill ph-chart-bar color-accent"></i> Estatísticas Administrativas
-            </h2>
-            <div class="flex gap-20">
-                <div class="info-block flex-1 text-center">
-                    <h3 class="color-main size-2" id="statPosts">0</h3>
-                    <p class="color-muted fw-500">Obras Avaliadas</p>
-                </div>
-                <div class="info-block flex-1 text-center">
-                    <h3 class="color-main size-2" id="statCats">0</h3>
-                    <p class="color-muted fw-500">Categorias Criadas</p>
-                </div>
-                <div class="info-block flex-1 text-center">
-                    <h3 class="color-main size-2" id="statMedia">0.0</h3>
-                    <p class="color-muted fw-500">Média Geral de Notas</p>
-                </div>
-            </div>
-        </div>
+        <!-- Dashboard removido daqui -->
 
         <div class="admin-container">
             <h2 class="section-title"><i class="ph-fill ph-plus-circle color-accent"></i> Criar Novo Post</h2>
             <form id="formCriarPost" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label>Título*</label>
-                    <input type="text" name="titulo" required placeholder="Digite o título da obra">
+                    <label>Título* <small id="titleWarning" class="color-danger" style="display:none;">(Já avaliado)</small></label>
+                    <input type="text" name="titulo" list="titlesDatalist" required placeholder="Digite o título da obra" autocomplete="off">
+                    <datalist id="titlesDatalist"></datalist>
                 </div>
                 <div class="form-group">
                     <label>Categoria*</label>
@@ -138,6 +124,47 @@
                 </table>
             </div>
         </div>
+
+        <!-- Estatísticas no Final da Página -->
+        <div class="admin-container" id="dashboardSection" style="display:none; margin-top: 40px;">
+            <h2 class="section-title"><i class="ph-fill ph-chart-bar color-accent"></i> Painel de Estatísticas</h2>
+            
+            <div class="flex gap-20 mb-20">
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statPosts">0</h3>
+                    <p class="color-muted fw-500">Obras Avaliadas</p>
+                </div>
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statCats">0</h3>
+                    <p class="color-muted fw-500">Categorias Criadas</p>
+                </div>
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statMedia">0.0</h3>
+                    <p class="color-muted fw-500">Média Geral de Notas</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-20 admin-charts">
+                <div class="info-block">
+                    <h4 class="text-center mb-10 size-0-9"><i class="ph ph-chart-pie color-info"></i> Obras por Categoria</h4>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="chartCategory"></canvas>
+                    </div>
+                </div>
+                <div class="info-block">
+                    <h4 class="text-center mb-10 size-0-9"><i class="ph ph-chart-bar color-warning"></i> Distribuição de Notas</h4>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="chartRating"></canvas>
+                    </div>
+                </div>
+                <div class="info-block" style="grid-column: span 2;">
+                    <h4 class="text-center mb-10 size-0-9"><i class="ph ph-calendar color-accent"></i> Linha do Tempo (Atividade Mensal)</h4>
+                    <div style="height: 200px; position: relative;">
+                        <canvas id="chartTimeline"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Modal Editar -->
@@ -147,8 +174,9 @@
             <form id="formEditarPost">
                 <input type="hidden" name="id">
                 <div class="form-group">
-                    <label>Título</label>
-                    <input type="text" name="titulo" required>
+                    <label>Título <small id="titleWarningEdit" class="color-danger" style="display:none;">(Já avaliado)</small></label>
+                    <input type="text" name="titulo" list="titlesDatalistEdit" required autocomplete="off">
+                    <datalist id="titlesDatalistEdit"></datalist>
                 </div>
                 <div class="form-group">
                     <label>Texto da Avaliação</label>

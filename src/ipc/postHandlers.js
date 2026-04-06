@@ -44,6 +44,14 @@ function setupPostHandlers(app) {
     ipcMain.handle('get-dashboard-stats', async () => {
         return await postService.getDashboardStats();
     });
+    
+    ipcMain.handle('search-post-titles', async (_, query) => {
+        return await postService.searchTitles(query);
+    });
+
+    ipcMain.handle('check-post-title-exists', async (_, { titulo, excludeId }) => {
+        return await postService.isTitleDuplicate(titulo, excludeId);
+    });
 }
 
 module.exports = setupPostHandlers;

@@ -145,6 +145,11 @@ class PostService {
     }
 
     async createPost(data) {
+        // Verificar duplicata
+        if (await this.isTitleDuplicate(data.titulo)) {
+            throw new Error('Já existe uma avaliação com este título.');
+        }
+
         let imagemFilename = 'exemplo.jpg'; // Imagem padrão
 
         if (data.imageAbsPath) {
@@ -170,6 +175,13 @@ class PostService {
     async updatePost(id, data) {
         const post = await Post.findByPk(id);
         if (!post) throw new Error('Not found');
+
+        // Verificar duplicata se o título mudou
+        if (data.titulo && data.titulo !== post.titulo) {
+            if (await this.isTitleDuplicate(data.titulo, id)) {
+                throw new Error('Já existe uma avaliação com este título.');
+            }
+        }
 
         let imagemFilename = post.imagem;
 
@@ -231,7 +243,75 @@ class PostService {
             attributes: [[Post.sequelize.fn('AVG', Post.sequelize.col('avaliacao')), 'media']]
         });
         const mediaNotas = avg && avg.get('media') ? parseFloat(avg.get('media')).toFixed(1) : '0.0';
-        return { totalPosts, totalCats, mediaNotas };
+        
+        // Dados para os gráficos
+        const postsByCategory = await Post.findAll({
+            attributes: [
+                [Post.sequelize.col('Category.name'), 'name'],
+                [Post.sequelize.fn('COUNT', Post.sequelize.col('Post.id')), 'total']
+            ],
+            include: [{ model: Category, as: 'Category', attributes: [] }],
+            group: ['Category.id', 'Category.name'],
+            raw: true
+        });
+
+        const postsByRating = await Post.findAll({
+            attributes: [
+                'avaliacao',
+                [Post.sequelize.fn('COUNT', Post.sequelize.col('id')), 'total']
+            ],
+            group: ['avaliacao'],
+            raw: true
+        });
+
+        // Linha do tempo (por mês do último ano)
+        const timeline = await Post.findAll({
+            attributes: [
+                [Post.sequelize.fn('strftime', '%Y-%m', Post.sequelize.col('data_post')), 'month'],
+                [Post.sequelize.fn('COUNT', Post.sequelize.col('id')), 'total']
+            ],
+            group: ['month'],
+            order: [[Post.sequelize.col('month'), 'ASC']],
+            limit: 12,
+            raw: true
+        });
+
+        return { 
+            totalPosts, 
+            totalCats, 
+            mediaNotas, 
+            charts: {
+                byCategory: postsByCategory,
+                byRating: postsByRating,
+                timeline: timeline
+            }
+        };
+    }
+
+    async searchTitles(query) {
+        if (!query || query.trim().length < 2) return [];
+        
+        const posts = await Post.findAll({
+            attributes: ['titulo'],
+            where: {
+                titulo: {
+                    [Op.like]: `%${query}%`
+                }
+            },
+            limit: 10,
+            group: ['titulo']
+        });
+        
+        return posts.map(p => p.titulo);
+    }
+
+    async isTitleDuplicate(titulo, excludeId = null) {
+        const where = { titulo };
+        if (excludeId) {
+            where.id = { [Op.ne]: excludeId };
+        }
+        const count = await Post.count({ where });
+        return count > 0;
     }
 }
 

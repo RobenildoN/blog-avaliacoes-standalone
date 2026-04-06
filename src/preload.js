@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld('api', {
     updatePost: (id, data) => ipcRenderer.invoke('update-post', { id, data }),
     deletePost: (id) => ipcRenderer.invoke('delete-post', id),
     toggleFavorito: (id) => ipcRenderer.invoke('toggle-favorito', id),
+    searchPostTitles: (query) => ipcRenderer.invoke('search-post-titles', query),
+    checkPostTitleExists: (titulo, excludeId) => ipcRenderer.invoke('check-post-title-exists', { titulo, excludeId }),
 
     // Categories
     getCategories: () => ipcRenderer.invoke('get-categories'),

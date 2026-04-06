@@ -1,16 +1,17 @@
 # Blog de Avaliações - Standalone Nativo 🖥️🌌
 
-A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.2.1**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
+A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.5.0**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
 
-## ✨ Características (Versão 4.2.1 - Premium Slate Blue Edition)
+## ✨ Características (Versão 4.5.0 - BI & Intelligence Update)
 
-### 🆕 **O que há de novo na v4.2.1**
+### 🆕 **O que há de novo na v4.5.0**
 
+-   **📊 Dashboard de BI (Chart.js):** Novo painel de estatísticas avançadas no rodapé da área administrativa. Gráficos de rosca por categoria, barras por nota e linha do tempo de atividade mensal.
+-   **🔍 Autocomplete de Títulos:** Sugestões inteligentes ao digitar o título de uma nova obra, evitando cadastros duplicados e mantendo a padronização do catálogo.
+-   **🛡️ Verificação de Unicidade:** O sistema agora impede a criação de avaliações repetidas para a mesma obra, com alertas visuais em tempo real ("Já avaliado").
 -   **❤️ Sistema de Favoritos:** Botão de coração flutuante nos cards e na página do post com persistência instantânea no banco de dados.
--   **🖼️ Motor de Imagens Resiliente:** Lógica de 3 tentativas de carregamento via protocolo `img://` com fallback automático para placeholder online caso a mídia local seja movida ou deletada.
--   **🎨 Premium Slate Blue UI:** Novo esquema de cores baseado em tons *Slate* e *Ocean Blue* (`#0f172a`), com Glassmorphism refinado e tipografia moderna (Inter/Outfit).
--   **🛡️ SQL Sanitized:** Proteção total contra erros de injeção e valores `NaN` no banco de dados, garantindo buscas e filtros 100% estáveis.
--   **📏 Layout Reestruturado:** Cards com título acima da avaliação e página de detalhes com imagem centralizada e metadados organizados.
+-   **🖼️ Motor de Imagens Resiliente:** Lógica de 3 tentativas de carregamento via protocolo `img://` com fallback automático para placeholder online.
+-   **🎨 Premium Slate Blue UI:** Novo esquema de cores baseado em tons *Slate* e *Ocean Blue* (`#0f172a`), com Glassmorphism refinado.
 
 ### 🏎️ Arquitetura Exclusiva de Software Desktop
 

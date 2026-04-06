@@ -21,12 +21,66 @@ document.addEventListener('DOMContentLoaded', () => {
     const init = async () => {
         setupMarkdownToolbar('toolbarCreate', 'resumoCreate');
         setupMarkdownToolbar('toolbarEdit', 'resumoEdit');
+        setupAutocomplete();
         carregarDashboard();
         carregarCategorias();
         carregarPostsAdmin();
     };
 
+    // --- Autocomplete de Títulos ---
+
+    function setupAutocomplete() {
+        const inputStore = document.querySelector('#formCriarPost input[name="titulo"]');
+        const datalistStore = document.getElementById('titlesDatalist');
+        const warningStore = document.getElementById('titleWarning');
+        
+        const inputEdit = document.querySelector('#formEditarPost input[name="titulo"]');
+        const datalistEdit = document.getElementById('titlesDatalistEdit');
+        const warningEdit = document.getElementById('titleWarningEdit');
+        const idEdit = document.querySelector('#formEditarPost input[name="id"]');
+
+        const handleInput = async (input, datalist, warning, excludeId = null) => {
+            const query = input.value;
+            if (query.trim().length === 0) {
+                datalist.innerHTML = '';
+                warning.style.display = 'none';
+                return;
+            }
+
+            // Autocomplete (só se tiver 2+ caracteres)
+            if (query.length >= 2) {
+                try {
+                    const titles = await window.api.searchPostTitles(query);
+                    datalist.innerHTML = titles.map(t => `<option value="${t}">`).join('');
+                } catch (error) {
+                    console.error('Erro no autocomplete:', error);
+                }
+            }
+
+            // Verificar se já existe (Duplicata)
+            try {
+                const isDuplicate = await window.api.checkPostTitleExists(query, excludeId);
+                warning.style.display = isDuplicate ? 'inline' : 'none';
+            } catch (error) {
+                console.error('Erro ao verificar duplicata:', error);
+            }
+        };
+
+        if (inputStore) {
+            inputStore.addEventListener('input', () => handleInput(inputStore, datalistStore, warningStore));
+        }
+
+        if (inputEdit) {
+            inputEdit.addEventListener('input', () => handleInput(inputEdit, datalistEdit, warningEdit, idEdit.value));
+        }
+    }
+
     // --- Dashboard & Estatísticas ---
+
+    // Dashboard Charts Instances
+    let chartCategory = null;
+    let chartRating = null;
+    let chartTimeline = null;
 
     async function carregarDashboard() {
         try {
@@ -35,9 +89,113 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('statPosts').innerText = stats.totalPosts || 0;
             document.getElementById('statCats').innerText = stats.totalCats || 0;
             document.getElementById('statMedia').innerText = stats.mediaNotas || '0.0';
+
+            if (stats.charts) {
+                renderCharts(stats.charts);
+            }
         } catch (error) {
-            console.warn('Dashboard não disponível ou vazio');
+            console.warn('Dashboard não disponível ou vazio', error);
         }
+    }
+    function renderCharts(data) {
+        // Cores padrões
+        const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#06b6d4'];
+        
+        // 1. Gráfico por Categoria (Pie)
+        const canvasCat = document.getElementById('chartCategory');
+        if (!canvasCat) return;
+        const ctxCat = canvasCat.getContext('2d');
+        if (chartCategory) chartCategory.destroy();
+        chartCategory = new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: data.byCategory.map(c => c.name || 'Sem Categoria'),
+                datasets: [{
+                    data: data.byCategory.map(c => c.total),
+                    backgroundColor: colors,
+                    hoverOffset: 4,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, padding: 15 } }
+                }
+            }
+        });
+
+        // 2. Gráfico por Nota (Bar)
+        const canvasRat = document.getElementById('chartRating');
+        if (!canvasRat) return;
+        const ctxRat = canvasRat.getContext('2d');
+        if (chartRating) chartRating.destroy();
+        
+        const ratingLabels = [1, 2, 3, 4, 5];
+        const ratingCounts = ratingLabels.map(r => {
+            const found = data.byRating.find(d => d.avaliacao === r);
+            return found ? found.total : 0;
+        });
+
+        chartRating = new Chart(ctxRat, {
+            type: 'bar',
+            data: {
+                labels: ratingLabels.map(r => r + ' ⭐'),
+                datasets: [{
+                    label: 'Quantidade',
+                    data: ratingCounts,
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#2d3748' }, ticks: { stepSize: 1, color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 3. Linha do Tempo (Line)
+        const canvasTime = document.getElementById('chartTimeline');
+        if (!canvasTime) return;
+        const ctxTime = canvasTime.getContext('2d');
+        if (chartTimeline) chartTimeline.destroy();
+
+        chartTimeline = new Chart(ctxTime, {
+            type: 'line',
+            data: {
+                labels: data.timeline.map(t => {
+                   if (!t.month) return 'N/A';
+                   const [y, m] = t.month.split('-');
+                   const date = new Date(y, m-1);
+                   return date.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+                }),
+                datasets: [{
+                    label: 'Novas Avaliações',
+                    data: data.timeline.map(t => t.total),
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#6366f1',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#2d3748' }, ticks: { stepSize: 1, color: '#94a3b8' } },
+                    x: { grid: { color: '#2d3748' }, ticks: { color: '#94a3b8' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
     }
 
     // --- Gerenciamento de Categorias (Selects) ---
@@ -110,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         previewImg.src = 'https://raw.githubusercontent.com/RobenildoN/temp-assets/main/placeholder-blog.png';
                     }
                     document.getElementById('imgNameCreate').innerText = 'Nenhuma selecionada';
+                    document.getElementById('titleWarning').style.display = 'none'; // Resetar aviso
                     carregarPostsAdmin();
                     carregarDashboard();
                 }
@@ -152,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.fecharModal = () => {
         modalOverlay.style.display = 'none';
         formEditar.reset();
+        document.getElementById('titleWarningEdit').style.display = 'none'; // Resetar aviso
     };
 
     if (formEditar) {

@@ -28,11 +28,11 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 ### 🛡️ Segurança & Performance
 - [ ] **Login Admin:** Implementar um pequeno formulário de senha para travar a área administrativa.
 - [ ] **Tratamento de Grandes Volumes:** Otimizar o Grid (Virtual List) para catálogos com mais de 1.000 avaliações.
-- [ ] **Autocomplete:** Sugestões ao digitar títulos para evitar avaliações repetidas da mesma obra.
+- [x] **Autocomplete & Unicidade:** Sugestões ao digitar títulos para evitar avaliações repetidas da mesma obra.
 
 ### 📊 Estatísticas (BI)
-- [ ] **Gráficos Visuais:** Usar Chart.js para mostrar um gráfico de pizza por categorias ou barras por notas.
-- [ ] **Linha do Tempo:** Ver quantas obras foram assistidas/lidas em cada mês do ano.
+- [x] **Gráficos Visuais:** Usar Chart.js para mostrar um gráfico de pizza por categorias ou barras por notas.
+- [x] **Linha do Tempo:** Ver quantas obras foram assistidas/lidas em cada mês do ano.
 
 ## 🐛 Bugs Reportados
 *(Nenhum reportado até o momento na v4.2.1)*
