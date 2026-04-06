@@ -68,6 +68,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 postLinkContainer.style.display = 'block';
             }
 
+            // Gerenciar Favoritos
+            const favBtn = document.getElementById('postFavoriteBtn');
+            const updateFavVisual = (isFav) => {
+                const icon = favBtn.querySelector('i');
+                if (isFav) {
+                    favBtn.classList.add('active');
+                    icon.classList.remove('ph');
+                    icon.classList.add('ph-fill');
+                } else {
+                    favBtn.classList.remove('active');
+                    icon.classList.remove('ph-fill');
+                    icon.classList.add('ph');
+                }
+            };
+            
+            updateFavVisual(post.favorito);
+            
+            favBtn.onclick = async () => {
+                try {
+                    const result = await window.api.toggleFavorito(id);
+                    if (result) {
+                        updateFavVisual(result.favorito);
+                        window.alertar(result.favorito ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.', 'success');
+                    }
+                } catch (error) {
+                    window.alertar('Erro ao atualizar favorito.', 'error');
+                }
+            };
+
             // Gerenciar Botão de Edição
             editBtn.addEventListener('click', () => {
                 window.location.href = `admin.html?edit=${id}`;

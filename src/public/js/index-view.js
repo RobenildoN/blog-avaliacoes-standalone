@@ -64,6 +64,29 @@ document.addEventListener('DOMContentLoaded', () => {
         carregarPosts(1);
     };
 
+    window.toggleFavoritoCard = async (btn, id) => {
+        try {
+            const result = await window.api.toggleFavorito(id);
+            if (result) {
+                const icon = btn.querySelector('i');
+                if (result.favorito) {
+                    btn.classList.add('active');
+                    icon.classList.remove('ph');
+                    icon.classList.add('ph-fill');
+                    window.alertar('Adicionado aos favoritos!', 'success');
+                } else {
+                    btn.classList.remove('active');
+                    icon.classList.remove('ph-fill');
+                    icon.classList.add('ph');
+                    window.alertar('Removido dos favoritos.', 'info');
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao alternar favorito:', error);
+            window.alertar('Erro ao atualizar favorito', 'error');
+        }
+    };
+
     async function carregarPosts(page = 1) {
         postsContainer.innerHTML = `
             <div class="loading">
@@ -108,7 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         postsContainer.innerHTML = posts.map(post => `
-            <div class="post animate-fade-in" onclick="window.location.href='post.html?id=${post.id}'">
+            <div class="post animate-fade-in" style="position: relative;" onclick="window.location.href='post.html?id=${post.id}'">
+                <button class="btn-favorite-card ${post.favorito ? 'active' : ''}" 
+                        onclick="event.stopPropagation(); window.toggleFavoritoCard(this, ${post.id})" 
+                        title="${post.favorito ? 'Remover dos favoritos' : 'Favoritar'}">
+                    <i class="ph${post.favorito ? '-fill' : ''} ph-heart"></i>
+                </button>
                 <img src="${post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'public/img/exemplo.jpg'}" alt="${post.titulo}" onerror="handleImageError(this)">
                 <div class="post-content">
                     <h3 class="post-title">${post.titulo}</h3>
