@@ -4,8 +4,6 @@ const fs = require('fs');
 const sqlite3 = require('sqlite3');
 
 let databasePath;
-let postsPath;
-let categoriesPath;
 
 try {
     // Tentar obter o caminho do Electron (se estiver rodando no Electron)
@@ -15,38 +13,33 @@ try {
     if (app) {
         const userDataPath = app.getPath('userData');
         databasePath = path.join(userDataPath, 'database.sqlite');
-        postsPath = path.join(userDataPath, 'posts.json');
-        categoriesPath = path.join(userDataPath, 'categories.json');
 
-        // Se os arquivos não existem no userData, copiar os iniciais do pacote (se existirem)
+        // Se o banco não existe no userData, copiar o inicial do pacote (se existir)
         const initialDbPath = path.join(__dirname, '../../data/database.sqlite');
-        const initialPostsPath = path.join(__dirname, '../../data/posts.json');
-        const initialCategoriesPath = path.join(__dirname, '../../data/categories.json');
 
         if (!fs.existsSync(databasePath) && fs.existsSync(initialDbPath)) {
-            try { fs.copyFileSync(initialDbPath, databasePath); console.log('Banco de dados inicial copiado'); } catch (err) { console.error('Erro ao copiar banco:', err); }
-        }
-        if (!fs.existsSync(postsPath) && fs.existsSync(initialPostsPath)) {
-            try { fs.copyFileSync(initialPostsPath, postsPath); console.log('Posts iniciais copiados'); } catch (err) { console.error('Erro ao copiar posts:', err); }
-        }
-        if (!fs.existsSync(categoriesPath) && fs.existsSync(initialCategoriesPath)) {
-            try { fs.copyFileSync(initialCategoriesPath, categoriesPath); console.log('Categorias iniciais copiadas'); } catch (err) { console.error('Erro ao copiar categorias:', err); }
+            try {
+                fs.copyFileSync(initialDbPath, databasePath);
+                console.log('Banco de dados inicial copiado para userData');
+            } catch (err) {
+                console.error('Erro ao copiar banco inicial:', err);
+            }
         }
     } else {
         databasePath = path.join(__dirname, '../../data/database.sqlite');
-        postsPath = path.join(__dirname, '../../data/posts.json');
-        categoriesPath = path.join(__dirname, '../../data/categories.json');
     }
 } catch (error) {
     // Fallback para quando não está no Electron
     databasePath = path.join(__dirname, '../../data/database.sqlite');
-    postsPath = path.join(__dirname, '../../data/posts.json');
-    categoriesPath = path.join(__dirname, '../../data/categories.json');
+}
+
+// Garantir que o diretório do banco exista
+const dbDir = path.dirname(databasePath);
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
 }
 
 console.log('Usando banco de dados em:', databasePath);
-console.log('Usando posts em:', postsPath);
-console.log('Usando categorias em:', categoriesPath);
 
 // Configuração do Sequelize para SQLite
 const sequelize = new Sequelize({
@@ -61,67 +54,88 @@ const sequelize = new Sequelize({
     }
 });
 
+const migrationsPath = path.join(__dirname, 'migrations');
+const migrationTableName = 'SequelizeMeta';
+
+async function ensureMigrationTable() {
+    const existingTable = await sequelize.query(
+        `SELECT name FROM sqlite_master WHERE type='table' AND name='${migrationTableName}';`,
+        { type: Sequelize.QueryTypes.SELECT }
+    );
+
+    if (!existingTable || existingTable.length === 0) {
+        await sequelize.getQueryInterface().createTable(migrationTableName, {
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false,
+                primaryKey: true
+            }
+        });
+    }
+}
+
+async function getAppliedMigrations() {
+    try {
+        const results = await sequelize.query(
+            `SELECT name FROM ${migrationTableName};`,
+            { type: Sequelize.QueryTypes.SELECT }
+        );
+        return results.map(row => row.name);
+    } catch (error) {
+        return [];
+    }
+}
+
+async function recordMigration(name) {
+    await sequelize.query(
+        `INSERT INTO ${migrationTableName} (name) VALUES (?);`,
+        { replacements: [name] }
+    );
+}
+
 // Função de conexão e sincronização
 const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        await sequelize.sync({ force: false });
-        console.log('Banco de dados SQLite conectado e sincronizado');
+        console.log('Banco de dados SQLite conectado');
     } catch (error) {
         console.error('Erro na conexão com o banco de dados:', error);
-        process.exit(1);
+        throw error;
     }
 };
 
-// Funções para sistema de arquivos JSON (Fallback ou principal dependendo do modelo)
-const getPosts = () => {
-    if (!fs.existsSync(postsPath)) return [];
+// Função para executar migrations internamente
+const migrateDB = async () => {
     try {
-        return JSON.parse(fs.readFileSync(postsPath, 'utf8'));
-    } catch (err) {
-        console.error('Erro ao ler posts.json:', err);
-        return [];
-    }
-};
+        await ensureMigrationTable();
+        const applied = await getAppliedMigrations();
 
-const savePosts = (posts) => {
-    try {
-        fs.writeFileSync(postsPath, JSON.stringify(posts, null, 2));
-    } catch (err) {
-        console.error('Erro ao salvar posts.json:', err);
-    }
-};
+        const migrationFiles = fs.readdirSync(migrationsPath)
+            .filter(file => file.endsWith('.js'))
+            .sort();
 
-const getCategories = () => {
-    if (!fs.existsSync(categoriesPath)) return [];
-    try {
-        return JSON.parse(fs.readFileSync(categoriesPath, 'utf8'));
-    } catch (err) {
-        console.error('Erro ao ler categories.json:', err);
-        return [];
-    }
-};
+        for (const migrationFile of migrationFiles) {
+            if (applied.includes(migrationFile)) continue;
 
-const saveCategories = (categories) => {
-    try {
-        fs.writeFileSync(categoriesPath, JSON.stringify(categories, null, 2));
-    } catch (err) {
-        console.error('Erro ao salvar categories.json:', err);
-    }
-};
+            console.log(`Aplicando migration: ${migrationFile}`);
+            const migration = require(path.join(migrationsPath, migrationFile));
+            if (!migration || typeof migration.up !== 'function') {
+                throw new Error(`Migration inválida: ${migrationFile}`);
+            }
 
-const db = {
-    getPosts,
-    savePosts,
-    getCategories,
-    saveCategories,
-    Op: {
-        like: 'like'
+            await migration.up(sequelize.getQueryInterface(), Sequelize);
+            await recordMigration(migrationFile);
+        }
+
+        console.log('Migrations executadas com sucesso');
+    } catch (error) {
+        console.error('Erro ao executar migrations:', error);
+        throw error;
     }
 };
 
 module.exports = {
     sequelize,
     connectDB,
-    db
+    migrateDB
 };

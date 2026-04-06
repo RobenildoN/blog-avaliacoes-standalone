@@ -3,353 +3,300 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Área Administrativa - Blog de Avaliações</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
+    <title>Administração - Blog de Avaliações</title>
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <!-- Custom Markdown Editor -->
+    <style>
+        .markdown-editor {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.95);
+            overflow: hidden;
+        }
+
+        .markdown-toolbar {
+            background: rgba(30, 41, 59, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .markdown-toolbar .separator {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0 4px;
+        }
+
+        .markdown-toolbar button {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            min-width: 32px;
+            justify-content: center;
+        }
+
+        .markdown-toolbar button strong,
+        .markdown-toolbar button em,
+        .markdown-toolbar button del {
+            font-weight: normal;
+            font-style: normal;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            color: inherit;
+        }
+
+        .markdown-toolbar button:hover strong,
+        .markdown-toolbar button:hover em,
+        .markdown-toolbar button:hover del {
+            color: inherit;
+        }
+
+        .markdown-toolbar button.active {
+            background: var(--accent);
+            color: #ffffff;
+        }
+
+        .markdown-textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(15, 23, 42, 0.95);
+            border: none;
+            color: #e2e8f0;
+            padding: 12px;
+            font-family: 'Outfit', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+        }
+
+        .markdown-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .markdown-textarea::placeholder {
+            color: #94a3b8;
+        }
+    </style>
 </head>
 
-<body
-    style="display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; font-family: Arial, sans-serif;">
-    <header style="width: 100%; text-align: center; background: #35424a; color: #fff; padding: 20px 0;">
-        <h1>Área Administrativa</h1>
-        <nav style="margin-top: 10px;">
-            <a href="/categorias.html" style="color: white; margin: 0 10px; text-decoration: none;">Gerenciar
-                Categorias</a>
-            <a href="/" style="color: white; margin: 0 10px; text-decoration: none;">Página Inicial</a>
+<body>
+    <header>
+        <div class="header-title-container text-center mb-5">
+            <h1><i class="ph-fill ph-gear header-icon color-accent v-middle"></i> Área Administrativa</h1>
+        </div>
+        <nav>
+            <ul id="categoriesNav">
+                <li><a href="index.html"><i class="ph ph-house"></i> Início</a></li>
+                <li><a href="categorias.html"><i class="ph ph-folders"></i> Gerenciar Categorias</a></li>
+                <li><a href="#" onclick="exportarBackup()"><i class="ph ph-download-simple"></i> Exportar Backup</a>
+                </li>
+            </ul>
         </nav>
     </header>
-    <!-- Notificação de status -->
-    <div id="notification"
-        style="display: none; position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 5px; color: white; font-weight: bold; z-index: 10000; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <span id="notificationMessage"></span>
-        <button onclick="fecharNotificacao()"
-            style="background: none; border: none; color: white; font-size: 20px; margin-left: 10px; cursor: pointer;">×</button>
-    </div>
 
-    <main
-        style="width: 100%; max-width: 800px; margin: 20px auto; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px;">
-        <h2 id="mainTitle" style="text-align: center; color: #35424a; margin-bottom: 20px;">Criar Novo Post</h2>
-        <form id="formCriarPost" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
-            <input type="text" name="titulo" placeholder="Título" required
-                style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-            <input type="file" name="imagem" accept="image/*"
-                style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-            <textarea name="resumo" placeholder="Resumo"
-                style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
-            <input type="number" name="avaliacao" placeholder="Avaliação (1-5)" min="1" max="5"
-                style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-            <input type="text" name="lido_ate" placeholder="Lido até"
-                style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-            <input type="text" name="link_acesso" placeholder="Link para acesso"
-                style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-            <select name="categoryId" id="selectCategoria"
-                style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <option value="">Selecione uma categoria</option>
-            </select>
-            <button type="submit" id="submitBtn"
-                style="padding: 12px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Criar
-                Post</button>
-        </form>
-        <h2 style="text-align: center; color: #35424a; margin-bottom: 20px;">Posts</h2>
-        <div id="posts" style="width: 100%;"></div>
-        <!-- Overlay do modal -->
-        <div id="modalOverlay"
-            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index: 999;">
+    <main class="admin-main">
+        <div class="admin-container" id="dashboardSection" style="display:none;">
+            <h2 class="section-title"><i class="ph-fill ph-chart-bar color-accent"></i> Estatísticas Administrativas
+            </h2>
+            <div class="flex gap-20">
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statPosts">0</h3>
+                    <p class="color-muted fw-500">Obras Avaliadas</p>
+                </div>
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statCats">0</h3>
+                    <p class="color-muted fw-500">Categorias Criadas</p>
+                </div>
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statMedia">0.0</h3>
+                    <p class="color-muted fw-500">Média Geral de Notas</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Modal de edição -->
-        <div id="modalEditar"
-            style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:#fff; padding:30px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.2); width: 80%; max-width: 600px; z-index: 1000;">
-            <h3 style="text-align: center; color: #35424a; margin-bottom: 20px;">Editar Post</h3>
-            <form id="formEditarPost" style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="hidden" name="id">
-                <input type="text" name="titulo" placeholder="Título" required
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="file" name="imagem" accept="image/*"
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <textarea name="resumo" placeholder="Resumo"
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px;"></textarea>
-                <input type="number" name="avaliacao" placeholder="Avaliação (1-5)" min="1" max="5"
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="text" name="lido_ate" placeholder="Lido até"
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="text" name="link_acesso" placeholder="Link para acesso"
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                <select name="categoryId" id="selectCategoriaEdit"
-                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                    <option value="">Selecione uma categoria</option>
-                </select>
-                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-                    <button type="submit"
-                        style="padding: 12px 20px; background-color: #5cb85c; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">Salvar</button>
-                    <button type="button" onclick="fecharModal()"
-                        style="padding: 12px 20px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; flex: 1;">Cancelar</button>
+        <div class="admin-container">
+            <h2 class="section-title"><i class="ph-fill ph-plus-circle color-accent"></i> Criar Novo Post</h2>
+            <form id="formCriarPost" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Título*</label>
+                    <input type="text" name="titulo" required placeholder="Digite o título da obra">
+                </div>
+                <div class="form-group">
+                    <label>Categoria*</label>
+                    <select name="categoryId" id="selectCategoria" required>
+                        <option value="" disabled selected>Selecione uma categoria...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Imagem da Capa</label>
+                    <div class="flex gap-10 items-center">
+                        <button type="button" class="btn-clear flex-1" onclick="selectImageHandler('create')">
+                            <i class="ph ph-image"></i> Procurar no Windows...
+                        </button>
+                        <span id="imgNameCreate" class="color-muted font-1-1">Nenhuma selecionada</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Resumo / Avaliação*</label>
+                    <div class="markdown-editor">
+                        <div class="markdown-toolbar" id="toolbarCreate">
+                            <button type="button" data-command="bold" title="Negrito"><strong>B</strong></button>
+                            <button type="button" data-command="italic" title="Itálico"><em>I</em></button>
+                            <button type="button" data-command="strikethrough" title="Riscado"><del>S</del></button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="heading" title="Cabeçalho">#</button>
+                            <button type="button" data-command="link" title="Link">🔗</button>
+                            <button type="button" data-command="image" title="Imagem">🖼️</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="list" title="Lista">•</button>
+                            <button type="button" data-command="list-ordered" title="Lista Ordenada">1.</button>
+                            <button type="button" data-command="quote" title="Citação">❝</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="code" title="Código">&lt;/&gt;</button>
+                            <button type="button" data-command="code-block" title="Bloco de Código">📄</button>
+                        </div>
+                        <textarea name="resumo" id="resumoCreate" class="markdown-textarea"
+                            placeholder="O que você achou da obra? (Suporta Markdown)"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nota de Avaliação (1 a 5)*</label>
+                    <input type="number" name="avaliacao" min="1" max="5" required placeholder="Ex: 4">
+                </div>
+                <div class="form-group">
+                    <label>Lido até / Assistido até (Opcional)</label>
+                    <input type="text" name="lido_ate" placeholder="Ex: Capítulo 100">
+                </div>
+                <div class="form-group">
+                    <label>Link de Origem (Opcional)</label>
+                    <input type="url" name="link_acesso" placeholder="https://...">
+                </div>
+
+                <div class="form-submit-container">
+                    <button type="submit" class="btn-search">
+                        <i class="ph ph-check-circle"></i> Publicar Avaliação
+                    </button>
                 </div>
             </form>
         </div>
+
+        <div class="admin-container">
+            <h2 class="section-title"><i class="ph-fill ph-list-dashes color-accent"></i> Avaliações Existentes</h2>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Categoria</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaPosts">
+                        <tr>
+                            <td colspan="5" class="text-center"><i class="ph ph-spinner-gap ph-spin"></i> Carregando...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
-    <script>
-        // Função para mostrar notificações
-        function mostrarNotificacao(mensagem, tipo = 'success') {
-            const notification = document.getElementById('notification');
-            const messageElement = document.getElementById('notificationMessage');
 
-            messageElement.textContent = mensagem;
-
-            if (tipo === 'success') {
-                notification.style.backgroundColor = '#28a745';
-            } else if (tipo === 'error') {
-                notification.style.backgroundColor = '#dc3545';
-            } else if (tipo === 'warning') {
-                notification.style.backgroundColor = '#ffc107';
-                notification.style.color = '#212529';
-            }
-
-            notification.style.display = 'block';
-
-            // Auto-esconder após 5 segundos
-            setTimeout(() => {
-                fecharNotificacao();
-            }, 5000);
-        }
-
-        // Função para fechar notificação
-        function fecharNotificacao() {
-            const notification = document.getElementById('notification');
-            notification.style.display = 'none';
-        }
-
-
-        // Função para carregar categorias
-        async function carregarCategorias() {
-            try {
-                console.log('Carregando categorias...');
-                const res = await fetch('/categories');
-                console.log('Resposta da API:', res.status);
-                const data = await res.json();
-                console.log('Dados recebidos:', data);
-                const categorias = Array.isArray(data) ? data : (data.categories || []);
-                console.log('Categorias processadas:', categorias);
-
-                // Preencher o select de categorias no formulário de criação
-                const selectCategoria = document.getElementById('selectCategoria');
-                selectCategoria.innerHTML = '<option value="">Selecione uma categoria</option>';
-                categorias.forEach(categoria => {
-                    selectCategoria.innerHTML += `<option value="${categoria.id}">${categoria.name}</option>`;
-                });
-
-                // Preencher o select de categorias no formulário de edição
-                const selectCategoriaEdit = document.getElementById('selectCategoriaEdit');
-                selectCategoriaEdit.innerHTML = '<option value="">Selecione uma categoria</option>';
-                categorias.forEach(categoria => {
-                    selectCategoriaEdit.innerHTML += `<option value="${categoria.id}">${categoria.name}</option>`;
-                });
-            } catch (error) {
-                console.error('Erro ao carregar categorias:', error);
-            }
-        }
-
-        async function carregarPosts() {
-            try {
-                const res = await fetch('/posts');
-                const data = await res.json();
-                const posts = Array.isArray(data) ? data : (data.posts || []);
-                const div = document.getElementById('posts');
-                div.innerHTML = posts.map(post => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div>
-                        <strong style="font-size: 16px; color: #333;">${post.titulo}</strong>
-                        <span style="margin-left: 10px; font-size: 12px; color: #666;">${post.Category ? post.Category.name : 'Sem categoria'}</span>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="abrirModalEditar(${post.id})" style="padding: 8px 12px; background-color: #5bc0de; color: white; border: none; border-radius: 4px; cursor: pointer;">Editar</button>
-                        <button onclick="deletarPost(${post.id})" style="padding: 8px 12px; background-color: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer;">Deletar</button>
+    <!-- Modal Editar -->
+    <div id="modalOverlay">
+        <div id="modalContent">
+            <h2 class="section-title"><i class="ph-fill ph-pencil-simple color-warning"></i> Editar Avaliação</h2>
+            <form id="formEditarPost">
+                <input type="hidden" name="id">
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" name="titulo" required>
+                </div>
+                <div class="form-group">
+                    <label>Texto da Avaliação</label>
+                    <div class="markdown-editor">
+                        <div class="markdown-toolbar" id="toolbarEdit">
+                            <button type="button" data-command="bold" title="Negrito"><strong>B</strong></button>
+                            <button type="button" data-command="italic" title="Itálico"><em>I</em></button>
+                            <button type="button" data-command="strikethrough" title="Riscado"><del>S</del></button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="heading" title="Cabeçalho">#</button>
+                            <button type="button" data-command="link" title="Link">🔗</button>
+                            <button type="button" data-command="image" title="Imagem">🖼️</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="list" title="Lista">•</button>
+                            <button type="button" data-command="list-ordered" title="Lista Ordenada">1.</button>
+                            <button type="button" data-command="quote" title="Citação">❝</button>
+                            <span class="separator"></span>
+                            <button type="button" data-command="code" title="Código">&lt;/&gt;</button>
+                            <button type="button" data-command="code-block" title="Bloco de Código">📄</button>
+                        </div>
+                        <textarea name="resumo" id="resumoEdit" class="markdown-textarea"></textarea>
                     </div>
                 </div>
-            `).join('');
-            } catch (error) {
-                console.error('Erro ao carregar posts:', error);
-            }
-        }
+                <div class="form-group">
+                    <label>Nova Nota (1 a 5)</label>
+                    <input type="number" name="avaliacao" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select name="categoryId" id="selectCategoriaEdit" required>
+                        <option value="">Selecione uma categoria...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Lido até / Assistido até</label>
+                    <input type="text" name="lido_ate">
+                </div>
+                <div class="form-group">
+                    <label>Atualizar Imagem da Capa</label>
+                    <div class="flex gap-10 items-center">
+                        <button type="button" class="btn-clear flex-1" onclick="selectImageHandler('edit')">
+                            <i class="ph ph-image"></i> Substituir Arquivo Mídia...
+                        </button>
+                        <span id="imgNameEdit" class="color-muted font-1-1">Manter imagem atual</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Link de Origem</label>
+                    <input type="url" name="link_acesso">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-clear" onclick="fecharModal()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-search">
+                        <i class="ph ph-arrows-clockwise"></i> Atualizar Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        document.getElementById('formCriarPost').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const form = e.target;
-            const submitBtn = document.getElementById('submitBtn');
-
-            // Validação básica
-            if (!form.titulo.value.trim() || !form.resumo.value.trim() || !form.avaliacao.value || !form.categoryId.value) {
-                mostrarNotificacao('⚠️ Por favor, preencha todos os campos obrigatórios: título, resumo, avaliação e categoria', 'warning');
-                return;
-            }
-
-            // Desabilitar botão durante o envio
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Criando...';
-
-            try {
-                const formData = new FormData(form);
-                const res = await fetch('/posts', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (res.ok) {
-                    // Sucesso
-                    mostrarNotificacao('✅ Post criado com sucesso!', 'success');
-                    form.reset();
-                    await carregarPosts();
-                } else {
-                    // Tentar obter mensagem de erro da resposta
-                    let errorMessage = 'Erro ao criar post';
-                    try {
-                        const errorData = await res.json();
-                        errorMessage = errorData.message || errorMessage;
-                    } catch (parseError) {
-                        // Se não conseguir fazer parse do erro, usar mensagem padrão
-                    }
-                    mostrarNotificacao(`❌ ${errorMessage}`, 'error');
-                }
-            } catch (error) {
-                console.error('Erro ao criar post:', error);
-                mostrarNotificacao('❌ Erro de conexão. Verifique sua internet e tente novamente.', 'error');
-            } finally {
-                // Reabilitar botão
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Criar Post';
-            }
-        });
-
-        async function abrirModalEditar(id) {
-            try {
-                const res = await fetch(`/posts/${id}`);
-                if (!res.ok) {
-                    throw new Error('Erro ao buscar post');
-                }
-                const post = await res.json();
-                const modal = document.getElementById('modalEditar');
-                const overlay = document.getElementById('modalOverlay');
-                const form = document.getElementById('formEditarPost');
-
-                // Preencher formulário com dados do post
-                form.id.value = post.id;
-                form.titulo.value = post.titulo;
-                form.resumo.value = post.resumo;
-                form.link_acesso.value = post.link_acesso || '';
-                form.avaliacao.value = post.avaliacao;
-                form.lido_ate.value = post.lido_ate;
-                form.categoryId.value = post.categoryId;
-
-                // Nota: Não podemos preencher o input file por questões de segurança
-                // O usuário precisará selecionar uma nova imagem se quiser alterar
-
-                // Mostrar modal e overlay
-                modal.style.display = 'block';
-                overlay.style.display = 'block';
-
-                // Alterar textos para modo de edição
-                document.getElementById('mainTitle').textContent = 'Editar Post';
-                document.getElementById('submitBtn').textContent = 'Editar Post';
-            } catch (error) {
-                console.error('Erro ao abrir modal de edição:', error);
-                mostrarNotificacao('❌ Erro ao carregar dados do post para edição', 'error');
-            }
-        }
-
-        function fecharModal() {
-            document.getElementById('modalEditar').style.display = 'none';
-            document.getElementById('modalOverlay').style.display = 'none';
-
-            // Limpar formulário
-            const form = document.getElementById('formEditarPost');
-            form.reset();
-
-            // Restaurar textos originais
-            document.getElementById('mainTitle').textContent = 'Criar Novo Post';
-            document.getElementById('submitBtn').textContent = 'Criar Post';
-        }
-
-        document.getElementById('formEditarPost').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            const form = e.target;
-            const id = form.id.value;
-
-            // Validação básica
-            if (!form.titulo.value.trim() || !form.resumo.value.trim() || !form.avaliacao.value) {
-                mostrarNotificacao('⚠️ Por favor, preencha todos os campos obrigatórios', 'warning');
-                return;
-            }
-
-            const formData = new FormData(form);
-            formData.delete('id');
-
-            try {
-                const res = await fetch(`/posts/${id}`, {
-                    method: 'PUT',
-                    body: formData
-                });
-
-                if (res.ok) {
-                    mostrarNotificacao('✅ Post editado com sucesso!', 'success');
-                    fecharModal();
-                    carregarPosts();
-                } else {
-                    const errorData = await res.json();
-                    mostrarNotificacao(`❌ Erro ao editar post: ${errorData.message || 'Erro desconhecido'}`, 'error');
-                }
-            } catch (error) {
-                console.error('Erro ao editar post:', error);
-                mostrarNotificacao('❌ Erro ao editar post. Tente novamente.', 'error');
-            }
-        });
-
-        async function deletarPost(id) {
-            if (confirm('Deseja realmente deletar este post? Esta ação não pode ser desfeita.')) {
-                try {
-                    const res = await fetch(`/posts/${id}`, { method: 'DELETE' });
-                    if (res.ok) {
-                        mostrarNotificacao('✅ Post deletado com sucesso!', 'success');
-                        carregarPosts();
-                    } else {
-                        mostrarNotificacao('❌ Erro ao deletar post', 'error');
-                    }
-                } catch (error) {
-                    console.error('Erro ao deletar post:', error);
-                    mostrarNotificacao('❌ Erro ao deletar post. Tente novamente.', 'error');
-                }
-            }
-        }
-
-        // Verificar se há parâmetro de edição na URL
-        async function verificarEdicaoAutomatica() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const editId = urlParams.get('edit');
-            if (editId) {
-                // Aguardar o carregamento das categorias e posts
-                await carregarCategorias();
-                await carregarPosts();
-                // Pequeno delay adicional para garantir que tudo foi renderizado
-                setTimeout(() => {
-                    abrirModalEditar(editId);
-                }, 100);
-            }
-        }
-
-        // Inicializar página
-        async function inicializarAdmin() {
-            // Carregar dados
-            await carregarCategorias();
-            await carregarPosts();
-
-            // Verificar edição automática
-            verificarEdicaoAutomatica();
-        }
-
-        // Permitir fechar modal clicando no overlay
-        document.getElementById('modalOverlay').addEventListener('click', fecharModal);
-
-        // Carregar tudo ao iniciar
-        inicializarAdmin();
-    </script>
+    <script src="../public/js/script.js"></script>
+    <script src="../public/js/api.js"></script>
+    <script src="../public/js/admin-view.js"></script>
 </body>
 
 </html>
