@@ -31,13 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
     async function carregarCategorias() {
         try {
             const categories = await BlogAPI.getCategories();
-            // Limpar categorias dinâmicas (mantendo o link 'Todos')
-            const todosBtn = categoriesNav.querySelector('li:first-child');
-            categoriesNav.innerHTML = '';
-            categoriesNav.appendChild(todosBtn);
+            
+            // Remover apenas as categorias dinâmicas anteriores (mantendo links fixos como Todos e Admin)
+            const linksDinâmicos = categoriesNav.querySelectorAll('li.dynamic-cat');
+            linksDinâmicos.forEach(li => li.remove());
 
             categories.forEach(cat => {
                 const li = document.createElement('li');
+                li.className = 'dynamic-cat';
                 li.innerHTML = `<a href="#" onclick="filtrarPorCategoria(${cat.id}, this)">
                     <i class="ph ph-tag"></i> ${cat.name}
                 </a>`;
