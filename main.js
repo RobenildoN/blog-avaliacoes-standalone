@@ -163,11 +163,21 @@ function createWindow() {
 app.on('ready', async () => {
   console.log('Iniciando Aplicação em Modo IPC...');
 
-  // Custom Protocol para carregar as imagens do userData nativamente
+  // Custom Protocol para carregar as imagens de qualquer lugar do PC nativamente
   protocol.registerFileProtocol('img', (request, callback) => {
+    // No Windows, a URL pode vir como img://c:/caminho/foto.jpg
+    // Removemos o protocolo e limpamos a barra inicial se necessário
     const url = request.url.replace('img://', '');
-    const userDataPath = app.getPath('userData');
-    callback({ path: path.normalize(path.join(userDataPath, 'images', url)) });
+    const decodedPath = decodeURI(url);
+    
+    // Se o caminho não for absoluto, tentamos buscar no userData/images por segurança
+    if (!path.isAbsolute(decodedPath)) {
+        const userDataPath = app.getPath('userData');
+        return callback({ path: path.normalize(path.join(userDataPath, 'images', decodedPath)) });
+    }
+    
+    // Se for absoluto (veio do dialog), carregamos diretamente
+    callback({ path: path.normalize(decodedPath) });
   });
 
   app.on('activate', () => {

@@ -67,6 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
             listaPosts.innerHTML = posts.map(post => `
                 <tr>
                     <td>${post.id}</td>
+                    <td>
+                        <img src="${post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : '../public/img/exemplo.jpg'}" 
+                             onerror="handleImageError(this)" class="admin-post-img">
+                    </td>
                     <td class="fw-600">${post.titulo}</td>
                     <td><span class="badge">${post.Category ? post.Category.name : 'Vários'}</span></td>
                     <td class="font-0-8 color-muted">${new Date(post.data_post).toLocaleDateString()}</td>
@@ -106,6 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.alertar('Avaliação publicada com sucesso!', 'success');
                 formCriar.reset();
                 selectedImageBase64 = null;
+                const previewImg = document.getElementById('previewCreate');
+                if (previewImg) {
+                    previewImg.src = 'img://' + filePath;
+                    previewImg.onerror = () => handleImageError(previewImg);
+                }
                 document.getElementById('imgNameCreate').innerText = 'Nenhuma selecionada';
                 carregarPostsAdmin();
                 carregarDashboard();
@@ -161,13 +170,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const result = await window.api.updatePost(id, data);
-            if (result.success) {
+            if (result && result.id) {
                 window.alertar('Avaliação atualizada!', 'success');
                 fecharModal();
                 carregarPostsAdmin();
             }
         } catch (error) {
-            window.alertar('Erro ao editar: ' + error.message, 'error');
+            console.error('Erro ao editar post:', error);
+            window.alertar(error.message || 'Erro ao salvar alterações', 'error');
         } finally {
             btnSubmit.disabled = false;
         }

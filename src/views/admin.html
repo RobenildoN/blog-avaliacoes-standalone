@@ -5,97 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img:; connect-src 'self' https://unpkg.com;">
     <title>Administração - Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="../public/css/style.css">
     <!-- Custom Markdown Editor -->
-    <style>
-        .markdown-editor {
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: rgba(15, 23, 42, 0.95);
-            overflow: hidden;
-        }
-
-        .markdown-toolbar {
-            background: rgba(30, 41, 59, 0.95);
-            border-bottom: 1px solid var(--border-color);
-            padding: 8px;
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        .markdown-toolbar .separator {
-            width: 1px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            margin: 0 4px;
-        }
-
-        .markdown-toolbar button {
-            background: transparent;
-            border: none;
-            color: #64748b;
-            padding: 6px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s ease;
-            min-width: 32px;
-            justify-content: center;
-        }
-
-        .markdown-toolbar button strong,
-        .markdown-toolbar button em,
-        .markdown-toolbar button del {
-            font-weight: normal;
-            font-style: normal;
-            text-decoration: none;
-            margin: 0;
-            padding: 0;
-            color: inherit;
-        }
-
-        .markdown-toolbar button:hover strong,
-        .markdown-toolbar button:hover em,
-        .markdown-toolbar button:hover del {
-            color: inherit;
-        }
-
-        .markdown-toolbar button.active {
-            background: var(--accent);
-            color: #ffffff;
-        }
-
-        .markdown-textarea {
-            width: 100%;
-            min-height: 200px;
-            background: rgba(15, 23, 42, 0.95);
-            border: none;
-            color: #e2e8f0;
-            padding: 12px;
-            font-family: 'Outfit', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            resize: vertical;
-            outline: none;
-        }
-
-        .markdown-textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
-        }
-
-        .markdown-textarea::placeholder {
-            color: #94a3b8;
-        }
-    </style>
 </head>
 
 <body>
@@ -283,7 +200,7 @@
                     <input type="url" name="link_acesso">
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-clear" onclick="fecharModal()">
+                    <button type="button" class="btn-cancel" onclick="fecharModal()">
                         Cancelar
                     </button>
                     <button type="submit" class="btn-search">

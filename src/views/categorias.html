@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob:; connect-src 'self';">
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img:; connect-src 'self' https://unpkg.com;">
     <title>Gerenciar Categorias - Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="../public/css/style.css">
 </head>
 
@@ -31,9 +33,11 @@
                     <label>Nome da Categoria</label>
                     <input type="text" name="name" placeholder="Ex: Animes, Séries, Livros..." required>
                 </div>
-                <button type="submit" class="btn-search category-submit-btn">
-                    <i class="ph ph-plus"></i> Adicionar
-                </button>
+                <div class="form-submit-container">
+                    <button type="submit" class="btn-search category-submit-btn">
+                        <i class="ph ph-plus"></i> Adicionar Categoria
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -55,7 +59,7 @@
                         <input type="text" name="name" placeholder="Novo nome da categoria" required>
                     </div>
                     <div class="modal-actions">
-                        <button type="button" class="btn-clear" onclick="fecharModal()">
+                        <button type="button" class="btn-cancel" onclick="fecharModal()">
                             Cancelar
                         </button>
                         <button type="submit" class="btn-search">

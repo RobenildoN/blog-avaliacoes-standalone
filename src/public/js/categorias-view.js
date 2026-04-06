@@ -52,13 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = Object.fromEntries(formData);
             
             const result = await window.api.createCategory(data);
-            if (result.success) {
+            if (result && result.id) {
                 window.alertar('Categoria criada!', 'success');
                 formCriar.reset();
                 carregarCategorias();
             }
         } catch (error) {
-            window.alertar('Erro ao criar categoria', 'error');
+            window.alertar(error.message || 'Erro ao criar categoria', 'error');
         } finally {
             btnSubmit.disabled = false;
         }

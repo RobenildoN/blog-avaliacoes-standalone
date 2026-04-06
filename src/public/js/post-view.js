@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Imagem
             postImage.src = post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : '../public/img/exemplo.jpg';
-            postImage.onerror = () => postImage.src = '../public/img/exemplo.jpg';
+            postImage.onerror = () => window.handleImageError(postImage);
 
             // Markdown Content
             postSummary.innerHTML = converter.makeHtml(post.resumo || '');

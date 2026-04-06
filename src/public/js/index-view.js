@@ -32,9 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const categories = await BlogAPI.getCategories();
             
-            // Remover apenas as categorias dinâmicas anteriores (mantendo links fixos como Todos e Admin)
+            // Remover apenas as categorias dinâmicas anteriores
             const linksDinâmicos = categoriesNav.querySelectorAll('li.dynamic-cat');
             linksDinâmicos.forEach(li => li.remove());
+
+            // Encontrar o link do Admin para movê-lo ao final depois
+            const adminLink = categoriesNav.querySelector('a[href="admin.html"]')?.parentElement;
 
             categories.forEach(cat => {
                 const li = document.createElement('li');
@@ -44,10 +47,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 </a>`;
                 categoriesNav.appendChild(li);
             });
+
+            // Mover Admin para o final se ele existir
+            if (adminLink) categoriesNav.appendChild(adminLink);
+
         } catch (error) {
             console.error('Erro ao carregar menu de categorias:', error);
         }
     }
+
+    // --- Filtros ---
+
+    window.toggleFiltroFavoritos = (btn) => {
+        apenasFavoritos = !apenasFavoritos;
+        btn.classList.toggle('active');
+        carregarPosts(1);
+    };
 
     async function carregarPosts(page = 1) {
         postsContainer.innerHTML = `
@@ -94,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         postsContainer.innerHTML = posts.map(post => `
             <div class="post animate-fade-in" onclick="window.location.href='post.html?id=${post.id}'">
-                <img src="${post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'public/img/exemplo.jpg'}" alt="${post.titulo}" onerror="this.src='public/img/exemplo.jpg'">
+                <img src="${post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'public/img/exemplo.jpg'}" alt="${post.titulo}" onerror="handleImageError(this)">
                 <div class="post-content">
                     <div class="rating">
                         ${'★'.repeat(post.avaliacao)}${'☆'.repeat(5 - post.avaliacao)}
