@@ -8,13 +8,10 @@ const setupAssociations = () => {
         as: 'posts'
     });
 
-    // Um post pertence a uma categoria
     Post.belongsTo(Category, {
         foreignKey: 'categoryId',
         as: 'Category' // Mantendo o alias Category para compatibilidade com o código atual
     });
-
-    console.log('Associações Sequelize configuradas com sucesso!');
 };
 
 module.exports = {

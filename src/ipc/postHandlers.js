@@ -14,12 +14,10 @@ function setupPostHandlers(app) {
     const postService = new PostService(imagesPath);
 
     ipcMain.handle('get-posts', async (_, params) => {
-        console.log('IPC: get-posts chamado', params);
         return await postService.getPosts(params);
     });
 
     ipcMain.handle('get-all-posts-admin', async () => {
-        console.log('IPC: get-all-posts-admin chamado');
         return await postService.getAllPostsAdmin();
     });
 

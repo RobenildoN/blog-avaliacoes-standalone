@@ -61,7 +61,6 @@ class PostService {
         const targetCategoryId = (categoryId && categoryId !== 'null' && categoryId !== 'undefined') ? parseInt(categoryId) : null;
         const targetMinRating = (minRating && minRating !== 'null') ? parseInt(minRating) : null;
 
-        console.log('PostService.getPosts (Saneado):', { p, l, targetCategoryId, search, targetMinRating, onlyFavorites });
 
         const where = {};
         if (targetCategoryId && !isNaN(targetCategoryId)) {

@@ -36,7 +36,6 @@ class BackupService {
             });
 
             output.on('close', () => {
-                console.log(`Backup criado: ${backupFilename} (${archive.pointer()} bytes)`);
                 resolve(backupFilePath);
             });
 
@@ -88,7 +87,6 @@ class BackupService {
                 const filesToDelete = files.slice(30);
                 for (const file of filesToDelete) {
                     fs.unlinkSync(file.path);
-                    console.log(`Backup antigo removido: ${file.name}`);
                 }
             }
         } catch (error) {
@@ -101,16 +99,12 @@ class BackupService {
         // Executar backup todos os dias às 02:00
         cron.schedule('0 2 * * *', async () => {
             try {
-                console.log('Iniciando backup automático agendado...');
                 await this.createBackup();
                 await this.cleanupOldBackups();
-                console.log('Backup automático concluído com sucesso');
             } catch (error) {
                 console.error('Erro no backup automático:', error);
             }
         });
-
-        console.log('Backup automático agendado para todos os dias às 02:00');
     }
 
     // Listar backups disponíveis

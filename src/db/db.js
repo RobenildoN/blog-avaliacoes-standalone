@@ -20,7 +20,6 @@ try {
         if (!fs.existsSync(databasePath) && fs.existsSync(initialDbPath)) {
             try {
                 fs.copyFileSync(initialDbPath, databasePath);
-                console.log('Banco de dados inicial copiado para userData');
             } catch (err) {
                 console.error('Erro ao copiar banco inicial:', err);
             }
@@ -38,8 +37,6 @@ const dbDir = path.dirname(databasePath);
 if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
 }
-
-console.log('Usando banco de dados em:', databasePath);
 
 // Configuração do Sequelize para SQLite
 const sequelize = new Sequelize({
@@ -97,7 +94,6 @@ async function recordMigration(name) {
 const connectDB = async () => {
     try {
         await sequelize.authenticate();
-        console.log('Banco de dados SQLite conectado');
     } catch (error) {
         console.error('Erro na conexão com o banco de dados:', error);
         throw error;
@@ -117,7 +113,6 @@ const migrateDB = async () => {
         for (const migrationFile of migrationFiles) {
             if (applied.includes(migrationFile)) continue;
 
-            console.log(`Aplicando migration: ${migrationFile}`);
             const migration = require(path.join(migrationsPath, migrationFile));
             if (!migration || typeof migration.up !== 'function') {
                 throw new Error(`Migration inválida: ${migrationFile}`);
@@ -127,7 +122,6 @@ const migrateDB = async () => {
             await recordMigration(migrationFile);
         }
 
-        console.log('Migrations executadas com sucesso');
     } catch (error) {
         console.error('Erro ao executar migrations:', error);
         throw error;

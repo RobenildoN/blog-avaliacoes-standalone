@@ -1,6 +1,3 @@
-// Debug: Verificar se estamos no contexto do Electron
-console.log('Process type:', process.type);
-console.log('Electron available:', typeof require('electron'));
 
 let electron, app, BrowserWindow, Menu, dialog, protocol;
 try {
@@ -11,7 +8,6 @@ try {
   dialog = electron.dialog;
   protocol = electron.protocol;
 } catch (error) {
-  console.error('Erro ao importar Electron:', error);
   process.exit(1);
 }
 
@@ -73,11 +69,9 @@ async function initializeApp() {
   const backupService = new BackupService(app.getPath('userData'));
   backupService.startScheduledBackup();
 
-  console.log('Backup automático inicializado');
 }
 
 initializeApp().then(() => {
-  console.log('Aplicação inicializada com sucesso!');
 
   // Agora que o banco está pronto, criar a janela
   createWindow();
@@ -101,8 +95,7 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'src', 'preload.js')
     },
-    title: 'Blog de Avaliações - Versão Autônoma Nativa',
-    show: false
+    title: 'Blog de Avaliações - Versão Autônoma Nativa'
   });
 
   // Level 3: Handlers nativos (IPC)
@@ -113,10 +106,6 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.maximize();
-    mainWindow.show();
-  });
-
-  mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
 
@@ -161,7 +150,6 @@ function createWindow() {
 }
 
 app.on('ready', async () => {
-  console.log('Iniciando Aplicação em Modo IPC...');
 
   // Custom Protocol para carregar as imagens de qualquer lugar do PC nativamente
   protocol.registerFileProtocol('img', (request, callback) => {
