@@ -1,7 +1,8 @@
-const { ipcMain, dialog } = require('electron');
+const { ipcMain, dialog, shell } = require('electron');
 const BackupService = require('../services/backupService');
 const { sequelize } = require('../db/db');
 const path = require('path');
+const fs = require('fs');
 
 function setupCommonHandlers(app, mainWindow) {
     const backupService = new BackupService(app.getPath('userData'));
@@ -67,6 +68,48 @@ function setupCommonHandlers(app, mainWindow) {
             }
         }
         return null;
+    });
+
+    ipcMain.handle('export-post-pdf', async (event, postId) => {
+        const Post = require('../models/post');
+        const post = await Post.findByPk(postId);
+        
+        if (!post) return { success: false, error: 'Post não encontrado' };
+
+        const result = await dialog.showSaveDialog(mainWindow, {
+            title: 'Exportar Ficha da Obra',
+            defaultPath: path.join(app.getPath('desktop'), `ficha-${post.id}.pdf`),
+            filters: [{ name: 'Arquivo PDF', extensions: ['pdf'] }]
+        });
+
+        if (result.canceled || !result.filePath) return null;
+
+        try {
+            const options = {
+                margins: { top: 0, bottom: 0, left: 0, right: 0 },
+                pageSize: 'A5',
+                printBackground: true,
+                landscape: false
+            };
+
+            const data = await event.sender.printToPDF(options);
+            fs.writeFileSync(result.filePath, data);
+            
+            // Sugerir abrir o arquivo
+            shell.openPath(result.filePath);
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+            return { success: false, error: error.message };
+        }
+    });
+
+    ipcMain.handle('cleanup-orphaned-images', async () => {
+        const PostService = require('../services/postService');
+        const postService = new PostService(app.getPath('userData'));
+        const count = await postService.cleanOrphanedImages();
+        return { success: true, count };
     });
 }
 

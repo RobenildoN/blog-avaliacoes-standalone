@@ -35,6 +35,10 @@ const Post = sequelize.define('Post', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    status: {
+        type: DataTypes.STRING,
+        defaultValue: 'Concluído'
+    },
     data_post: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW

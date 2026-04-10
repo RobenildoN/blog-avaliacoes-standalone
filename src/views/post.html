@@ -40,11 +40,17 @@
                 <span class="post-category" id="post-category" style="position: static; transform: none;">Categoria</span>
             </div>
 
-            <div class="post-content post-detail-content" style="width: 100%; position: relative;">
-                <button id="postFavoriteBtn" class="btn-favorite-card" title="Favoritar">
-                    <i class="ph ph-heart"></i>
+            <div class="post-toolbar flex justify-between items-center mb-30">
+            <a href="index.html" class="btn-back"><i class="ph ph-arrow-left"></i> Voltar</a>
+            <div class="flex gap-10">
+                <button class="btn-action" id="btnExportPDF" onclick="exportarPDF()">
+                    <i class="ph ph-file-pdf"></i> Exportar PDF
                 </button>
-                <h2 id="post-title" class="post-detail-title color-main mb-20 text-center">Título do Post</h2>
+                <button class="btn-favorite-post" id="btnFavorite" onclick="toggleFavorito()">
+                    <i class="ph ph-heart"></i> Favoritar
+                </button>
+            </div>
+        </div>        <h2 id="post-title" class="post-detail-title color-main mb-20 text-center">Título do Post</h2>
 
                 <div class="post-detail-meta flex items-center justify-center gap-20 mb-30">
                     <div id="post-rating" class="post-detail-rating fw-600">Avaliação: ★★★★☆</div>

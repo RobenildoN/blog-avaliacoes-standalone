@@ -291,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formEditar.resumo.value = post.resumo;
             formEditar.avaliacao.value = post.avaliacao;
             formEditar.categoryId.value = post.categoryId || '';
+            formEditar.status.value = post.status || 'Concluído';
             formEditar.lido_ate.value = post.lido_ate || '';
             formEditar.link_acesso.value = post.link_acesso || '';
             
@@ -454,6 +455,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             window.alertar('Erro técnico ao importar backup', 'error');
+        }
+    };
+
+    window.limparImagensOrfas = async () => {
+        if (!confirm('Deseja procurar e excluir imagens que não pertencem a nenhuma avaliação? Isso economizará espaço em disco.')) return;
+        
+        try {
+            window.alertar('Iniciando limpeza...', 'info');
+            const result = await BlogAPI.cleanOrphanedImages();
+            if (result && result.success) {
+                window.alertar(`Limpeza concluída! ${result.count} arquivos removidos.`, 'success');
+            }
+        } catch (error) {
+            console.error('Erro na limpeza:', error);
+            window.alertar('Erro ao realizar limpeza de arquivos.', 'error');
         }
     };
 

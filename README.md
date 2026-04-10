@@ -1,17 +1,17 @@
 # Blog de Avaliações - Standalone Nativo 🖥️🌌
 
-A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.6.0**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
+A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.8.0**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
 
-## ✨ Características (Versão 4.6.0 - Performance & Sync Update)
+## ✨ Características (Versão 4.8.0 - Organization & Export Update)
 
-### 🆕 **O que há de novo na v4.6.0**
+### 🆕 **O que há de novo na v4.8.0**
 
--   **📥 Importação de Backup:** Agora é possível restaurar todo o seu catálogo a partir de um arquivo ZIP, facilitando a migração entre dispositivos.
--   **❤️ Filtro de Favoritos:** Botão de acesso rápido na Home para visualizar instantaneamente apenas as obras favoritadas.
--   **📊 Dashboard de BI (Chart.js):** Painel de estatísticas avançadas com gráficos de rosca por categoria, barras por nota e linha do tempo de atividade mensal.
--   **🔍 Autocomplete de Títulos:** Sugestões inteligentes ao digitar o título de uma nova obra, evitando cadastros duplicados.
--   **🛡️ Verificação de Unicidade:** O sistema impede a criação de avaliações repetidas para a mesma obra com alertas em tempo real.
--   **🎨 Premium Slate Blue UI:** Esquema de cores refinado com Glassmorphism e ícones Phosphor.
+-   **🏷️ Selos de Status:** Acompanhe seu progresso com tags de "Lendo", "Concluído", "Em Espera" ou "Abandonado" com cores exclusivas.
+-   **📅 Filtros Temporais e por Nota:** Encontre rapidamente obras assistidas em um ano/mês específico ou obras com nota 4+, 3+ ou 5 estrelas.
+-   **📑 Exportação PDF (Share Card):** Gere uma ficha técnica elegante em PDF pronta para impressão ou compartilhamento social (Layout A5).
+-   **🧹 Manutenção de Mídias:** Ferramenta integrada para identificar e remover arquivos de imagem órfãos, otimizando o armazenamento.
+-   **📥 Importação de Backup:** Agora é possível restaurar todo o seu catálogo a partir de um arquivo ZIP.
+-   **📊 Dashboard de BI (Chart.js):** Painel de estatísticas avançadas com gráficos de rosca por categoria, barras por nota e linha do tempo.
 
 ### 🏎️ Arquitetura Exclusiva de Software Desktop
 

@@ -33,17 +33,20 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 ### 🛡️ Segurança & Performance
 - [ ] **Login Admin:** Implementar um pequeno formulário de senha para travar a área administrativa.
 - [ ] **Tratamento de Grandes Volumes:** Otimizar o Grid (Virtual List) para catálogos com mais de 1.000 avaliações.
-- [x] **Autocomplete & Unicidade:** Sugestões ao digitar títulos para evitar avaliações repetidas da mesma obra.
+- [ ] **Integração com APIs:** Buscar metadados (capa, sinopse, ano) via TMDB (Filmes) ou Google Books.
+- [ ] **Edição em Lote:** Selecionar múltiplos posts no Admin para mudar categoria ou status coletivamente.
+- [ ] **Custom shortcuts:** Atalhos de teclado (ex: Ctrl+N para novo post) para facilitar o uso.
+- [ ] **Sistema de Tags Custom:** Além da categoria, permitir adicionar tags livres (ex: #épico, #suspense).
 
-### 📊 Estatísticas (BI)
-- [x] **Gráficos Visuais:** Usar Chart.js para mostrar um gráfico de pizza por categorias ou barras por notas.
-- [x] **Linha do Tempo:** Ver quantas obras foram assistidas/lidas em cada mês do ano.
+### ☁️ Sincronização & Cloud
+- [ ] **Backup Automático Cloud:** Sincronizar o arquivo ZIP no Google Drive ou Dropbox.
+- [ ] **Multi-dispositivo:** Backend leve (Firebase/Supabase) para ver o catálogo no celular.
 
 ## 🐛 Bugs Reportados
-*(Nenhum reportado até o momento na v4.2.1)*
+*(Nenhum reportado até o momento na v4.8.0)*
 
 ---
 ### 📝 Notas de Versão
-- **v4.2.1:** Estabilização total do motor IPC e novo design Slate Blue.
 - **v4.5.0:** Gráficos BI (Chart.js), Autocomplete e Unicidade.
-- **v4.6.0 (Atual):** Importador de Backup e Filtros de Favoritos na Home.
+- **v4.6.0:** Importador de Backup e Filtros de Favoritos na Home.
+- **v4.8.0 (Atual):** Status Tags, Filtros Temporais/Nota, Exportação PDF e Limpeza de Storage.

@@ -92,6 +92,14 @@ class BlogAPI {
     static async importBackup() {
         return await window.api.importBackup();
     }
+
+    static async exportPDF(postId) {
+        return await window.api.exportPDF(postId);
+    }
+
+    static async cleanOrphanedImages() {
+        return await window.api.cleanupOrphanedImages();
+    }
 }
 
 // Tornar global para uso nos scripts de view

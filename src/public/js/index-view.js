@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let termoBusca = '';
     let apenasFavoritos = false;
     let notaMinima = 0;
+    let filtroAno = '';
+    let filtroMes = '';
 
     // Elementos do DOM
     const postsContainer = document.getElementById('postsContainer');
@@ -24,7 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const init = async () => {
         carregarCategorias();
         carregarPosts();
+        popularAnos();
     };
+
+    function popularAnos() {
+        const yearSelect = document.getElementById('filterYear');
+        if (!yearSelect) return;
+        const currentYear = new Date().getFullYear();
+        for (let i = currentYear; i >= 2020; i--) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = i;
+            yearSelect.appendChild(opt);
+        }
+    }
 
     // --- Funções de Carregamento ---
 
@@ -104,10 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             let data;
-            const params = { page, limit: 16 };
-
-            if (notaMinima > 0) params.minRating = notaMinima;
-            if (apenasFavoritos) params.onlyFavorites = true;
+            const params = { 
+                page, 
+                limit: 16,
+                onlyFavorites: apenasFavoritos,
+                minRating: notaMinima,
+                year: filtroAno,
+                month: filtroMes
+            };
 
             if (termoBusca) {
                 data = await BlogAPI.searchPosts(termoBusca, params);
@@ -138,6 +157,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const getStatusClass = (status) => {
+            switch (status) {
+                case 'Lendo': return 'status-lendo';
+                case 'Em Espera': return 'status-espera';
+                case 'Abandonado': return 'status-abandonado';
+                default: return 'status-concluido';
+            }
+        };
+
         postsContainer.innerHTML = posts.map(post => `
             <div class="post animate-fade-in" style="position: relative;" onclick="window.location.href='post.html?id=${post.id}'">
                 <button class="btn-favorite-card ${post.favorito ? 'active' : ''}" 
@@ -145,13 +173,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         title="${post.favorito ? 'Remover dos favoritos' : 'Favoritar'}">
                     <i class="ph${post.favorito ? '-fill' : ''} ph-heart"></i>
                 </button>
-                <img src="${post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'public/img/exemplo.jpg'}" alt="${post.titulo}" onerror="handleImageError(this)">
+                <img src="${post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'https://via.placeholder.com/400x225/0f172a/94a3b8?text=Sem+Capa'}" alt="${post.titulo}" onerror="handleImageError(this)">
                 <div class="post-content">
-                    <h3 class="post-title">${post.titulo}</h3>
+                    <div class="flex justify-between items-start mb-10">
+                        <h3 class="post-title" style="margin-bottom: 0;">${limitarTexto(post.titulo, 40)}</h3>
+                        <span class="badge-status ${getStatusClass(post.status)}">${post.status || 'Concluído'}</span>
+                    </div>
                     <div class="rating">
                         ${'★'.repeat(post.avaliacao)}${'☆'.repeat(5 - post.avaliacao)}
                     </div>
-                    <p>${limitarTexto(post.resumo, 120)}</p>
+                    <p>${limitarTexto(post.resumo, 100)}</p>
                     <div class="post-footer flex justify-between items-center mt-15">
                         <span class="color-muted font-0-8"><i class="ph ph-tag"></i> ${post.Category ? post.Category.name : 'Vários'}</span>
                         <span class="color-accent font-0-9"><i class="ph ph-calendar"></i> ${new Date(post.data_post).toLocaleDateString()}</span>
@@ -183,6 +214,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Event Handlers (Globais para chamadas inline HTML) ---
+
+    window.filtrarAvancado = () => {
+        notaMinima = parseInt(document.getElementById('filterRating').value);
+        filtroAno = document.getElementById('filterYear').value;
+        filtroMes = document.getElementById('filterMonth').value;
+        carregarPosts(1);
+    };
 
     window.realizarBusca = () => {
         termoBusca = searchBox.value.trim();

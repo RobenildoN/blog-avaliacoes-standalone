@@ -47,11 +47,23 @@ document.addEventListener('DOMContentLoaded', () => {
             // Preencher campos
             postTitle.innerText = post.titulo;
             postCategory.innerText = post.Category ? post.Category.name : 'Avaliação';
-            postRating.innerHTML = `<span class="color-muted">Avaliação:</span> ` + '★'.repeat(post.avaliacao) + '☆'.repeat(5 - post.avaliacao);
+            
+            const getStatusClass = (status) => {
+                switch (status) {
+                    case 'Lendo': return 'status-lendo';
+                    case 'Em Espera': return 'status-espera';
+                    case 'Abandonado': return 'status-abandonado';
+                    default: return 'status-concluido';
+                }
+            };
+
+            const statusHtml = `<span class="badge-status ${getStatusClass(post.status)}">${post.status || 'Concluído'}</span>`;
+            postRating.innerHTML = `<span class="color-muted">Status:</span> ${statusHtml} &nbsp; <span class="color-muted">| Avaliação:</span> ` + '★'.repeat(post.avaliacao) + '☆'.repeat(5 - post.avaliacao);
+            
             postDate.innerText = window.formatarData(post.data_post || post.createdAt);
             
             // Imagem
-            postImage.src = post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : '../public/img/exemplo.jpg';
+            postImage.src = post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'https://via.placeholder.com/800x450/0f172a/94a3b8?text=Sem+Capa';
             postImage.onerror = () => window.handleImageError(postImage);
 
             // Markdown Content
@@ -69,8 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Gerenciar Favoritos
-            const favBtn = document.getElementById('postFavoriteBtn');
+            const favBtn = document.getElementById('btnFavorite');
             const updateFavVisual = (isFav) => {
+                if (!favBtn) return;
                 const icon = favBtn.querySelector('i');
                 if (isFav) {
                     favBtn.classList.add('active');
@@ -85,28 +98,69 @@ document.addEventListener('DOMContentLoaded', () => {
             
             updateFavVisual(post.favorito);
             
-            favBtn.onclick = async () => {
-                try {
-                    const result = await window.api.toggleFavorito(id);
-                    if (result) {
-                        updateFavVisual(result.favorito);
-                        window.alertar(result.favorito ? 'Adicionado aos favoritos!' : 'Removido dos favoritos.', 'success');
-                    }
-                } catch (error) {
-                    window.alertar('Erro ao atualizar favorito.', 'error');
-                }
-            };
+            // O onclick já está definido no HTML chamando toggleFavorito()
+            // Mas vamos manter a lógica de atualização visual aqui.
+            // O toggleFavorito no post-view.js cuidará de chamar updateFavVisual
+            window.updateFavVisual = updateFavVisual; 
 
             // Gerenciar Botão de Edição
-            editBtn.addEventListener('click', () => {
-                window.location.href = `admin.html?edit=${id}`;
-            });
+            if (editBtn) {
+                editBtn.addEventListener('click', () => {
+                    window.location.href = `admin.html?edit=${id}`;
+                });
+            }
 
         } catch (error) {
             console.error('Erro ao abrir post:', error);
             window.alertar('Erro ao carregar detalhes da obra.', 'error');
         }
     }
+
+    // --- Ações ---
+
+    window.exportarPDF = async () => {
+        const id = getPostId();
+        const btn = document.getElementById('btnExportPDF');
+        try {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Gerando...';
+            
+            const result = await BlogAPI.exportPDF(id);
+            if (result && result.success) {
+                window.alertar('PDF gerado com sucesso!', 'success');
+            }
+        } catch (error) {
+            console.error('Erro ao exportar PDF:', error);
+            window.alertar('Erro ao gerar PDF', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ph ph-file-pdf"></i> Exportar PDF';
+        }
+    };
+
+    window.toggleFavorito = async () => {
+        const id = getPostId();
+        const btn = document.getElementById('btnFavorite');
+        try {
+            const result = await window.api.toggleFavorito(id);
+            if (result) {
+                const icon = btn.querySelector('i');
+                if (result.favorito) {
+                    btn.classList.add('active');
+                    icon.classList.remove('ph');
+                    icon.classList.add('ph-fill');
+                    window.alertar('Adicionado aos favoritos!', 'success');
+                } else {
+                    btn.classList.remove('active');
+                    icon.classList.remove('ph-fill');
+                    icon.classList.add('ph');
+                    window.alertar('Removido dos favoritos.', 'info');
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar favorito:', error);
+        }
+    };
 
     // Iniciar
     carregarPost();
