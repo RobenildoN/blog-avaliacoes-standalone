@@ -10,6 +10,8 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 - [x] **Resiliência de Imagens:** Mecanismo de 3 tentativas e placeholder de backup.
 - [x] **Gestão de Categorias:** Validação de unicidade para evitar duplicatas.
 - [x] **Dashboard Administrativo:** Estatísticas automáticas no topo da tela Admin.
+- [x] **Filtragem Avançada:** Botão para filtrar apenas os favoritos diretamente na Home.
+- [x] **Portabilidade de Dados:** Sistema de Importação e Exportação de Backups (ZIP).
 
 ## 🛠️ Sugestões de Melhorias (Próximas Passos)
 
@@ -20,10 +22,13 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 - [ ] **Preview de Imagem:** Ver a imagem em tamanho real ao clicar na capa na página de detalhes.
 
 ### ⚙️ Funcionalidades (Features)
-- [ ] **Filtragem Avançada:** Botão para filtrar apenas os favoritos diretamente na Home.
+- [ ] **Filtragem por Data:** Seletor para ver avaliações de um ano ou mês específico.
+- [ ] **Busca por Nota:** Slider ou botões para buscar obras por faixa de avaliação (ex: 4+ estrelas).
+- [ ] **Tags de Status:** Adicionar selos de "Lendo", "Concluído" ou "Abandonado" às obras.
 - [ ] **Exportação em PDF:** Gerar um arquivo PDF ou imagem (social share) com a sua nota e resumo.
 - [ ] **Edição em Lote:** Selecionar múltiplos posts no Admin para mudar a categoria de todos ao mesmo tempo.
 - [ ] **Backup na Nuvem:** Integração opcional com Google Drive ou GitHub para salvar o banco fora do PC.
+- [ ] **Sincronização em Nuvem:** Usar Firebase ou Supabase para manter o catálogo sincronizado entre PCs.
 
 ### 🛡️ Segurança & Performance
 - [ ] **Login Admin:** Implementar um pequeno formulário de senha para travar a área administrativa.
@@ -39,5 +44,6 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 
 ---
 ### 📝 Notas de Versão
-- **v4.2.1 (Atual):** Estabilização total do motor IPC e novo design Slate Blue.
-- **v4.5.0 (Planejada):** Foco em Exportação e Filtros Avançados.
+- **v4.2.1:** Estabilização total do motor IPC e novo design Slate Blue.
+- **v4.5.0:** Gráficos BI (Chart.js), Autocomplete e Unicidade.
+- **v4.6.0 (Atual):** Importador de Backup e Filtros de Favoritos na Home.

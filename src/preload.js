@@ -23,5 +23,6 @@ contextBridge.exposeInMainWorld('api', {
     getDashboardStats: () => ipcRenderer.invoke('get-dashboard-stats'),
     selectImage: () => ipcRenderer.invoke('select-image'),
     authenticate: (pwd) => ipcRenderer.invoke('authenticate', pwd),
-    exportBackup: () => ipcRenderer.invoke('export-backup')
+    exportBackup: () => ipcRenderer.invoke('export-backup'),
+    importBackup: () => ipcRenderer.invoke('import-backup')
 });

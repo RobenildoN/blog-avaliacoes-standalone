@@ -84,6 +84,14 @@ class BlogAPI {
             throw error;
         }
     }
+    // Backup
+    static async exportBackup() {
+        return await window.api.exportBackup();
+    }
+
+    static async importBackup() {
+        return await window.api.importBackup();
+    }
 }
 
 // Tornar global para uso nos scripts de view

@@ -1,17 +1,17 @@
 # Blog de Avaliações - Standalone Nativo 🖥️🌌
 
-A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.5.0**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
+A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.6.0**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
 
-## ✨ Características (Versão 4.5.0 - BI & Intelligence Update)
+## ✨ Características (Versão 4.6.0 - Performance & Sync Update)
 
-### 🆕 **O que há de novo na v4.5.0**
+### 🆕 **O que há de novo na v4.6.0**
 
--   **📊 Dashboard de BI (Chart.js):** Novo painel de estatísticas avançadas no rodapé da área administrativa. Gráficos de rosca por categoria, barras por nota e linha do tempo de atividade mensal.
--   **🔍 Autocomplete de Títulos:** Sugestões inteligentes ao digitar o título de uma nova obra, evitando cadastros duplicados e mantendo a padronização do catálogo.
--   **🛡️ Verificação de Unicidade:** O sistema agora impede a criação de avaliações repetidas para a mesma obra, com alertas visuais em tempo real ("Já avaliado").
--   **❤️ Sistema de Favoritos:** Botão de coração flutuante nos cards e na página do post com persistência instantânea no banco de dados.
--   **🖼️ Motor de Imagens Resiliente:** Lógica de 3 tentativas de carregamento via protocolo `img://` com fallback automático para placeholder online.
--   **🎨 Premium Slate Blue UI:** Novo esquema de cores baseado em tons *Slate* e *Ocean Blue* (`#0f172a`), com Glassmorphism refinado.
+-   **📥 Importação de Backup:** Agora é possível restaurar todo o seu catálogo a partir de um arquivo ZIP, facilitando a migração entre dispositivos.
+-   **❤️ Filtro de Favoritos:** Botão de acesso rápido na Home para visualizar instantaneamente apenas as obras favoritadas.
+-   **📊 Dashboard de BI (Chart.js):** Painel de estatísticas avançadas com gráficos de rosca por categoria, barras por nota e linha do tempo de atividade mensal.
+-   **🔍 Autocomplete de Títulos:** Sugestões inteligentes ao digitar o título de uma nova obra, evitando cadastros duplicados.
+-   **🛡️ Verificação de Unicidade:** O sistema impede a criação de avaliações repetidas para a mesma obra com alertas em tempo real.
+-   **🎨 Premium Slate Blue UI:** Esquema de cores refinado com Glassmorphism e ícones Phosphor.
 
 ### 🏎️ Arquitetura Exclusiva de Software Desktop
 
@@ -23,7 +23,7 @@ A evolução definitiva do **Blog de Avaliações**, agora operando como um Soft
 
 -   **🔐 Autenticação Lógica:** Estrutura preparada para bloqueio de área administrativa por senha, protegendo suas notas e críticas.
 -   **📦 Database Offline (SQLite):** Total privacidade num banco sem contatos web. Relacional puro manipulado via **Sequelize ORM**.
--   **🔄 Backup com um Clique:** Sistema de exportação de backup para a Área de Trabalho e rotina automática diária às 02:00 (mantém os últimos 30 dias).
+-   **🔄 Backup e Restauração:** Sistema completo de importação e exportação de backups ZIP, além de rotina automática diária às 02:00.
 -   **🔍 Busca Full-Text (FTS5):** Pesquisa instantânea em milissegundos dentro de títulos e conteúdos das avaliações.
 
 ### 🛠️ Stack Tecnológica

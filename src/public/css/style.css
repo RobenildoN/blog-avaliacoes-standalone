@@ -158,6 +158,32 @@ header {
     transform: translateY(-2px);
 }
 
+.btn-favorite-filter {
+    background: rgba(var(--color-accent-rgb), 0.1);
+    color: var(--color-accent);
+    border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.btn-favorite-filter:hover {
+    background: rgba(var(--color-accent-rgb), 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-favorite-filter.active {
+    background: #f43f5e;
+    color: #fff;
+    border-color: #f43f5e;
+    box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+}
+
 .btn-clear {
     background: transparent;
     border: 1px solid var(--glass-border);

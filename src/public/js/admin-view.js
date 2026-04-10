@@ -427,13 +427,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Backup
     window.exportarBackup = async () => {
         try {
-            window.alertar('Processando backup. Por favor aguarde...', 'info');
-            const result = await window.api.exportBackup();
-            if (result.success) {
-                window.alertar('Backup exportado para sua Área de Trabalho!', 'success');
+            window.alertar('Preparando backup. Selecione onde salvar...', 'info');
+            const success = await window.api.exportBackup();
+            if (success) {
+                window.alertar('Backup exportado com sucesso!', 'success');
             }
         } catch (error) {
             window.alertar('Erro ao exportar backup', 'error');
+        }
+    };
+
+    window.importarBackup = async () => {
+        if (!confirm('ATENÇÃO: Importar um backup substituirá seu banco de dados atual e mesclará as imagens. Deseja prosseguir?')) return;
+        
+        try {
+            window.alertar('Importando backup. Por favor aguarde...', 'info');
+            const result = await window.api.importBackup();
+            
+            if (result && result.success) {
+                window.alertar('Backup restaurado com sucesso! Recarregando dados...', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else if (result && result.error) {
+                window.alertar('Erro ao importar: ' + result.error, 'error');
+            }
+        } catch (error) {
+            window.alertar('Erro técnico ao importar backup', 'error');
         }
     };
 

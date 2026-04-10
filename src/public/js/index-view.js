@@ -61,6 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toggleFiltroFavoritos = (btn) => {
         apenasFavoritos = !apenasFavoritos;
         btn.classList.toggle('active');
+        const icon = btn.querySelector('i');
+        if (apenasFavoritos) {
+            icon.classList.remove('ph');
+            icon.classList.add('ph-fill');
+        } else {
+            icon.classList.remove('ph-fill');
+            icon.classList.add('ph');
+        }
         carregarPosts(1);
     };
 

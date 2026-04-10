@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
 const cron = require('node-cron');
+const AdmZip = require('adm-zip');
 const packageJson = require('../../package.json');
 
 class BackupService {
@@ -69,6 +70,65 @@ class BackupService {
 
             archive.finalize();
         });
+    }
+
+    // Restaurar backup a partir de um arquivo ZIP
+    async importBackup(zipPath) {
+        try {
+            const zip = new AdmZip(zipPath);
+            const tempRestorePath = path.join(this.userDataPath, 'temp_restore');
+            
+            // Limpar diretório temporário se existir
+            if (fs.existsSync(tempRestorePath)) {
+                fs.rmSync(tempRestorePath, { recursive: true, force: true });
+            }
+            fs.mkdirSync(tempRestorePath, { recursive: true });
+            
+            // Extrair arquivos
+            zip.extractAllTo(tempRestorePath, true);
+            
+            const restoredDbPath = path.join(tempRestorePath, 'database.sqlite');
+            const restoredImagesPath = path.join(tempRestorePath, 'images');
+            
+            // 1. Restaurar Banco de Dados
+            if (fs.existsSync(restoredDbPath)) {
+                // Fazer backup do banco atual antes (por segurança)
+                const dbBackupPath = `${this.databasePath}.bak`;
+                if (fs.existsSync(this.databasePath)) {
+                    fs.copyFileSync(this.databasePath, dbBackupPath);
+                }
+                
+                try {
+                    fs.copyFileSync(restoredDbPath, this.databasePath);
+                } catch (err) {
+                    console.error('Erro ao substituir banco, possivelmente em uso:', err);
+                    // Se falhar a cópia direta, retornamos um erro específico
+                    throw new Error('Não foi possível substituir o banco de dados. O arquivo pode estar em uso.');
+                }
+            }
+            
+            // 2. Restaurar Imagens (Merge)
+            if (fs.existsSync(restoredImagesPath)) {
+                if (!fs.existsSync(this.imagesPath)) {
+                    fs.mkdirSync(this.imagesPath, { recursive: true });
+                }
+                
+                const files = fs.readdirSync(restoredImagesPath);
+                for (const file of files) {
+                    const srcFile = path.join(restoredImagesPath, file);
+                    const destFile = path.join(this.imagesPath, file);
+                    fs.copyFileSync(srcFile, destFile);
+                }
+            }
+            
+            // Limpar temporários
+            fs.rmSync(tempRestorePath, { recursive: true, force: true });
+            
+            return true;
+        } catch (error) {
+            console.error('Erro na importação de backup:', error);
+            throw error;
+        }
     }
 
     // Limpar backups antigos (manter apenas os últimos 30)
