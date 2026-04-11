@@ -126,7 +126,8 @@ function setupCommonHandlers(app, mainWindow) {
                 height: 1920,
                 show: false,
                 frame: false,
-                enableLargerThanScreen: true, // Importante para 1920 de altura em janelas menores
+                resizable: false,
+                enableLargerThanScreen: true,
                 useContentSize: true,
                 webPreferences: {
                     nodeIntegration: false,
@@ -134,6 +135,9 @@ function setupCommonHandlers(app, mainWindow) {
                     webSecurity: false
                 }
             });
+
+            // Forçar posição fora da tela para garantir que o SO não limite a janela
+            tempWin.setPosition(-5000, -5000);
 
             const templatePath = path.join(__dirname, '../views/social-share-template.html');
             await tempWin.loadFile(templatePath);

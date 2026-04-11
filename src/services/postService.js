@@ -363,8 +363,26 @@ class PostService {
             return deletedCount;
         } catch (error) {
             console.error('Erro na limpeza de imagens órfãs:', error);
-            throw error;
         }
+    }
+
+    async isTitleDuplicate(titulo, excludeId = null) {
+        if (!titulo) return false;
+        
+        const where = {
+            titulo: {
+                [Op.like]: titulo // Usar Op.like para ser insensível a maiúsculas se necessário, ou Op.eq
+            }
+        };
+
+        if (excludeId) {
+            where.id = {
+                [Op.ne]: excludeId
+            };
+        }
+
+        const count = await Post.count({ where });
+        return count > 0;
     }
 }
 

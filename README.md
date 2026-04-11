@@ -1,16 +1,15 @@
 # Blog de Avaliações - Standalone Nativo 🖥️🌌
 
-A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.8.0**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
+A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.9.7**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
 
-## ✨ Características (Versão 4.8.0 - Organization & Export Update)
+## ✨ Características (Versão 4.9.7 - Social & Design Update)
 
-### 🆕 **O que há de novo na v4.8.0**
+### 🆕 **O que há de novo na v4.9.7**
 
+-   **📲 Social Image Share (Stories):** Gere imagens formatadas em 1080x1920 prontas para Instagram e WhatsApp com design premium, badges de status e avaliação.
+-   **💎 Refinamento de UI (Post Detail):** Nova organização da página de detalhes com título em destaque, status/nota unificados e botão de favoritar integrado à composição.
 -   **🏷️ Selos de Status:** Acompanhe seu progresso com tags de "Lendo", "Concluído", "Em Espera" ou "Abandonado" com cores exclusivas.
 -   **📅 Filtros Temporais e por Nota:** Encontre rapidamente obras assistidas em um ano/mês específico ou obras com nota 4+, 3+ ou 5 estrelas.
--   **📑 Exportação PDF (Share Card):** Gere uma ficha técnica elegante em PDF pronta para impressão ou compartilhamento social (Layout A5).
--   **🧹 Manutenção de Mídias:** Ferramenta integrada para identificar e remover arquivos de imagem órfãos, otimizando o armazenamento.
--   **📥 Importação de Backup:** Agora é possível restaurar todo o seu catálogo a partir de um arquivo ZIP.
 -   **📊 Dashboard de BI (Chart.js):** Painel de estatísticas avançadas com gráficos de rosca por categoria, barras por nota e linha do tempo.
 
 ### 🏎️ Arquitetura Exclusiva de Software Desktop

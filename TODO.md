@@ -43,11 +43,14 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 - [ ] **Multi-dispositivo:** Backend leve (Firebase/Supabase) para ver o catálogo no celular.
 
 ## 🐛 Bugs Reportados
-*(Nenhum reportado até o momento na v4.9.0)*
 
----
-### 📝 Notas de Versão
+- [ ] **[BUG] Social Image Share Clipping:** Imagem gerada para Stories ainda apresenta cortes ou layout desalinhado em algumas resoluções de tela específicas (Windows DPI Scaling).
+- [x] **[FIX] Duplicate Title Check:** Corrigido erro TypeError no Admin ao validar títulos de avaliações.
+- [x] **[FIX] Select Dropdown UI:** Corrigido fundo branco em menus de seleção (Categoria/Status) em Dark Mode.
+
+## 📝 Notas de Versão
 - **v4.5.0:** Gráficos BI (Chart.js), Autocomplete e Unicidade.
 - **v4.6.0:** Importador de Backup e Filtros de Favoritos na Home.
 - **v4.8.0:** Status Tags, Filtros Temporais/Nota, Exportação PDF e Limpeza de Storage.
-- **v4.9.0 (Atual):** Social Image Share (Instagram Stories/WhatsApp) e Refinamento de UI.
+- **v4.9.0:** Social Image Share (Instagram Stories/WhatsApp) e Refinamento de UI.
+- **v4.9.7 (Atual):** Fix de Duplicatas, Refinamento de Captura Social e Correções de Estilo.

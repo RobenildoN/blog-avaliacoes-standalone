@@ -465,7 +465,7 @@ nav a:hover, nav a.active {
 .form-group select, 
 .form-group textarea {
     width: 100%;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(15, 23, 42, 0.8); /* Fundo mais sólido para selects */
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     padding: 12px 15px;
@@ -475,11 +475,17 @@ nav a:hover, nav a.active {
     transition: var(--transition);
 }
 
+/* Corrigir fundo branco das opções em alguns sistemas */
+.form-group select option {
+    background-color: #1e293b;
+    color: #fff;
+}
+
 .form-group input:focus, 
 .form-group select:focus, 
 .form-group textarea:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.9);
     border-color: var(--color-accent);
 }
 

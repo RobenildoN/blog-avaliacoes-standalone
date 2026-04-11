@@ -22,7 +22,7 @@
             height: var(--story-height);
             overflow: hidden;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: #0f172a;
+            background: #0b0f19;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -32,39 +32,39 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             position: relative;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 80px 60px;
+            padding: 40px;
         }
         
         .blob {
             position: absolute;
             width: 1400px;
-            height: 1200px;
-            background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
-            filter: blur(180px);
-            opacity: 0.15;
+            height: 1400px;
+            background: radial-gradient(circle, #3b82f6 0%, transparent 75%);
+            filter: blur(200px);
+            opacity: 0.1;
             z-index: 1;
         }
-        .blob-1 { top: -400px; left: -400px; }
-        .blob-2 { bottom: -400px; right: -400px; }
+        .blob-1 { top: -600px; left: -600px; }
+        .blob-2 { bottom: -600px; right: -600px; }
 
         .content-card {
             position: relative;
             z-index: 10;
-            width: 100%;
-            height: 1650px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(50px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 90px;
-            padding: 80px 60px;
+            width: 980px;
+            height: 1500px; /* Reduzi mais a altura do card */
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(60px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 80px;
+            padding: 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 60px 120px -20px rgba(0, 0, 0, 0.7);
+            justify-content: space-evenly;
+            box-shadow: 0 60px 120px -20px rgba(0, 0, 0, 0.8);
         }
 
         .meta-badges {
@@ -84,33 +84,10 @@
         .category-badge { background: #3b82f6; color: white; }
         .status-badge { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        .post-image-container {
-            width: 800px;
-            height: 950px;
-            position: relative;
-        }
-
-        .post-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 40px;
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
-            border: 4px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .info-section {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
         .post-title {
-            font-size: 80px;
+            font-size: 82px;
             font-weight: 900;
             text-align: center;
-            margin-bottom: 30px;
             line-height: 1.1;
             color: #fff;
             display: -webkit-box;
@@ -118,25 +95,45 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             width: 100%;
+            margin: 20px 0;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .post-image-container {
+            width: 800px;
+            height: 700px; /* Imagem ainda menor para caber tudo */
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+            border: 3px solid rgba(255, 255, 255, 0.1);
         }
 
         .rating-container {
-            font-size: 110px;
+            font-size: 130px; /* Estrelas maiores embaixo */
             color: #fbbf24;
             display: flex;
             gap: 15px;
-            filter: drop-shadow(0 5px 15px rgba(251, 191, 36, 0.5));
+            filter: drop-shadow(0 10px 30px rgba(251, 191, 36, 0.6));
+            margin-top: 20px;
         }
 
         .footer-logo {
-            margin-top: 50px;
             display: flex;
             align-items: center;
             gap: 20px;
-            opacity: 0.4;
+            opacity: 0.5;
             font-size: 36px;
             font-weight: 600;
             color: #fff;
+            margin-top: 20px;
         }
 
         .footer-logo i { font-size: 46px; color: #3b82f6; }
@@ -153,21 +150,20 @@
                 <div id="post-status" class="badge status-badge">STATUS</div>
             </div>
 
+            <h1 id="post-title" class="post-title">Título da Obra</h1>
+
             <div class="post-image-container">
                 <img id="post-image" src="" alt="" class="post-image">
             </div>
 
-            <div class="info-section">
-                <h1 id="post-title" class="post-title">Título da Obra</h1>
-                <div id="post-rating" class="rating-container">
-                    ★★★★★
-                </div>
+            <div id="post-rating" class="rating-container">
+                ★★★★★
             </div>
-        </div>
-
-        <div class="footer-logo">
-            <i class="ph-fill ph-star-four"></i>
-            <span>Blog de Avaliações</span>
+            
+            <div class="footer-logo">
+                <i class="ph-fill ph-star-four"></i>
+                <span>Blog de Avaliações</span>
+            </div>
         </div>
     </div>
 
