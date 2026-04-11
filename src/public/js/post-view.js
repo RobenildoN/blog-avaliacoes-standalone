@@ -138,6 +138,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    window.exportarImagemSocial = async () => {
+        const id = getPostId();
+        const btn = document.getElementById('btnExportSocial');
+        try {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Gerando...';
+            
+            const result = await BlogAPI.exportSocialImage(id);
+            if (result && result.success) {
+                window.alertar('Imagem para Stories gerada!', 'success');
+            }
+        } catch (error) {
+            console.error('Erro ao exportar imagem:', error);
+            window.alertar('Erro ao gerar imagem para redes sociais', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ph ph-instagram-logo"></i> Img para compartilhar';
+        }
+    };
+
     window.toggleFavorito = async () => {
         const id = getPostId();
         const btn = document.getElementById('btnFavorite');

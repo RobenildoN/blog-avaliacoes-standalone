@@ -97,6 +97,10 @@ class BlogAPI {
         return await window.api.exportPDF(postId);
     }
 
+    static async exportSocialImage(postId) {
+        return await window.api.exportSocialImage(postId);
+    }
+
     static async cleanOrphanedImages() {
         return await window.api.cleanupOrphanedImages();
     }

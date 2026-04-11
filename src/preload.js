@@ -26,5 +26,6 @@ contextBridge.exposeInMainWorld('api', {
     exportBackup: () => ipcRenderer.invoke('export-backup'),
     importBackup: () => ipcRenderer.invoke('import-backup'),
     exportPDF: (postId) => ipcRenderer.invoke('export-post-pdf', postId),
+    exportSocialImage: (postId) => ipcRenderer.invoke('export-social-image', postId),
     cleanupOrphanedImages: () => ipcRenderer.invoke('cleanup-orphaned-images')
 });

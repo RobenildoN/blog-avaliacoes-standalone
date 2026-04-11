@@ -105,6 +105,89 @@ function setupCommonHandlers(app, mainWindow) {
         }
     });
 
+    ipcMain.handle('export-social-image', async (event, postId) => {
+        const Post = require('../models/post');
+        const post = await Post.findByPk(postId, { include: ['Category'] });
+        
+        if (!post) return { success: false, error: 'Post não encontrado' };
+
+        const result = await dialog.showSaveDialog(mainWindow, {
+            title: 'Salvar Imagem para Redes Sociais',
+            defaultPath: path.join(app.getPath('desktop'), `share-${post.id}.png`),
+            filters: [{ name: 'Imagem PNG', extensions: ['png'] }]
+        });
+
+        if (result.canceled || !result.filePath) return null;
+
+        try {
+            const { BrowserWindow, screen } = require('electron');
+            let tempWin = new BrowserWindow({
+                width: 1080,
+                height: 1920,
+                show: false,
+                frame: false,
+                enableLargerThanScreen: true, // Importante para 1920 de altura em janelas menores
+                useContentSize: true,
+                webPreferences: {
+                    nodeIntegration: false,
+                    contextIsolation: true,
+                    webSecurity: false
+                }
+            });
+
+            const templatePath = path.join(__dirname, '../views/social-share-template.html');
+            await tempWin.loadFile(templatePath);
+
+            const postData = {
+                titulo: post.titulo,
+                categoria: post.Category ? post.Category.name : 'Avaliação',
+                status: post.status || 'Concluído',
+                avaliacao: post.avaliacao,
+                imagem: post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'https://via.placeholder.com/800x450/0f172a/94a3b8?text=Sem+Capa'
+            };
+
+            await tempWin.webContents.executeJavaScript(`window.setData(${JSON.stringify(postData)})`);
+            tempWin.webContents.setZoomFactor(1.0);
+
+            // Aguardar até que a imagem esteja carregada e sinalizada como ready
+            await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('Timed out waiting for image to load')), 10000);
+                const checkReady = async () => {
+                    if (tempWin.isDestroyed()) return;
+                    const isReady = await tempWin.webContents.executeJavaScript('window.isReady');
+                    if (isReady) {
+                        clearTimeout(timeout);
+                        // Pequeno delay extra para renderização final
+                        setTimeout(resolve, 500);
+                    } else {
+                        setTimeout(checkReady, 100);
+                    }
+                };
+                checkReady();
+            });
+
+            // Capturar a página com as dimensões exatas
+            const image = await tempWin.webContents.capturePage({
+                x: 0,
+                y: 0,
+                width: 1080,
+                height: 1920
+            });
+            fs.writeFileSync(result.filePath, image.toPNG());
+            
+            tempWin.close();
+            
+            // Sugerir abrir o arquivo
+            shell.openPath(result.filePath);
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Erro ao gerar imagem:', error);
+            if (tempWin && !tempWin.isDestroyed()) tempWin.close();
+            return { success: false, error: error.message };
+        }
+    });
+
     ipcMain.handle('cleanup-orphaned-images', async () => {
         const PostService = require('../services/postService');
         const postService = new PostService(app.getPath('userData'));

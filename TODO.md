@@ -25,7 +25,7 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 - [ ] **Filtragem por Data:** Seletor para ver avaliações de um ano ou mês específico.
 - [ ] **Busca por Nota:** Slider ou botões para buscar obras por faixa de avaliação (ex: 4+ estrelas).
 - [ ] **Tags de Status:** Adicionar selos de "Lendo", "Concluído" ou "Abandonado" às obras.
-- [ ] **Exportação em PDF:** Gerar um arquivo PDF ou imagem (social share) com a sua nota e resumo.
+- [x] **Exportação Custom:** Gerar arquivo PDF ou imagem formatada para redes sociais (Stories).
 - [ ] **Edição em Lote:** Selecionar múltiplos posts no Admin para mudar a categoria de todos ao mesmo tempo.
 - [ ] **Backup na Nuvem:** Integração opcional com Google Drive ou GitHub para salvar o banco fora do PC.
 - [ ] **Sincronização em Nuvem:** Usar Firebase ou Supabase para manter o catálogo sincronizado entre PCs.
@@ -43,10 +43,11 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 - [ ] **Multi-dispositivo:** Backend leve (Firebase/Supabase) para ver o catálogo no celular.
 
 ## 🐛 Bugs Reportados
-*(Nenhum reportado até o momento na v4.8.0)*
+*(Nenhum reportado até o momento na v4.9.0)*
 
 ---
 ### 📝 Notas de Versão
 - **v4.5.0:** Gráficos BI (Chart.js), Autocomplete e Unicidade.
 - **v4.6.0:** Importador de Backup e Filtros de Favoritos na Home.
-- **v4.8.0 (Atual):** Status Tags, Filtros Temporais/Nota, Exportação PDF e Limpeza de Storage.
+- **v4.8.0:** Status Tags, Filtros Temporais/Nota, Exportação PDF e Limpeza de Storage.
+- **v4.9.0 (Atual):** Social Image Share (Instagram Stories/WhatsApp) e Refinamento de UI.

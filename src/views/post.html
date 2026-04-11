@@ -32,58 +32,54 @@
 
     <main>
         <article class="post-card post-detail-article flex flex-column items-center">
-            <div class="post-image-wrapper post-detail-img-wrapper mb-20 text-center" style="width: 100%;">
+            <div class="post-image-wrapper post-detail-img-wrapper mb-20 text-center" style="width: 100%; position: relative;">
                 <img id="post-image" src="../public/img/exemplo.jpg" alt="Imagem do Post" class="post-image" style="margin: 0 auto; display: block; max-width: 100%; border-radius: var(--radius-md);">
             </div>
+
+            <div class="flex items-center justify-center gap-15 mb-10 w-full">
+                <h2 id="post-title" class="post-detail-title color-main text-center m-0" style="font-size: 2.5rem;">Título do Post</h2>
+                <button class="btn-favorite-card" id="btnFavorite" onclick="toggleFavorito()" style="position: static; width: 45px; height: 45px; flex-shrink: 0;">
+                    <i class="ph ph-heart" style="font-size: 1.6rem;"></i>
+                </button>
+            </div>
             
-            <div class="post-category-container mb-20">
-                <span class="post-category" id="post-category" style="position: static; transform: none;">Categoria</span>
+            <div class="post-detail-meta flex items-center justify-center gap-20 mb-20">
+                <div id="post-rating" class="post-detail-rating fw-600">Avaliação: ★★★★☆</div>
             </div>
 
-            <div class="post-toolbar flex justify-between items-center mb-30">
-            <a href="index.html" class="btn-back"><i class="ph ph-arrow-left"></i> Voltar</a>
-            <div class="flex gap-10">
-                <button class="btn-action" id="btnExportPDF" onclick="exportarPDF()">
-                    <i class="ph ph-file-pdf"></i> Exportar PDF
-                </button>
-                <button class="btn-favorite-post" id="btnFavorite" onclick="toggleFavorito()">
-                    <i class="ph ph-heart"></i> Favoritar
-                </button>
+            <div id="post-summary" class="post-detail-summary mb-30">Resumo do post aqui...</div>
+
+            <div class="post-info-blocks">
+                <div id="post-lido-container" class="info-block" style="display: none; margin-bottom: 12px;">
+                    <i class="ph ph-calendar-check info-block-icon"></i>
+                    <strong class="info-block-label">Lido até/Assistido até:</strong> <span id="post-lido-ate" class="info-block-value"></span>
+                </div>
+
+                <div class="info-block" style="margin-bottom: 12px;">
+                    <i class="ph ph-calendar-blank info-block-icon"></i>
+                    <span class="badge" id="post-category" style="margin-right: 10px;">Categoria</span>
+                    <strong class="info-block-label">Data:</strong> <span id="post-date" class="info-block-value">01/01/2023</span>
+                </div>
+
+                <div id="post-link-container" class="info-block" style="display: none; margin-bottom: 12px;">
+                    <i class="ph ph-link info-block-icon"></i>
+                    <strong class="info-block-label">Fonte externa:</strong>
+                    <a id="post-link" href="#" target="_blank" class="info-block-link">Acessar material original <i class="ph ph-arrow-up-right"></i></a>
+                </div>
             </div>
-        </div>        <h2 id="post-title" class="post-detail-title color-main mb-20 text-center">Título do Post</h2>
 
-                <div class="post-detail-meta flex items-center justify-center gap-20 mb-30">
-                    <div id="post-rating" class="post-detail-rating fw-600">Avaliação: ★★★★☆</div>
-                </div>
-
-                <div id="post-summary" class="post-detail-summary mb-30">Resumo do post aqui...</div>
-
-                <div class="post-info-blocks">
-                    <div id="post-lido-container" class="info-block" style="display: none; margin-bottom: 12px;">
-                        <i class="ph ph-calendar-check info-block-icon"></i>
-                        <strong class="info-block-label">Lido até/Assistido até:</strong> <span id="post-lido-ate"
-                            class="info-block-value"></span>
-                    </div>
-
-                    <div class="info-block" style="margin-bottom: 12px;">
-                        <i class="ph ph-calendar-blank info-block-icon"></i>
-                        <strong class="info-block-label">Data da Avaliação:</strong> <span id="post-date"
-                            class="info-block-value">01/01/2023</span>
-                    </div>
-
-                    <div id="post-link-container" class="info-block" style="display: none; margin-bottom: 12px;">
-                        <i class="ph ph-link info-block-icon"></i>
-                        <strong class="info-block-label">Fonte externa:</strong>
-                        <a id="post-link" href="#" target="_blank" class="info-block-link">Acessar material original <i
-                                class="ph ph-arrow-up-right"></i></a>
-                    </div>
-                </div>
-
-                <div class="form-submit-container mt-30">
-                    <button id="editPostBtn" class="btn-search">
-                        <i class="ph ph-pencil-simple"></i> Editar esta avaliação
+            <div class="form-submit-container mt-30 flex-column gap-15">
+                <div class="flex gap-10 justify-center">
+                    <button class="btn-action" id="btnExportPDF" onclick="exportarPDF()">
+                        <i class="ph ph-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn-action btn-share-image" id="btnExportSocial" onclick="exportarImagemSocial()" title="Gerar imagem para Stories/WhatsApp">
+                        <i class="ph ph-instagram-logo"></i> Img para compartilhar
                     </button>
                 </div>
+                <button id="editPostBtn" class="btn-search">
+                    <i class="ph ph-pencil-simple"></i> Editar esta avaliação
+                </button>
             </div>
         </article>
     </main>

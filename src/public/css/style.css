@@ -891,3 +891,14 @@ main {
     color: var(--color-muted);
     opacity: 0.5;
 }
+
+/* Share Social Media Button */
+.btn-share-image {
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045) !important;
+    box-shadow: 0 10px 20px rgba(253, 29, 29, 0.2) !important;
+}
+
+.btn-share-image:hover {
+    box-shadow: 0 15px 30px rgba(253, 29, 29, 0.4) !important;
+    transform: translateY(-3px) scale(1.02);
+}
