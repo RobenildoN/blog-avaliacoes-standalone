@@ -194,7 +194,7 @@ function setupCommonHandlers(app, mainWindow) {
 
     ipcMain.handle('cleanup-orphaned-images', async () => {
         const PostService = require('../services/postService');
-        const postService = new PostService(app.getPath('userData'));
+        const postService = new PostService(path.join(app.getPath('userData'), 'images'));
         const count = await postService.cleanOrphanedImages();
         return { success: true, count };
     });

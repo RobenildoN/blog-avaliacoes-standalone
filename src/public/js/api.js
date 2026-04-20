@@ -80,6 +80,14 @@ class BlogAPI {
     static async authenticate(pwd) {
         return await window.api.authenticate(pwd);
     }
+
+    static async searchPosts(query, params = {}) {
+        return await this.getPosts({ ...params, search: query });
+    }
+
+    static async getPostsByCategory(categoryId, params = {}) {
+        return await this.getPosts({ ...params, categoryId: categoryId });
+    }
 }
 
 window.BlogAPI = BlogAPI;

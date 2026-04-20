@@ -141,6 +141,48 @@ class PostService {
         const mediaNotas = avg && avg.get('media') ? parseFloat(avg.get('media')).toFixed(1) : '0.0';
         return { totalPosts, totalCats, mediaNotas };
     }
+
+    async searchTitles(query) {
+        const posts = await Post.findAll({
+            where: { titulo: { [Op.like]: `%${query}%` } },
+            limit: 10,
+            attributes: ['id', 'titulo']
+        });
+        return posts.map(p => p.toJSON());
+    }
+
+    async isTitleDuplicate(titulo, excludeId = null) {
+        const where = { titulo };
+        if (excludeId) where.id = { [Op.ne]: excludeId };
+        const count = await Post.count({ where });
+        return count > 0;
+    }
+
+    async cleanOrphanedImages() {
+        const posts = await Post.findAll({ attributes: ['imagem'] });
+        const usedImages = new Set(posts.map(p => {
+            if (p.imagem && p.imagem.startsWith('img://')) {
+                return p.imagem.replace('img://', '');
+            }
+            return null;
+        }).filter(i => i));
+
+        if (!fs.existsSync(this.imagesPath)) return 0;
+
+        const files = fs.readdirSync(this.imagesPath);
+        let count = 0;
+        files.forEach(file => {
+            if (!usedImages.has(file) && file !== 'exemplo.jpg') {
+                try {
+                    fs.unlinkSync(path.join(this.imagesPath, file));
+                    count++;
+                } catch (e) {
+                    console.error('Erro ao deletar imagem órfã:', e);
+                }
+            }
+        });
+        return count;
+    }
 }
 
 module.exports = PostService;
