@@ -1,110 +1,85 @@
+// src/public/js/api.js
+
 /**
- * BlogAPI - Ponte de comunicação IPC (Nativo)
- * Substitui as chamadas fetch HTTP por chamadas diretas ao Preload Bridge
+ * Biblioteca de acesso à API NATIVA via IPC 
  */
-
 class BlogAPI {
-    // Posts
+    
+    // ============================================
+    // POSTS
+    // ============================================
+    
     static async getPosts(params = {}) {
-        try {
-            return await window.api.getPosts(params);
-        } catch (error) {
-            console.error('Erro ao buscar posts:', error);
-            throw error;
-        }
+        return await window.api.getPosts(params);
     }
 
-    static async getPostById(id) {
-        try {
-            return await window.api.getPostById(id);
-        } catch (error) {
-            console.error('Erro ao buscar post:', error);
-            throw error;
-        }
+    static async toggleFavorito(id) {
+        return await window.api.toggleFavorito(id);
     }
 
-    static async createPost(formData) {
-        try {
-            // Converter FormData para objeto plano se necessário (IPC prefere objetos)
-            const data = {};
-            formData.forEach((value, key) => { data[key] = value; });
-            return await window.api.createPost(data);
-        } catch (error) {
-            console.error('Erro ao criar post:', error);
-            throw error;
-        }
-    }
-
-    static async updatePost(id, formData) {
-        try {
-            const data = {};
-            formData.forEach((value, key) => { data[key] = value; });
-            return await window.api.updatePost(id, data);
-        } catch (error) {
-            console.error('Erro ao editar post:', error);
-            throw error;
-        }
-    }
-
-    static async deletePost(id) {
-        try {
-            return await window.api.deletePost(id);
-        } catch (error) {
-            console.error('Erro ao deletar post:', error);
-            throw error;
-        }
-    }
-
-    // Categorias
-    static async getCategories() {
-        try {
-            return await window.api.getCategories();
-        } catch (error) {
-            console.error('Erro ao buscar categorias:', error);
-            throw error;
-        }
-    }
-
-    static async getPostsByCategory(categoryId, page = 1) {
-        try {
-            // Unificando com o sistema de filtros padrão para evitar erro de função inexistente
-            return await this.getPosts({ categoryId, page, limit: 16 });
-        } catch (error) {
-            console.error('Erro ao buscar posts por categoria:', error);
-            throw error;
-        }
-    }
-
-    // Busca
-    static async searchPosts(query, params = {}) {
-        try {
-            return await window.api.searchPosts(query, params);
-        } catch (error) {
-            console.error('Erro ao pesquisar posts:', error);
-            throw error;
-        }
-    }
-    // Backup
     static async exportBackup() {
         return await window.api.exportBackup();
     }
 
-    static async importBackup() {
-        return await window.api.importBackup();
+    static async getAllPostsAdmin() {
+        return await window.api.getAllPostsAdmin();
     }
 
-    static async exportPDF(postId) {
-        return await window.api.exportPDF(postId);
+    static async getPostById(id) {
+        return await window.api.getPostById(id);
     }
 
-    static async exportSocialImage(postId) {
-        return await window.api.exportSocialImage(postId);
+    static async createPost(formDataDict) {
+        return await window.api.createPost(formDataDict); // Expects native dict
     }
 
-    static async cleanOrphanedImages() {
-        return await window.api.cleanupOrphanedImages();
+    static async updatePost(id, formDataDict) {
+        return await window.api.updatePost({ id, data: formDataDict });
+    }
+
+    static async deletePost(id) {
+        return await window.api.deletePost(id);
+    }
+
+    // ============================================
+    // CATEGORIAS
+    // ============================================
+    
+    static async getCategories() {
+        return await window.api.getCategories();
+    }
+
+    static async getCategoryById(id) {
+        return await window.api.getCategoryById(id);
+    }
+
+    static async createCategory(data) {
+        return await window.api.createCategory(data);
+    }
+
+    static async updateCategory(id, data) {
+        return await window.api.updateCategory({ id, data });
+    }
+
+    static async deleteCategory(id) {
+        return await window.api.deleteCategory(id);
+    }
+
+    // ============================================
+    // EXTRAS (NÍVEL 3)
+    // ============================================
+
+    static async selectImage() {
+        return await window.api.selectImage();
+    }
+
+    static async getDashboardStats() {
+        return await window.api.getDashboardStats();
+    }
+
+    static async authenticate(pwd) {
+        return await window.api.authenticate(pwd);
     }
 }
 
-// Tornar global para uso nos scripts de view
 window.BlogAPI = BlogAPI;

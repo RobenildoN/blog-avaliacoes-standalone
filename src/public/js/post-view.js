@@ -1,187 +1,89 @@
-/**
- * PostView - Gerenciador da Página de Detalhes do Post
- * Renderiza o post completo com suporte a Markdown.
- */
+// src/public/js/post-view.js
 
-document.addEventListener('DOMContentLoaded', () => {
-    const postImage = document.getElementById('post-image');
-    const postTitle = document.getElementById('post-title');
-    const postCategory = document.getElementById('post-category');
-    const postSummary = document.getElementById('post-summary');
-    const postRating = document.getElementById('post-rating');
-    const postDate = document.getElementById('post-date');
-    const postLidoAte = document.getElementById('post-lido-ate');
-    const postLidoContainer = document.getElementById('post-lido-container');
-    const postLink = document.getElementById('post-link');
-    const postLinkContainer = document.getElementById('post-link-container');
-    const editBtn = document.getElementById('editPostBtn');
+// Função para obter o ID do post da URL
+function getPostIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+}
 
-    // Inicialização do Conversor Markdown
-    const converter = new showdown.Converter({
-        headerLevelStart: 3,
-        simplifiedAutoLink: true,
-        strikethrough: true,
-        tables: true,
-        tasklists: true
-    });
-
-    // Obter ID da URL
-    const getPostId = () => {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('id');
-    };
-
-    // --- Carregamento de Dados ---
-
-    async function carregarPost() {
-        const id = getPostId();
-        if (!id) {
-            window.alertar('Post não encontrado!', 'error');
-            setTimeout(() => window.location.href = 'index.html', 2000);
-            return;
-        }
-
-        try {
-            const post = await window.api.getPostById(id);
-            
-            // Preencher campos
-            postTitle.innerText = post.titulo;
-            postCategory.innerText = post.Category ? post.Category.name : 'Avaliação';
-            
-            const getStatusClass = (status) => {
-                switch (status) {
-                    case 'Lendo': return 'status-lendo';
-                    case 'Em Espera': return 'status-espera';
-                    case 'Abandonado': return 'status-abandonado';
-                    default: return 'status-concluido';
-                }
-            };
-
-            const statusHtml = `<span class="badge-status ${getStatusClass(post.status)}">${post.status || 'Concluído'}</span>`;
-            postRating.innerHTML = `<span class="color-muted">Status:</span> ${statusHtml} &nbsp; <span class="color-muted">| Avaliação:</span> ` + '★'.repeat(post.avaliacao) + '☆'.repeat(5 - post.avaliacao);
-            
-            postDate.innerText = window.formatarData(post.data_post || post.createdAt);
-            
-            // Imagem
-            postImage.src = post.imagem ? (post.imagem.startsWith('http') ? post.imagem : 'img://' + post.imagem) : 'https://via.placeholder.com/800x450/0f172a/94a3b8?text=Sem+Capa';
-            postImage.onerror = () => window.handleImageError(postImage);
-
-            // Markdown Content
-            postSummary.innerHTML = converter.makeHtml(post.resumo || '');
-
-            // Campos Opcionais
-            if (post.lido_ate) {
-                postLidoAte.innerText = post.lido_ate;
-                postLidoContainer.style.display = 'block';
-            }
-
-            if (post.link_acesso) {
-                postLink.href = post.link_acesso;
-                postLinkContainer.style.display = 'block';
-            }
-
-            // Gerenciar Favoritos
-            const favBtn = document.getElementById('btnFavorite');
-            const updateFavVisual = (isFav) => {
-                if (!favBtn) return;
-                const icon = favBtn.querySelector('i');
-                if (isFav) {
-                    favBtn.classList.add('active');
-                    icon.classList.remove('ph');
-                    icon.classList.add('ph-fill');
-                } else {
-                    favBtn.classList.remove('active');
-                    icon.classList.remove('ph-fill');
-                    icon.classList.add('ph');
-                }
-            };
-            
-            updateFavVisual(post.favorito);
-            
-            // O onclick já está definido no HTML chamando toggleFavorito()
-            // Mas vamos manter a lógica de atualização visual aqui.
-            // O toggleFavorito no post-view.js cuidará de chamar updateFavVisual
-            window.updateFavVisual = updateFavVisual; 
-
-            // Gerenciar Botão de Edição
-            if (editBtn) {
-                editBtn.addEventListener('click', () => {
-                    window.location.href = `admin.html?edit=${id}`;
-                });
-            }
-
-        } catch (error) {
-            console.error('Erro ao abrir post:', error);
-            window.alertar('Erro ao carregar detalhes da obra.', 'error');
-        }
+// Função para carregar os detalhes do post
+async function loadPostDetails() {
+    const postId = getPostIdFromUrl();
+    if (!postId) {
+        document.getElementById('post-title').innerHTML = '<i class="ph ph-warning" style="color: var(--danger)"></i> Post não encontrado';
+        return;
     }
 
-    // --- Ações ---
+    try {
+        const post = await BlogAPI.getPostById(postId);
 
-    window.exportarPDF = async () => {
-        const id = getPostId();
-        const btn = document.getElementById('btnExportPDF');
-        try {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Gerando...';
-            
-            const result = await BlogAPI.exportPDF(id);
-            if (result && result.success) {
-                window.alertar('PDF gerado com sucesso!', 'success');
-            }
-        } catch (error) {
-            console.error('Erro ao exportar PDF:', error);
-            window.alertar('Erro ao gerar PDF', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="ph ph-file-pdf"></i> Exportar PDF';
+        // Preencher os elementos com os dados do post
+        document.getElementById('post-title').textContent = post.titulo;
+        document.getElementById('post-image').src = post.imagem || '../public/img/exemplo.jpg';
+        
+        // Converter Markdown para HTML
+        const converter = new showdown.Converter({
+            tables: true,
+            strikethrough: true,
+            tasklists: true,
+            simpleLineBreaks: true
+        });
+        document.getElementById('post-summary').innerHTML = converter.makeHtml(post.resumo || '');
+
+        // Tratar link de acesso
+        const linkContainer = document.getElementById('post-link-container');
+        const linkElement = document.getElementById('post-link');
+        if (post.link_acesso) {
+            linkElement.href = post.link_acesso;
+            linkContainer.style.display = 'block';
+        } else {
+            linkContainer.style.display = 'none';
         }
-    };
 
-    window.exportarImagemSocial = async () => {
-        const id = getPostId();
-        const btn = document.getElementById('btnExportSocial');
-        try {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Gerando...';
-            
-            const result = await BlogAPI.exportSocialImage(id);
-            if (result && result.success) {
-                window.alertar('Imagem para Stories gerada!', 'success');
-            }
-        } catch (error) {
-            console.error('Erro ao exportar imagem:', error);
-            window.alertar('Erro ao gerar imagem para redes sociais', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="ph ph-instagram-logo"></i> Img para compartilhar';
+        // Tratar lido até
+        const lidoContainer = document.getElementById('post-lido-container');
+        const lidoElement = document.getElementById('post-lido-ate');
+        if (post.lido_ate) {
+            lidoElement.textContent = post.lido_ate;
+            lidoContainer.style.display = 'block';
+        } else {
+            lidoContainer.style.display = 'none';
         }
-    };
 
-    window.toggleFavorito = async () => {
-        const id = getPostId();
-        const btn = document.getElementById('btnFavorite');
-        try {
-            const result = await window.api.toggleFavorito(id);
-            if (result) {
-                const icon = btn.querySelector('i');
-                if (result.favorito) {
-                    btn.classList.add('active');
-                    icon.classList.remove('ph');
-                    icon.classList.add('ph-fill');
-                    window.alertar('Adicionado aos favoritos!', 'success');
-                } else {
-                    btn.classList.remove('active');
-                    icon.classList.remove('ph-fill');
-                    icon.classList.add('ph');
-                    window.alertar('Removido dos favoritos.', 'info');
-                }
-            }
-        } catch (error) {
-            console.error('Erro ao atualizar favorito:', error);
+        // Usando o formatarNota do script.js
+        if (typeof formatarNota === 'function') {
+            document.getElementById('post-rating').innerHTML = formatarNota(post.avaliacao);
+        } else {
+            document.getElementById('post-rating').textContent = '★'.repeat(post.avaliacao) + '☆'.repeat(5 - post.avaliacao);
         }
-    };
+        
+        // Usando o formatarData
+        if (typeof formatarData === 'function') {
+            document.getElementById('post-date').textContent = formatarData(post.createdAt || post.data_post);
+        } else {
+            document.getElementById('post-date').textContent = new Date(post.createdAt || post.data_post).toLocaleDateString('pt-BR');
+        }
+        
+        document.getElementById('post-category').innerHTML = `<i class="ph ph-tag"></i> ` + (post.Category ? post.Category.name : 'N/A');
+        
+    } catch (error) {
+        console.error('Erro:', error);
+        document.getElementById('post-title').innerHTML = '<i class="ph ph-warning" style="color: var(--danger)"></i> Erro ao carregar post';
+    }
+}
 
-    // Iniciar
-    carregarPost();
+// Carregar os detalhes do post ao carregar a página
+document.addEventListener('DOMContentLoaded', async function () {
+    loadPostDetails();
+
+    // Mostrar botão editar sempre disponível
+    const editBtn = document.getElementById('editPostBtn');
+    editBtn.style.display = 'inline-flex';
+    // Adicionar funcionalidade ao botão editar
+    editBtn.addEventListener('click', function () {
+        const postId = getPostIdFromUrl();
+        if (postId) {
+            window.location.href = `admin.html?edit=${postId}`;
+        }
+    });
 });

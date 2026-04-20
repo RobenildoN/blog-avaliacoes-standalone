@@ -13,12 +13,6 @@ class CategoryService {
     }
 
     async createCategory(data) {
-        if (!data.name) throw new Error("Nome da categoria é obrigatório");
-        
-        // Verificar duplicidade
-        const existing = await Category.findOne({ where: { name: data.name } });
-        if (existing) throw new Error(`A categoria "${data.name}" já existe.`);
-
         const cat = await Category.create({ name: data.name });
         return cat.toJSON();
     }

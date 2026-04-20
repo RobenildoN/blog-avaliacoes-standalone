@@ -11,6 +11,8 @@ function setupIpcHandlers(app, mainWindow) {
     
     // Registrar handlers Comuns (Diálogos, Autenticação)
     setupCommonHandlers(app, mainWindow);
+    
+    console.log('Todos os handlers IPC foram registrados com sucesso!');
 }
 
 module.exports = setupIpcHandlers;

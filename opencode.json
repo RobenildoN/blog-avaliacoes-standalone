@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "project": "blog-avaliacoes-standalone",
+  "mode": "build",
+  "build": {
+    "platforms": ["win32","darwin","linux"],
+    "targets": {
+      "win32": "nsis",
+      "darwin": "dmg",
+      "linux": "AppImage"
+    }
+  },
+  "scripts": {
+    "dist": "electron-builder",
+    "start": "electron ."
+  }
+}

@@ -4,14 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img: https://via.placeholder.com; connect-src 'self' https://unpkg.com;">
     <title>Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Tooltips -->
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="../public/css/style.css">
 </head>
 
@@ -27,42 +22,18 @@
             <button class="btn-clear" onclick="limparBusca()"><i class="ph ph-x"></i></button>
         </div>
 
-        <div class="advanced-filters flex flex-column gap-15 mt-30 items-center">
-            <div class="flex flex-wrap justify-center gap-15 items-center">
-                <button class="btn-favorite-filter" id="btnFilterFavorites" onclick="toggleFiltroFavoritos(this)">
-                    <i class="ph ph-heart"></i> Favoritos
-                </button>
-                
-                <div class="flex items-center gap-10 glass-filter-pill">
-                    <i class="ph ph-star color-star"></i>
-                    <select id="filterRating" class="select-transparent" onchange="filtrarAvancado()">
-                        <option value="0">Todas as Notas</option>
-                        <option value="4">Melhores (4+ ★)</option>
-                        <option value="3">Medianas (3+ ★)</option>
-                        <option value="5">Perfeitas (5 ★)</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center gap-10 glass-filter-pill">
-                    <i class="ph ph-calendar color-accent"></i>
-                    <select id="filterYear" class="select-transparent" onchange="filtrarAvancado()">
-                        <option value="">Ano</option>
-                    </select>
-                    <select id="filterMonth" class="select-transparent" onchange="filtrarAvancado()">
-                        <option value="">Mês</option>
-                        <option value="01">Janeiro</option>
-                        <option value="02">Fevereiro</option>
-                        <option value="03">Março</option>
-                        <option value="04">Abril</option>
-                        <option value="05">Maio</option>
-                        <option value="06">Junho</option>
-                        <option value="07">Julho</option>
-                        <option value="08">Agosto</option>
-                        <option value="09">Setembro</option>
-                        <option value="10">Outubro</option>
-                        <option value="11">Novembro</option>
-                        <option value="12">Dezembro</option>
-                    </select>
+        <div class="advanced-filters flex justify-center gap-15 mt-20">
+            <button class="btn-clear" onclick="toggleFiltroFavoritos(this)">
+                <i class="ph ph-heart"></i> Apenas Favoritos
+            </button>
+            <div class="rating-filter flex items-center gap-10">
+                <span class="color-muted font-0-9">Nota mínima:</span>
+                <div class="flex gap-5">
+                    <button class="btn-star-filter" onclick="filtrarPorNota(1)">1</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(2)">2</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(3)">3</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(4)">4</button>
+                    <button class="btn-star-filter" onclick="filtrarPorNota(5)">5</button>
                 </div>
             </div>
         </div>
@@ -70,7 +41,6 @@
         <nav class="mt-20">
             <ul id="categoriesNav">
                 <li><a href="#" class="active" onclick="mostrarTodosPosts(this)"><i class="ph ph-squares-four"></i> Todos</a></li>
-                <li><a href="admin.html" class="link-admin"><i class="ph-fill ph-gear"></i> Admin</a></li>
                 <!-- Categorias serão carregadas dinamicamente -->
             </ul>
         </nav>
@@ -79,8 +49,7 @@
     <main>
         <section id="postsSection">
             <div class="section-header flex justify-between items-center mb-25 border-bottom">
-                <h2 id="sectionTitle" class="section-title"><i class="ph ph-clock-counter-clockwise"></i> Últimos Posts
-                </h2>
+                <h2 id="sectionTitle" class="section-title"><i class="ph ph-clock-counter-clockwise"></i> Últimos Posts</h2>
             </div>
 
             <div id="postsContainer" class="posts-container">
@@ -91,18 +60,15 @@
             </div>
 
             <div id="paginationControls" class="pagination" style="display: none;">
-                <button id="prevPageBtn" class="btn-clear" onclick="mudarPagina(-1)"><i class="ph ph-caret-left"></i>
-                    Anterior</button>
+                <button id="prevPageBtn" class="btn-clear" onclick="mudarPagina(-1)"><i class="ph ph-caret-left"></i> Anterior</button>
                 <span id="pageInfo" class="page-info-text">Página 1 de 1</span>
-                <button id="nextPageBtn" class="btn-search" onclick="mudarPagina(1)">Próximo <i
-                        class="ph ph-caret-right"></i></button>
+                <button id="nextPageBtn" class="btn-search" onclick="mudarPagina(1)">Próximo <i class="ph ph-caret-right"></i></button>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão
-                Autônoma</span></p>
+        <p>&copy; 2024 Blog de Avaliações - <span class="app-version color-accent"><i class="ph ph-cpu"></i> Versão Autônoma</span></p>
     </footer>
 
     <script src="../public/js/script.js"></script>

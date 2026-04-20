@@ -4,17 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://maxcdn.bootstrapcdn.com; img-src 'self' data: blob: img: https://via.placeholder.com; connect-src 'self' https://unpkg.com https://cdn.jsdelivr.net;">
     <title>Administração - Blog de Avaliações</title>
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="../public/css/style.css">
-    <!-- Custom Markdown Editor -->
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- EasyMDE Markdown Editor -->
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
 </head>
 
 <body>
@@ -26,23 +22,38 @@
             <ul id="categoriesNav">
                 <li><a href="index.html"><i class="ph ph-house"></i> Início</a></li>
                 <li><a href="categorias.html"><i class="ph ph-folders"></i> Gerenciar Categorias</a></li>
-                <li><a href="#" onclick="exportarBackup()"><i class="ph ph-download-simple"></i> Exportar Backup</a></li>
-                <li><a href="#" onclick="importarBackup()"><i class="ph ph-upload-simple"></i> Importar Backup</a></li>
-                <li><a href="#" onclick="limparImagensOrfas()"><i class="ph ph-broom"></i> Manutenção de Mídias</a></li>
+                <li><a href="#" onclick="exportarBackup()"><i class="ph ph-download-simple"></i> Exportar Backup</a>
+                </li>
             </ul>
         </nav>
     </header>
 
     <main class="admin-main">
-        <!-- Dashboard removido daqui -->
+        <div class="admin-container" id="dashboardSection" style="display:none;">
+            <h2 class="section-title"><i class="ph-fill ph-chart-bar color-accent"></i> Estatísticas Administrativas
+            </h2>
+            <div class="flex gap-20">
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statPosts">0</h3>
+                    <p class="color-muted fw-500">Obras Avaliadas</p>
+                </div>
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statCats">0</h3>
+                    <p class="color-muted fw-500">Categorias Criadas</p>
+                </div>
+                <div class="info-block flex-1 text-center">
+                    <h3 class="color-main size-2" id="statMedia">0.0</h3>
+                    <p class="color-muted fw-500">Média Geral de Notas</p>
+                </div>
+            </div>
+        </div>
 
         <div class="admin-container">
             <h2 class="section-title"><i class="ph-fill ph-plus-circle color-accent"></i> Criar Novo Post</h2>
             <form id="formCriarPost" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label>Título* <small id="titleWarning" class="color-danger" style="display:none;">(Já avaliado)</small></label>
-                    <input type="text" name="titulo" list="titlesDatalist" required placeholder="Digite o título da obra" autocomplete="off">
-                    <datalist id="titlesDatalist"></datalist>
+                    <label>Título*</label>
+                    <input type="text" name="titulo" required placeholder="Digite o título da obra">
                 </div>
                 <div class="form-group">
                     <label>Categoria*</label>
@@ -61,39 +72,12 @@
                 </div>
                 <div class="form-group">
                     <label>Resumo / Avaliação*</label>
-                    <div class="markdown-editor">
-                        <div class="markdown-toolbar" id="toolbarCreate">
-                            <button type="button" data-command="bold" title="Negrito"><strong>B</strong></button>
-                            <button type="button" data-command="italic" title="Itálico"><em>I</em></button>
-                            <button type="button" data-command="strikethrough" title="Riscado"><del>S</del></button>
-                            <span class="separator"></span>
-                            <button type="button" data-command="heading" title="Cabeçalho">#</button>
-                            <button type="button" data-command="link" title="Link">🔗</button>
-                            <button type="button" data-command="image" title="Imagem">🖼️</button>
-                            <span class="separator"></span>
-                            <button type="button" data-command="list" title="Lista">•</button>
-                            <button type="button" data-command="list-ordered" title="Lista Ordenada">1.</button>
-                            <button type="button" data-command="quote" title="Citação">❝</button>
-                            <span class="separator"></span>
-                            <button type="button" data-command="code" title="Código">&lt;/&gt;</button>
-                            <button type="button" data-command="code-block" title="Bloco de Código">📄</button>
-                        </div>
-                        <textarea name="resumo" id="resumoCreate" class="markdown-textarea"
-                            placeholder="O que você achou da obra? (Suporta Markdown)"></textarea>
-                    </div>
+                    <textarea name="resumo" id="resumoCreate" rows="8" required
+                        placeholder="O que você achou da obra?"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Nota de Avaliação (1 a 5)*</label>
                     <input type="number" name="avaliacao" min="1" max="5" required placeholder="Ex: 4">
-                </div>
-                <div class="form-group">
-                    <label>Status*</label>
-                    <select name="status" required>
-                        <option value="Concluído" selected>Concluído</option>
-                        <option value="Lendo">Lendo</option>
-                        <option value="Em Espera">Em Espera</option>
-                        <option value="Abandonado">Abandonado</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label>Lido até / Assistido até (Opcional)</label>
@@ -134,47 +118,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- Estatísticas no Final da Página -->
-        <div class="admin-container" id="dashboardSection" style="display:none; margin-top: 40px;">
-            <h2 class="section-title"><i class="ph-fill ph-chart-bar color-accent"></i> Painel de Estatísticas</h2>
-            
-            <div class="flex gap-20 mb-20">
-                <div class="info-block flex-1 text-center">
-                    <h3 class="color-main size-2" id="statPosts">0</h3>
-                    <p class="color-muted fw-500">Obras Avaliadas</p>
-                </div>
-                <div class="info-block flex-1 text-center">
-                    <h3 class="color-main size-2" id="statCats">0</h3>
-                    <p class="color-muted fw-500">Categorias Criadas</p>
-                </div>
-                <div class="info-block flex-1 text-center">
-                    <h3 class="color-main size-2" id="statMedia">0.0</h3>
-                    <p class="color-muted fw-500">Média Geral de Notas</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-20 admin-charts">
-                <div class="info-block">
-                    <h4 class="text-center mb-10 size-0-9"><i class="ph ph-chart-pie color-info"></i> Obras por Categoria</h4>
-                    <div style="height: 250px; position: relative;">
-                        <canvas id="chartCategory"></canvas>
-                    </div>
-                </div>
-                <div class="info-block">
-                    <h4 class="text-center mb-10 size-0-9"><i class="ph ph-chart-bar color-warning"></i> Distribuição de Notas</h4>
-                    <div style="height: 250px; position: relative;">
-                        <canvas id="chartRating"></canvas>
-                    </div>
-                </div>
-                <div class="info-block" style="grid-column: span 2;">
-                    <h4 class="text-center mb-10 size-0-9"><i class="ph ph-calendar color-accent"></i> Linha do Tempo (Atividade Mensal)</h4>
-                    <div style="height: 200px; position: relative;">
-                        <canvas id="chartTimeline"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- Modal Editar -->
@@ -184,44 +127,16 @@
             <form id="formEditarPost">
                 <input type="hidden" name="id">
                 <div class="form-group">
-                    <label>Título <small id="titleWarningEdit" class="color-danger" style="display:none;">(Já avaliado)</small></label>
-                    <input type="text" name="titulo" list="titlesDatalistEdit" required autocomplete="off">
-                    <datalist id="titlesDatalistEdit"></datalist>
+                    <label>Título</label>
+                    <input type="text" name="titulo" required>
                 </div>
                 <div class="form-group">
                     <label>Texto da Avaliação</label>
-                    <div class="markdown-editor">
-                        <div class="markdown-toolbar" id="toolbarEdit">
-                            <button type="button" data-command="bold" title="Negrito"><strong>B</strong></button>
-                            <button type="button" data-command="italic" title="Itálico"><em>I</em></button>
-                            <button type="button" data-command="strikethrough" title="Riscado"><del>S</del></button>
-                            <span class="separator"></span>
-                            <button type="button" data-command="heading" title="Cabeçalho">#</button>
-                            <button type="button" data-command="link" title="Link">🔗</button>
-                            <button type="button" data-command="image" title="Imagem">🖼️</button>
-                            <span class="separator"></span>
-                            <button type="button" data-command="list" title="Lista">•</button>
-                            <button type="button" data-command="list-ordered" title="Lista Ordenada">1.</button>
-                            <button type="button" data-command="quote" title="Citação">❝</button>
-                            <span class="separator"></span>
-                            <button type="button" data-command="code" title="Código">&lt;/&gt;</button>
-                            <button type="button" data-command="code-block" title="Bloco de Código">📄</button>
-                        </div>
-                        <textarea name="resumo" id="resumoEdit" class="markdown-textarea"></textarea>
-                    </div>
+                    <textarea name="resumo" id="resumoEdit" rows="8" required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Nova Nota (1 a 5)</label>
                     <input type="number" name="avaliacao" min="1" max="5" required>
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <select name="status" required>
-                        <option value="Concluído">Concluído</option>
-                        <option value="Lendo">Lendo</option>
-                        <option value="Em Espera">Em Espera</option>
-                        <option value="Abandonado">Abandonado</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label>Categoria</label>
@@ -247,7 +162,7 @@
                     <input type="url" name="link_acesso">
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="fecharModal()">
+                    <button type="button" class="btn-clear" onclick="fecharModal()">
                         Cancelar
                     </button>
                     <button type="submit" class="btn-search">
