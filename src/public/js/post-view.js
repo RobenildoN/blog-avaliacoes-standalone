@@ -19,7 +19,25 @@ async function loadPostDetails() {
 
         // Preencher os elementos com os dados do post
         document.getElementById('post-title').textContent = post.titulo;
-        document.getElementById('post-image').src = post.imagem || '../public/img/exemplo.jpg';
+        // Tratar imagem com protocolo customizado se necessário
+        let imageSrc = '../public/img/exemplo.jpg';
+        if (post.imagem) {
+            if (post.imagem.startsWith('http')) {
+                imageSrc = post.imagem;
+            } else if (post.imagem.startsWith('img://')) {
+                imageSrc = post.imagem;
+            } else {
+                imageSrc = 'img://' + post.imagem;
+            }
+        }
+        document.getElementById('post-image').src = imageSrc;
+        document.getElementById('post-image').onerror = () => {
+            if (typeof window.handleImageError === 'function') {
+                window.handleImageError(document.getElementById('post-image'));
+            } else {
+                document.getElementById('post-image').src = '../public/img/exemplo.jpg';
+            }
+        };
         
         // Converter Markdown para HTML
         const converter = new showdown.Converter({
