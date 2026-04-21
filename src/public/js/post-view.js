@@ -84,6 +84,19 @@ async function loadPostDetails() {
         
         document.getElementById('post-category').innerHTML = `<i class="ph ph-tag"></i> ` + (post.Category ? post.Category.name : 'N/A');
         
+        // Atualizar estado do botão de favorito
+        const btnFav = document.getElementById('btnFavorite');
+        const iconFav = btnFav.querySelector('i');
+        if (post.favorito) {
+            btnFav.classList.add('active');
+            iconFav.classList.remove('ph');
+            iconFav.classList.add('ph-fill');
+        } else {
+            btnFav.classList.remove('active');
+            iconFav.classList.remove('ph-fill');
+            iconFav.classList.add('ph');
+        }
+        
     } catch (error) {
         console.error('Erro:', error);
         document.getElementById('post-title').innerHTML = '<i class="ph ph-warning" style="color: var(--danger)"></i> Erro ao carregar post';
@@ -105,3 +118,34 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     });
 });
+
+async function toggleFavorito() {
+    const postId = getPostIdFromUrl();
+    if (!postId) return;
+
+    const btnFav = document.getElementById('btnFavorite');
+    const iconFav = btnFav.querySelector('i');
+
+    try {
+        const result = await BlogAPI.toggleFavorito(postId);
+        if (result) {
+            if (result.favorito) {
+                btnFav.classList.add('active');
+                iconFav.classList.remove('ph');
+                iconFav.classList.add('ph-fill');
+                if (typeof window.alertar === 'function') window.alertar('Adicionado aos favoritos!', 'success');
+            } else {
+                btnFav.classList.remove('active');
+                iconFav.classList.remove('ph-fill');
+                iconFav.classList.add('ph');
+                if (typeof window.alertar === 'function') window.alertar('Removido dos favoritos.', 'info');
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao alternar favorito:', error);
+        if (typeof window.alertar === 'function') window.alertar('Erro ao atualizar favorito', 'error');
+    }
+}
+
+// Bind to window
+window.toggleFavorito = toggleFavorito;
