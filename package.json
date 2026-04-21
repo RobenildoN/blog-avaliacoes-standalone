@@ -1,6 +1,6 @@
 {
   "name": "blog-avaliacoes-standalone",
-  "version": "4.5.0",
+  "version": "4.9.8",
   "description": "Aplicação de avaliações com SQLite",
   "main": "main.js",
   "scripts": {

@@ -11,7 +11,8 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 - [x] **Gestão de Categorias:** Validação de unicidade para evitar duplicatas.
 - [x] **Dashboard Administrativo:** Estatísticas automáticas no topo da tela Admin.
 - [x] **Filtragem Avançada:** Botão para filtrar apenas os favoritos diretamente na Home.
-- [x] **Portabilidade de Dados:** Sistema de Importação e Exportação de Backups (ZIP).
+- [x] **Portabilidade de Dados:** Sistema de Importação e Exportação de Backups (ZIP) com interface integrada.
+- [x] **Suíte de Testes:** Testes unitários para serviços core (Backup e Posts).
 
 ## 🛠️ Sugestões de Melhorias (Próximas Passos)
 
@@ -53,4 +54,5 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 - **v4.6.0:** Importador de Backup e Filtros de Favoritos na Home.
 - **v4.8.0:** Status Tags, Filtros Temporais/Nota, Exportação PDF e Limpeza de Storage.
 - **v4.9.0:** Social Image Share (Instagram Stories/WhatsApp) e Refinamento de UI.
-- **v4.9.7 (Atual):** Fix de Duplicatas, Refinamento de Captura Social e Correções de Estilo.
+- **v4.9.7:** Fix de Duplicatas, Refinamento de Captura Social e Correções de Estilo.
+- **v4.9.8 (Atual):** Botão de Importação na UI, Refatoração do PostService e Suíte de Testes completa.

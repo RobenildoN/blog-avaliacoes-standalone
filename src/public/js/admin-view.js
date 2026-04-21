@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.fecharModal = fecharModal;
     window.selectImageHandler = selectImageHandler;
     window.exportarBackup = exportarBackup;
+    window.importarBackup = importarBackup;
 });
 
 async function exportarBackup() {
@@ -59,6 +60,24 @@ async function exportarBackup() {
     } catch (error) {
         console.error('Erro ao exportar:', error);
         showToast('Falha ao exportar backup.', 'error');
+    }
+}
+
+async function importarBackup() {
+    if (!confirm('AVISO: Importar um backup substituirá todos os dados atuais e reiniciará o aplicativo. Deseja continuar?')) return;
+
+    try {
+        showToast('Iniciando importação de backup...', 'warning');
+        const result = await BlogAPI.importBackup();
+        
+        if (result && result.success) {
+            showToast('Backup importado! O aplicativo será reiniciado em instantes...', 'success');
+        } else if (result && result.success === false) {
+            showToast('Erro ao importar: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao importar:', error);
+        showToast('Falha crítica ao importar backup.', 'error');
     }
 }
 

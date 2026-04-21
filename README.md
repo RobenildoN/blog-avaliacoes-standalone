@@ -1,16 +1,16 @@
 # Blog de Avaliações - Standalone Nativo 🖥️🌌
 
-A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.9.7**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
+A evolução definitiva do **Blog de Avaliações**, agora operando como um Software Desktop 100% Nativo blindado e extremamente rápido na **versão 4.9.8**. Substituímos toda a dependência que simulava navegadores web por comunicações de processos nativos (IPC), trazendo a melhor performance e segurança disponíveis no ecossistema Electron.
 
-## ✨ Características (Versão 4.9.7 - Social & Design Update)
+## ✨ Características (Versão 4.9.8 - Backup & Test Update)
 
-### 🆕 **O que há de novo na v4.9.7**
+### 🆕 **O que há de novo na v4.9.8**
 
--   **📲 Social Image Share (Stories):** Gere imagens formatadas em 1080x1920 prontas para Instagram e WhatsApp com design premium, badges de status e avaliação.
--   **💎 Refinamento de UI (Post Detail):** Nova organização da página de detalhes com título em destaque, status/nota unificados e botão de favoritar integrado à composição.
--   **🏷️ Selos de Status:** Acompanhe seu progresso com tags de "Lendo", "Concluído", "Em Espera" ou "Abandonado" com cores exclusivas.
--   **📅 Filtros Temporais e por Nota:** Encontre rapidamente obras assistidas em um ano/mês específico ou obras com nota 4+, 3+ ou 5 estrelas.
--   **📊 Dashboard de BI (Chart.js):** Painel de estatísticas avançadas com gráficos de rosca por categoria, barras por nota e linha do tempo.
+-   **📥 Importação de Backup Integrada:** Agora você pode restaurar seus dados diretamente pela interface administrativa com um clique.
+-   **🧪 Suíte de Testes Robusta:** Implementação de testes unitários para os serviços de Backup e Posts, garantindo integridade total dos dados.
+-   **📲 Social Image Share (Stories):** Gere imagens formatadas em 1080x1920 prontas para Instagram e WhatsApp com design premium.
+-   **💎 Refinamento de UI:** Botões de Backup organizados no cabeçalho administrativo.
+-   **📊 Dashboard de BI (Chart.js):** Painel de estatísticas avançadas com gráficos dinâmicos.
 
 ### 🏎️ Arquitetura Exclusiva de Software Desktop
 
@@ -38,6 +38,7 @@ A evolução definitiva do **Blog de Avaliações**, agora operando como um Soft
 1. **Instalar dependências**: `npm install`
 2. **Executar migrations**: `npx sequelize-cli db:migrate`
 3. **Rodar Ambiente**: `npm start`
+4. **Executar Testes**: `npm test`
 
 ### Geração do Instalador (.exe)
 Para obter uma versão autônoma entregável:

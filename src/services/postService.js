@@ -3,6 +3,7 @@ const Category = require('../models/category');
 const { Op } = require('sequelize');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 class PostService {
     constructor(imagesPath) {
@@ -67,11 +68,8 @@ class PostService {
     async createPost(data) {
         let imagemPath = null;
         if (data.imageAbsPath) {
-            const ext = path.extname(data.imageAbsPath);
-            const filename = `post-${Date.now()}${ext}`;
-            const targetPath = path.join(this.imagesPath, filename);
-            fs.copyFileSync(data.imageAbsPath, targetPath);
-            imagemPath = 'img://' + filename;
+            const filename = await this.saveImage(data.imageAbsPath);
+            if (filename) imagemPath = 'img://' + filename;
         }
 
         const post = await Post.create({
@@ -93,11 +91,12 @@ class PostService {
 
         let imagemPath = post.imagem;
         if (data.imageAbsPath) {
-            const ext = path.extname(data.imageAbsPath);
-            const filename = `post-${Date.now()}${ext}`;
-            const targetPath = path.join(this.imagesPath, filename);
-            fs.copyFileSync(data.imageAbsPath, targetPath);
-            imagemPath = 'img://' + filename;
+            // Se já tinha imagem customizada, remover a antiga
+            if (post.imagem && post.imagem.startsWith('img://')) {
+                await this.removeImage(post.imagem.replace('img://', ''));
+            }
+            const filename = await this.saveImage(data.imageAbsPath);
+            if (filename) imagemPath = 'img://' + filename;
         }
 
         let targetCategoryId = post.categoryId;
@@ -128,8 +127,51 @@ class PostService {
 
     async deletePost(id) {
         const post = await Post.findByPk(id);
-        if (post) await post.destroy();
+        if (post) {
+            // Remover imagem física se existir
+            if (post.imagem && post.imagem.startsWith('img://')) {
+                await this.removeImage(post.imagem.replace('img://', ''));
+            }
+            await post.destroy();
+        }
         return true;
+    }
+
+    // Helper methods for images
+    generateImageFilename(originalPath) {
+        const ext = path.extname(originalPath);
+        const hash = crypto.createHash('md5').update(Date.now().toString() + originalPath).digest('hex');
+        return `${hash}${ext}`;
+    }
+
+    async saveImage(imageAbsPath) {
+        if (!fs.existsSync(imageAbsPath)) return null;
+        
+        const filename = this.generateImageFilename(imageAbsPath);
+        const targetPath = path.join(this.imagesPath, filename);
+        
+        if (!fs.existsSync(this.imagesPath)) {
+            fs.mkdirSync(this.imagesPath, { recursive: true });
+        }
+        
+        fs.copyFileSync(imageAbsPath, targetPath);
+        return filename;
+    }
+
+    async removeImage(filename) {
+        if (!filename || filename === 'exemplo.jpg' || filename.includes('img/exemplo.jpg')) return;
+        
+        // Se for base64 não faz nada
+        if (filename.startsWith('data:')) return;
+
+        const filePath = path.join(this.imagesPath, filename);
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath);
+            } catch (e) {
+                console.error(`Erro ao remover arquivo: ${filePath}`, e);
+            }
+        }
     }
 
     async getDashboardStats() {

@@ -21,6 +21,10 @@ class BlogAPI {
         return await window.api.exportBackup();
     }
 
+    static async importBackup() {
+        return await window.api.importBackup();
+    }
+
     static async getAllPostsAdmin() {
         return await window.api.getAllPostsAdmin();
     }

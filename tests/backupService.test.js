@@ -66,7 +66,7 @@ describe('BackupService', () => {
             const backupPath = await backupService.createBackup();
 
             expect(fs.existsSync(backupPath)).toBe(true);
-            expect(backupPath).toMatch(/backup-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.zip$/);
+            expect(backupPath).toMatch(/backup-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}(-\d{3})?\.zip$/);
 
             // Verificar se o backup contém os arquivos esperados
             const stats = fs.statSync(backupPath);
@@ -82,10 +82,39 @@ describe('BackupService', () => {
             const backups = backupService.listBackups();
 
             expect(backups.length).toBeGreaterThan(0);
-            expect(backups[0].filename).toMatch(/backup-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}\.zip$/);
+            expect(backups[0].filename).toMatch(/backup-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}(-\d{3})?\.zip$/);
             expect(backups[0]).toHaveProperty('size');
             expect(backups[0]).toHaveProperty('createdAt');
             expect(backups[0]).toHaveProperty('path');
+        });
+    });
+
+    describe('importBackup', () => {
+        test('should extract backup files to userDataPath', async () => {
+            // 1. Criar um backup
+            const backupPath = await backupService.createBackup();
+            
+            // 2. Modificar os arquivos originais para verificar se foram restaurados
+            fs.writeFileSync(testDbPath, 'modified database content');
+            const image1Path = path.join(testImagesPath, 'image1.jpg');
+            fs.writeFileSync(image1Path, 'modified image 1');
+
+            // 3. Importar o backup
+            await backupService.importBackup(backupPath);
+
+            // 4. Verificar se os arquivos foram restaurados ao conteúdo original do backup
+            const dbContent = fs.readFileSync(testDbPath, 'utf8');
+            const imgContent = fs.readFileSync(image1Path, 'utf8');
+
+            expect(dbContent).toBe('fake database content');
+            expect(imgContent).toBe('fake image 1');
+        });
+
+        test('should throw error for invalid zip file', async () => {
+            const invalidZipPath = path.join(testUserDataPath, 'invalid.zip');
+            fs.writeFileSync(invalidZipPath, 'not a zip content');
+
+            await expect(backupService.importBackup(invalidZipPath)).rejects.toThrow();
         });
     });
 });
