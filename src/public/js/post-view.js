@@ -84,6 +84,23 @@ async function loadPostDetails() {
         
         document.getElementById('post-category').innerHTML = `<i class="ph ph-tag"></i> ` + (post.Category ? post.Category.name : 'N/A');
         
+        const statusEl = document.getElementById('post-status');
+        if (statusEl) {
+            statusEl.textContent = post.status || 'Concluído';
+            // Remover classes anteriores
+            statusEl.classList.remove('status-lendo', 'status-espera', 'status-abandonado', 'status-concluido');
+            // Adicionar nova classe
+            const statusClass = (s) => {
+                switch (s) {
+                    case 'Lendo': return 'status-lendo';
+                    case 'Em Espera': return 'status-espera';
+                    case 'Abandonado': return 'status-abandonado';
+                    default: return 'status-concluido';
+                }
+            };
+            statusEl.classList.add(statusClass(post.status));
+        }
+        
         // Atualizar estado do botão de favorito
         const btnFav = document.getElementById('btnFavorite');
         const iconFav = btnFav.querySelector('i');

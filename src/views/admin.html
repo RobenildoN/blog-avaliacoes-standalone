@@ -64,6 +64,15 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Status da Obra*</label>
+                    <select name="status" required>
+                        <option value="Concluído">Concluído</option>
+                        <option value="Lendo">Lendo / Assistindo</option>
+                        <option value="Em Espera">Em Espera</option>
+                        <option value="Abandonado">Abandonado</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Imagem da Capa</label>
                     <div class="flex gap-10 items-center">
                         <button type="button" class="btn-clear flex-1" onclick="selectImageHandler('create')">
@@ -144,6 +153,15 @@
                     <label>Categoria</label>
                     <select name="categoryId" id="selectCategoriaEdit" required>
                         <option value="">Selecione uma categoria...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status da Obra</label>
+                    <select name="status" required>
+                        <option value="Concluído">Concluído</option>
+                        <option value="Lendo">Lendo / Assistindo</option>
+                        <option value="Em Espera">Em Espera</option>
+                        <option value="Abandonado">Abandonado</option>
                     </select>
                 </div>
                 <div class="form-group">

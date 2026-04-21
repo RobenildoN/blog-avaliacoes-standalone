@@ -25,7 +25,7 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 ### ⚙️ Funcionalidades (Features)
 - [ ] **Filtragem por Data:** Seletor para ver avaliações de um ano ou mês específico.
 - [ ] **Busca por Nota:** Slider ou botões para buscar obras por faixa de avaliação (ex: 4+ estrelas).
-- [ ] **Tags de Status:** Adicionar selos de "Lendo", "Concluído" ou "Abandonado" às obras.
+- [x] **Tags de Status:** Adicionar selos de "Lendo", "Concluído" ou "Abandonado" às obras.
 - [x] **Exportação Custom:** Gerar arquivo PDF ou imagem formatada para redes sociais (Stories).
 - [ ] **Edição em Lote:** Selecionar múltiplos posts no Admin para mudar a categoria de todos ao mesmo tempo.
 - [ ] **Backup na Nuvem:** Integração opcional com Google Drive ou GitHub para salvar o banco fora do PC.

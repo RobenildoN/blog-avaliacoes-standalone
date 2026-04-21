@@ -168,11 +168,11 @@ async function criarPost(e) {
     submitBtn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Publicando Nativamente...';
     submitBtn.disabled = true;
 
-    // Convert form to Dict as IPC doesn't serialize FormData Objects
     const dataDict = {
         titulo: e.target.titulo.value,
         resumo: mdeCreate.value(),
         categoryId: e.target.categoryId.value,
+        status: e.target.status.value,
         avaliacao: e.target.avaliacao.value,
         lido_ate: e.target.lido_ate.value,
         link_acesso: e.target.link_acesso.value,
@@ -225,6 +225,7 @@ async function abrirEditar(id) {
         mdeEdit.value(post.resumo || '');
         form.avaliacao.value = post.avaliacao;
         form.categoryId.value = post.categoryId || '';
+        form.status.value = post.status || 'Concluído';
         form.lido_ate.value = post.lido_ate || '';
         form.link_acesso.value = post.link_acesso || '';
 
@@ -257,11 +258,11 @@ async function atualizarPost(e) {
     submitBtn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Atualizando IPC...';
     submitBtn.disabled = true;
 
-    // Convert form to Dict as IPC doesn't serialize FormData Objects
     const dataDict = {
         titulo: e.target.titulo.value,
         resumo: mdeEdit.value(),
         categoryId: e.target.categoryId.value,
+        status: e.target.status.value,
         avaliacao: e.target.avaliacao.value,
         lido_ate: e.target.lido_ate.value,
         link_acesso: e.target.link_acesso.value,
