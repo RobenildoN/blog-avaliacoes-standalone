@@ -164,5 +164,25 @@ async function toggleFavorito() {
     }
 }
 
+async function exportarImagemSocial() {
+    const postId = getPostIdFromUrl();
+    if (!postId) return;
+
+    if (typeof window.alertar === 'function') window.alertar('Gerando imagem para redes sociais...', 'info');
+
+    try {
+        const result = await BlogAPI.exportSocialImage(postId);
+        if (result && result.success) {
+            if (typeof window.alertar === 'function') window.alertar('Imagem exportada com sucesso!', 'success');
+        } else if (result && result.error) {
+            if (typeof window.alertar === 'function') window.alertar('Erro: ' + result.error, 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao exportar imagem:', error);
+        if (typeof window.alertar === 'function') window.alertar('Erro ao exportar imagem', 'error');
+    }
+}
+
 // Bind to window
 window.toggleFavorito = toggleFavorito;
+window.exportarImagemSocial = exportarImagemSocial;

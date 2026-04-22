@@ -92,6 +92,10 @@ class BlogAPI {
     static async getPostsByCategory(categoryId, params = {}) {
         return await this.getPosts({ ...params, categoryId: categoryId });
     }
+
+    static async exportSocialImage(postId) {
+        return await window.api.exportSocialImage(postId);
+    }
 }
 
 window.BlogAPI = BlogAPI;

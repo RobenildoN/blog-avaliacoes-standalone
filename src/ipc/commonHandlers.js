@@ -128,16 +128,17 @@ function setupCommonHandlers(app, mainWindow) {
                 frame: false,
                 resizable: false,
                 enableLargerThanScreen: true,
-                useContentSize: true,
+                backgroundColor: '#0b0f19', // Cor de fundo para evitar bordas brancas
                 webPreferences: {
                     nodeIntegration: false,
                     contextIsolation: true,
-                    webSecurity: false
+                    webSecurity: false,
+                    offscreen: false // CapturePage funciona melhor com offscreen: false
                 }
             });
 
             // Forçar posição fora da tela para garantir que o SO não limite a janela
-            tempWin.setPosition(-5000, -5000);
+            tempWin.setPosition(-10000, -10000);
 
             const templatePath = path.join(__dirname, '../views/social-share-template.html');
             await tempWin.loadFile(templatePath);
@@ -151,6 +152,8 @@ function setupCommonHandlers(app, mainWindow) {
             };
 
             await tempWin.webContents.executeJavaScript(`window.setData(${JSON.stringify(postData)})`);
+            
+            // Forçar zoom 1.0 e garantir que não haja escala do sistema afetando o tamanho
             tempWin.webContents.setZoomFactor(1.0);
 
             // Aguardar até que a imagem esteja carregada e sinalizada como ready
@@ -170,7 +173,8 @@ function setupCommonHandlers(app, mainWindow) {
                 checkReady();
             });
 
-            // Capturar a página com as dimensões exatas
+            // Capturar a página com as dimensões exatas em pixels reais
+            // Usamos as dimensões do conteúdo para garantir que pegamos tudo
             const image = await tempWin.webContents.capturePage({
                 x: 0,
                 y: 0,

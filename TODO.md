@@ -45,7 +45,7 @@ Este arquivo contém as tarefas concluídas e as sugestões de melhorias planeja
 
 ## 🐛 Bugs Reportados
 
-- [ ] **[BUG] Social Image Share Clipping:** Imagem gerada para Stories ainda apresenta cortes ou layout desalinhado em algumas resoluções de tela específicas (Windows DPI Scaling).
+- [x] **[BUG] Social Image Share Clipping:** Imagem gerada para Stories refinada para evitar cortes em telas com DPI alto (ajustado zoom e captura).
 - [x] **[FIX] Duplicate Title Check:** Corrigido erro TypeError no Admin ao validar títulos de avaliações.
 - [x] **[FIX] Select Dropdown UI:** Corrigido fundo branco em menus de seleção (Categoria/Status) em Dark Mode.
 

@@ -59,7 +59,8 @@
       "**/node_modules/sqlite3/**/*"
     ],
     "win": {
-      "target": "dir"
+      "target": "dir",
+      "icon": "build/icon.png"
     },
     "mac": {
       "target": "dmg"
