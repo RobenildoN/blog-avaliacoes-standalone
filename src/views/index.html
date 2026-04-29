@@ -18,24 +18,33 @@
             <h1><i class="ph-fill ph-star-four header-icon color-accent v-middle"></i> Avaliações</h1>
         </div>
 
-        <div class="search-box">
-            <input type="text" placeholder="Pesquisar títulos, resumos ou categorias..." id="searchBox">
-            <button class="btn-search" onclick="realizarBusca()"><i class="ph ph-magnifying-glass"></i> Buscar</button>
-            <button class="btn-clear" onclick="limparBusca()"><i class="ph ph-x"></i></button>
-        </div>
-
-        <div class="advanced-filters flex justify-center gap-15 mt-20">
-            <button class="btn-favorite-filter" onclick="toggleFiltroFavoritos(this)">
-                <i class="ph ph-heart"></i> Apenas Favoritos
-            </button>
-            <div class="rating-filter flex items-center gap-10">
-                <span class="color-muted font-0-9">Nota mínima:</span>
-                <div class="flex gap-5">
-                    <button class="btn-star-filter" onclick="filtrarPorNota(1)">1</button>
-                    <button class="btn-star-filter" onclick="filtrarPorNota(2)">2</button>
-                    <button class="btn-star-filter" onclick="filtrarPorNota(3)">3</button>
-                    <button class="btn-star-filter" onclick="filtrarPorNota(4)">4</button>
-                    <button class="btn-star-filter" onclick="filtrarPorNota(5)">5</button>
+        <div class="search-container flex justify-center gap-15 items-stretch mt-20">
+            <div class="search-box m-0" style="margin: 0; max-width: 500px; width: 100%;">
+                <input type="text" placeholder="Pesquisar títulos, resumos ou categorias..." id="searchBox">
+                <button class="btn-search" onclick="realizarBusca()"><i class="ph ph-magnifying-glass"></i> Buscar</button>
+                <button class="btn-clear" onclick="limparBusca()"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="dropdown">
+                <button class="btn-filter-dropdown" onclick="toggleFiltrosDropdown(event)">
+                    <i class="ph ph-faders"></i> Outros filtros
+                </button>
+                <div id="filtrosDropdown" class="dropdown-content">
+                    <div class="filter-group mb-15">
+                        <button class="btn-favorite-filter w-100 justify-center" onclick="toggleFiltroFavoritos(this)">
+                            <i class="ph ph-heart"></i> Apenas Favoritos
+                        </button>
+                    </div>
+                    <div class="filter-group">
+                        <span class="color-muted font-0-9 mb-5 d-block text-center">Nota mínima:</span>
+                        <div class="flex gap-5 justify-center">
+                            <button class="btn-star-filter" onclick="filtrarPorNota(1)">1</button>
+                            <button class="btn-star-filter" onclick="filtrarPorNota(2)">2</button>
+                            <button class="btn-star-filter" onclick="filtrarPorNota(3)">3</button>
+                            <button class="btn-star-filter" onclick="filtrarPorNota(4)">4</button>
+                            <button class="btn-star-filter" onclick="filtrarPorNota(5)">5</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

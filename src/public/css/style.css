@@ -50,6 +50,7 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.6;
+    zoom: 0.85; /* Reduce the overall size by zooming out */
 }
 
 /* Scrollbar Customizado */
@@ -275,6 +276,59 @@ header {
     background: var(--color-accent);
     color: #000;
     border-color: var(--color-accent);
+}
+
+/* Dropdown Filter */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-filter-dropdown {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-muted);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    height: 100%;
+}
+
+.btn-filter-dropdown:hover, .btn-filter-dropdown.active {
+    background: rgba(var(--color-accent-rgb), 0.2);
+    color: #fff;
+    border-color: rgba(var(--color-accent-rgb), 0.4);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    min-width: 250px;
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .glass-filter-pill {
@@ -678,6 +732,7 @@ nav a:hover, nav a.active {
 
 /* Utilitários Gerais */
 .text-center { text-align: center; }
+.m-0 { margin: 0 !important; }
 .mb-5 { margin-bottom: 5px; }
 .mb-20 { margin-bottom: 20px; }
 .mb-25 { margin-bottom: 25px; }
@@ -693,6 +748,8 @@ nav a:hover, nav a.active {
 .gap-10 { gap: 10px; }
 .gap-15 { gap: 15px; }
 .gap-20 { gap: 20px; }
+.w-100 { width: 100%; }
+.d-block { display: block; }
 .color-accent { color: var(--color-accent); }
 .color-muted { color: var(--color-muted); }
 .v-middle { vertical-align: middle; }
